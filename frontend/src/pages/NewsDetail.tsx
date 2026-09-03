@@ -1,69 +1,110 @@
-import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
-import { getNewsPost } from '@/api/content'
-import type { NewsPost } from '@/types'
-
-function NewsDetailSkeleton() {
-  return (
-    <article className="mx-auto max-w-3xl animate-pulse px-4 py-16">
-      <div className="mb-8 h-72 w-full rounded-2xl bg-muted" />
-      <div className="h-8 w-3/4 rounded bg-muted" />
-      <div className="mt-3 h-4 w-32 rounded bg-muted" />
-      <div className="mt-8 space-y-3">
-        <div className="h-4 w-full rounded bg-muted" />
-        <div className="h-4 w-full rounded bg-muted" />
-        <div className="h-4 w-2/3 rounded bg-muted" />
-      </div>
-    </article>
-  )
-}
+import { EmptyState, PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
+import { Button } from '@/components/ui/button'
+import { findNews, news } from '@/data'
+import { formatDate } from '@/lib/format'
 
 export default function NewsDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const [post, setPost] = useState<NewsPost | null>(null)
+  const post = slug ? findNews(slug) : undefined
 
-  useEffect(() => {
-    if (!slug) return
-    getNewsPost(slug).then(setPost)
-  }, [slug])
+  if (!post) {
+    return (
+      <Section>
+        <EmptyState
+          title="Article not found"
+          body="That article is not in the archive. It may have been moved."
+          action={
+            <Button variant="outline" asChild>
+              <Link to="/news">Back to news</Link>
+            </Button>
+          }
+        />
+      </Section>
+    )
+  }
 
-  if (!post) return <NewsDetailSkeleton />
+  const others = news.filter((n) => n.id !== post.id).slice(0, 3)
 
   return (
-    <article className="mx-auto max-w-3xl px-4 py-16">
-      <Link
-        to="/news"
-        className="fade-up inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-      >
-        <ArrowLeft className="h-4 w-4" /> Back to news
-      </Link>
+    <>
+      <PageHeader
+        breadcrumb={[{ label: 'Home', to: '/' }, { label: 'News', to: '/news' }, { label: post.category }]}
+        title={post.title}
+        intro={post.excerpt}
+      />
 
-      {post.cover_url && (
-        <img
-          src={post.cover_url}
-          alt={post.title}
-          className="fade-up mt-6 mb-8 h-72 w-full rounded-2xl border object-cover shadow-lg shadow-primary/5"
-        />
-      )}
-      <h1 className="fade-up font-heading text-3xl font-bold tracking-tight text-balance sm:text-4xl">
-        {post.title}
-      </h1>
-      {post.published_at && (
-        <p className="fade-up mt-3 text-sm text-muted-foreground">
-          {new Date(post.published_at).toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </p>
-      )}
-      {post.body && (
-        <div
-          className="fade-up prose prose-neutral dark:prose-invert prose-headings:font-heading prose-a:text-primary mt-8 max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.body }}
-        />
-      )}
-    </article>
+      <Section>
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+          <article>
+            <div className="flex flex-wrap items-center gap-3 text-[0.85rem] text-muted-foreground">
+              <StatusTag tone="gold">{post.category}</StatusTag>
+              <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+              <span>{post.author}</span>
+            </div>
+
+            {post.coverUrl && (
+              <img
+                src={post.coverUrl}
+                alt=""
+                className="mt-6 aspect-[16/9] w-full border border-border object-cover"
+              />
+            )}
+
+            <div className="mt-8 max-w-[70ch] space-y-4 text-[1.02rem] leading-relaxed">
+              {post.body.map((para) => (
+                <p key={para.slice(0, 40)}>{para}</p>
+              ))}
+            </div>
+          </article>
+
+          <aside className="space-y-6">
+            <div className="border border-border bg-card p-6">
+              <h2 className="text-[1.05rem]">More from the chapter</h2>
+              <ul className="mt-4 divide-y divide-border border-y border-border">
+                {others.map((n) => (
+                  <li key={n.id}>
+                    <Link to={`/news/${n.slug}`} className="group block py-3.5">
+                      <span className="block text-[0.9rem] leading-snug group-hover:text-plum-700 dark:group-hover:text-primary">
+                        {n.title}
+                      </span>
+                      <span className="mt-1 block text-[0.78rem] text-muted-foreground">
+                        {formatDate(n.publishedAt)}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="border border-border bg-card p-6">
+              <h2 className="text-[1.05rem]">Publications library</h2>
+              <p className="mt-2 text-[0.88rem] leading-relaxed text-muted-foreground">
+                Communiqués, technical bulletins and the annual report are filed in full.
+              </p>
+              <Button variant="outline" asChild className="mt-4 w-full">
+                <Link to="/publications">Open the library</Link>
+              </Button>
+            </div>
+          </aside>
+        </div>
+      </Section>
+
+      <Section tone="tinted">
+        <SectionHeading title="Keep reading" className="mb-8" />
+        <ul className="grid gap-px bg-border md:grid-cols-3">
+          {others.map((n) => (
+            <li key={n.id} className="bg-card p-5">
+              <p className="text-[0.8rem] text-muted-foreground">{formatDate(n.publishedAt)}</p>
+              <h3 className="mt-2 text-[1rem] leading-snug">
+                <Link to={`/news/${n.slug}`} className="hover:text-plum-700 dark:hover:text-primary">
+                  {n.title}
+                </Link>
+              </h3>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    </>
   )
 }

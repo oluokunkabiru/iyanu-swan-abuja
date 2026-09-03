@@ -1,49 +1,61 @@
-import { useEffect, useState } from 'react'
-import { ImageOff } from 'lucide-react'
-import { getGallery } from '@/api/content'
-import type { GalleryImage } from '@/types'
+import { useState } from 'react'
+import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
+import { gallery, galleryAlbums } from '@/data'
+import { cn } from '@/lib/utils'
 
 export default function Gallery() {
-  const [images, setImages] = useState<GalleryImage[]>([])
-
-  useEffect(() => {
-    getGallery().then(setImages).catch(() => setImages([]))
-  }, [])
+  const albums = ['All', ...galleryAlbums]
+  const [album, setAlbum] = useState('All')
+  const visible = album === 'All' ? gallery : gallery.filter((g) => g.album === album)
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-20">
-      <div className="mx-auto max-w-xl text-center">
-        <h1 className="font-heading text-4xl font-bold tracking-tight">Gallery</h1>
-        <p className="mt-3 text-muted-foreground">Moments from our events and community programmes</p>
-      </div>
+    <>
+      <PageHeader
+        breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Gallery' }]}
+        title="Gallery"
+        intro="Seminars, outreach and chapter life."
+      />
 
-      {images.length === 0 ? (
-        <div className="flex flex-col items-center py-16 text-center text-muted-foreground">
-          <ImageOff className="h-10 w-10 text-muted-foreground/50" />
-          <p className="mt-3">No photos yet — check back soon.</p>
-        </div>
-      ) : (
-        <div className="mt-12 columns-2 gap-4 sm:columns-3">
-          {images.map((image, i) => (
-            <figure
-              key={image.id}
-              className="fade-up group mb-4 break-inside-avoid overflow-hidden rounded-xl border"
-              style={{ animationDelay: `${(i % 6) * 60}ms` }}
+      <Section>
+        <SectionHeading title="Albums" className="mb-6" />
+        <div className="flex flex-wrap gap-2">
+          {albums.map((a) => (
+            <button
+              key={a}
+              type="button"
+              onClick={() => setAlbum(a)}
+              aria-pressed={album === a}
+              className={cn(
+                'rounded-sm border px-3 py-1.5 text-[0.84rem] font-medium transition-colors',
+                album === a
+                  ? 'border-plum-700 bg-plum-700 text-white dark:border-primary dark:bg-primary dark:text-primary-foreground'
+                  : 'border-border bg-card text-muted-foreground hover:text-foreground',
+              )}
             >
-              {image.image_url && (
-                <img
-                  src={image.image_url}
-                  alt={image.caption ?? ''}
-                  className="w-full transition-transform duration-500 group-hover:scale-105"
-                />
-              )}
-              {image.caption && (
-                <figcaption className="p-2.5 text-center text-xs text-muted-foreground">{image.caption}</figcaption>
-              )}
-            </figure>
+              {a}
+            </button>
           ))}
         </div>
-      )}
-    </section>
+
+        <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {visible.map((img) => (
+            <li key={img.id} className="border border-border bg-card">
+              <img
+                src={img.imageUrl}
+                alt={img.caption}
+                loading="lazy"
+                className="aspect-[4/3] w-full object-cover"
+              />
+              <div className="p-4">
+                <p className="text-[0.92rem] leading-snug">{img.caption}</p>
+                <p className="tnum mt-1 text-[0.78rem] text-muted-foreground">
+                  {img.album} · {img.year}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    </>
   )
 }

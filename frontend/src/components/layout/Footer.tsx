@@ -1,99 +1,99 @@
 import { Link } from 'react-router-dom'
 import { Mail, MapPin, Phone } from 'lucide-react'
-import { FacebookIcon, InstagramIcon, XIcon } from '@/components/icons/SocialIcons'
-import { useSettings } from '@/context/SettingsContext'
+import { footerLinks, site } from '@/data'
 
 export function Footer() {
-  const settings = useSettings()
+  const year = new Date().getFullYear()
 
   return (
-    <footer className="border-t bg-muted/30">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <h3 className="font-heading font-semibold">{settings?.chapter_name ?? 'SWAN Abuja Chapter'}</h3>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {settings?.tagline ?? 'Empowering the professional female accountant'}
-          </p>
-          <div className="mt-5 flex gap-2">
-            {settings?.facebook_url && (
-              <a
-                href={settings.facebook_url}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Facebook"
-                className="flex h-9 w-9 items-center justify-center rounded-full border bg-card text-muted-foreground transition-colors hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
+    <footer className="mt-auto bg-plum-900 text-plum-200">
+      <div className="mx-auto max-w-6xl px-4 py-14">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
+          <div>
+            <div className="flex items-center gap-3">
+              <span
+                aria-hidden="true"
+                className="flex h-11 w-11 items-center justify-center rounded-sm border border-gold-500/50 bg-plum-800 font-heading text-[0.72rem] font-semibold text-gold-300"
               >
-                <FacebookIcon className="h-4 w-4" />
-              </a>
-            )}
-            {settings?.instagram_url && (
-              <a
-                href={settings.instagram_url}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Instagram"
-                className="flex h-9 w-9 items-center justify-center rounded-full border bg-card text-muted-foreground transition-colors hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
-              >
-                <InstagramIcon className="h-4 w-4" />
-              </a>
-            )}
-            {settings?.twitter_url && (
-              <a
-                href={settings.twitter_url}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="X / Twitter"
-                className="flex h-9 w-9 items-center justify-center rounded-full border bg-card text-muted-foreground transition-colors hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
-              >
-                <XIcon className="h-4 w-4" />
-              </a>
-            )}
+                SWAN
+              </span>
+              <span className="font-heading text-lg leading-tight text-white">
+                {site.shortName}
+              </span>
+            </div>
+            <p className="mt-4 max-w-xs text-[0.86rem] leading-relaxed">{site.tagline}</p>
+
+            <ul className="mt-6 space-y-2.5 text-[0.86rem]">
+              <li className="flex items-start gap-2.5">
+                <MapPin aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                <span>{site.address}</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Mail aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                <a href={`mailto:${site.email}`} className="hover:text-white">
+                  {site.email}
+                </a>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Phone aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                <a href={`tel:${site.phone.replace(/\s/g, '')}`} className="hover:text-white">
+                  {site.phone}
+                </a>
+              </li>
+            </ul>
+
+            <ul className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-[0.82rem]">
+              {site.socials.map((s) => (
+                <li key={s.label}>
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="border-b border-plum-800 pb-0.5 hover:border-gold-500 hover:text-white"
+                  >
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {footerLinks.map((col) => (
+              <div key={col.heading}>
+                <p className="border-b border-gold-500/40 pb-2 text-[0.8rem] font-semibold text-gold-300">
+                  {col.heading}
+                </p>
+                <ul className="mt-3 space-y-2 text-[0.86rem]">
+                  {col.items.map((item) => (
+                    <li key={item.to}>
+                      <Link to={item.to} className="hover:text-white">
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div>
-          <h4 className="font-heading text-sm font-semibold">Quick links</h4>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-            <li><Link to="/about" className="transition-colors hover:text-primary">About us</Link></li>
-            <li><Link to="/events" className="transition-colors hover:text-primary">Events</Link></li>
-            <li><Link to="/news" className="transition-colors hover:text-primary">News</Link></li>
-            <li><Link to="/gallery" className="transition-colors hover:text-primary">Gallery</Link></li>
-          </ul>
+        <div className="mt-12 flex flex-col gap-3 border-t border-plum-800 pt-6 text-[0.8rem] sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            {site.chapterName} — {year}. All rights reserved.
+          </p>
+          <p>
+            A society of the{' '}
+            <a
+              href="https://icanig.org/ican/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-gold-300 underline-offset-4 hover:underline"
+            >
+              Institute of Chartered Accountants of Nigeria
+            </a>
+          </p>
         </div>
-
-        <div>
-          <h4 className="font-heading text-sm font-semibold">Membership</h4>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-            <li><Link to="/register" className="transition-colors hover:text-primary">Become a member</Link></li>
-            <li><Link to="/login" className="transition-colors hover:text-primary">Member login</Link></li>
-            <li><Link to="/dashboard" className="transition-colors hover:text-primary">Dashboard</Link></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-heading text-sm font-semibold">Contact</h4>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-            {settings?.address && (
-              <li className="flex items-start gap-2.5">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {settings.address}
-              </li>
-            )}
-            {settings?.phone && (
-              <li className="flex items-center gap-2.5">
-                <Phone className="h-4 w-4 shrink-0 text-primary" /> {settings.phone}
-              </li>
-            )}
-            {settings?.email && (
-              <li className="flex items-center gap-2.5">
-                <Mail className="h-4 w-4 shrink-0 text-primary" /> {settings.email}
-              </li>
-            )}
-          </ul>
-        </div>
-      </div>
-
-      <div className="border-t py-5 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} {settings?.chapter_name ?? 'SWAN Abuja Chapter'}. All rights reserved.
       </div>
     </footer>
   )

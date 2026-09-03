@@ -1,59 +1,66 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Newspaper } from 'lucide-react'
-import { getNews } from '@/api/content'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState } from 'react'
+import { NewsCard } from '@/components/common/Cards'
+import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
+import { news } from '@/data'
+import { cn } from '@/lib/utils'
 import type { NewsPost } from '@/types'
 
-export default function News() {
-  const [posts, setPosts] = useState<NewsPost[]>([])
+const categories: (NewsPost['category'] | 'All')[] = ['All', 'Chapter', 'ICAN', 'Profession', 'Advocacy']
 
-  useEffect(() => {
-    getNews().then(setPosts).catch(() => setPosts([]))
-  }, [])
+export default function News() {
+  const [category, setCategory] = useState<(typeof categories)[number]>('All')
+  const visible = category === 'All' ? news : news.filter((n) => n.category === category)
+  const [lead, ...rest] = visible
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-20">
-      <div className="mx-auto max-w-xl text-center">
-        <h1 className="font-heading text-4xl font-bold tracking-tight">News</h1>
-        <p className="mt-3 text-muted-foreground">Updates and announcements from the chapter</p>
-      </div>
+    <>
+      <PageHeader
+        breadcrumb={[{ label: 'Home', to: '/' }, { label: 'News' }]}
+        title="Chapter news"
+        intro="What the chapter has done, published and argued for."
+      />
 
-      {posts.length === 0 ? (
-        <div className="flex flex-col items-center py-16 text-center text-muted-foreground">
-          <Newspaper className="h-10 w-10 text-muted-foreground/50" />
-          <p className="mt-3">No news posted yet — check back soon.</p>
-        </div>
-      ) : (
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post, i) => (
-            <Link
-              key={post.id}
-              to={`/news/${post.slug}`}
-              className="fade-up"
-              style={{ animationDelay: `${i * 80}ms` }}
+      <Section>
+        <SectionHeading title="Latest" className="mb-6" />
+        <div className="flex flex-wrap gap-2">
+          {categories.map((c) => (
+            <button
+              key={c}
+              type="button"
+              onClick={() => setCategory(c)}
+              aria-pressed={category === c}
+              className={cn(
+                'rounded-sm border px-3 py-1.5 text-[0.84rem] font-medium transition-colors',
+                category === c
+                  ? 'border-plum-700 bg-plum-700 text-white dark:border-primary dark:bg-primary dark:text-primary-foreground'
+                  : 'border-border bg-card text-muted-foreground hover:text-foreground',
+              )}
             >
-              <Card className="card-hover h-full overflow-hidden py-0">
-                <div className="h-40 w-full">
-                  {post.cover_url ? (
-                    <img src={post.cover_url} alt={post.title} className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/25 via-accent/40 to-primary/10">
-                      <Newspaper className="h-8 w-8 text-primary/60" />
-                    </div>
-                  )}
-                </div>
-                <CardHeader>
-                  <CardTitle className="font-heading text-lg leading-snug">{post.title}</CardTitle>
-                </CardHeader>
-                {post.excerpt && (
-                  <CardContent className="pb-6 text-sm text-muted-foreground">{post.excerpt}</CardContent>
-                )}
-              </Card>
-            </Link>
+              {c}
+            </button>
           ))}
         </div>
-      )}
-    </section>
+
+        {lead && (
+          <div className="mt-8">
+            <NewsCard post={lead} featured />
+          </div>
+        )}
+
+        {rest.length > 0 && (
+          <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {rest.map((post) => (
+              <NewsCard key={post.id} post={post} />
+            ))}
+          </div>
+        )}
+
+        {visible.length === 0 && (
+          <p className="mt-8 border border-dashed border-rule px-6 py-10 text-center text-[0.9rem] text-muted-foreground">
+            Nothing filed under that category yet.
+          </p>
+        )}
+      </Section>
+    </>
   )
 }

@@ -1,83 +1,88 @@
 import { useState, type FormEvent } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Section } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context/AuthContext'
 
 export default function Login() {
-  const { user, login } = useAuth()
+  const { signIn } = useAuth()
   const navigate = useNavigate()
-  const [form, setForm] = useState({ email: '', password: '' })
+  const location = useLocation()
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  if (user) return <Navigate to="/dashboard" replace />
+  const from = (location.state as { from?: string } | null)?.from ?? '/members'
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const form = new FormData(e.currentTarget)
+    const email = String(form.get('email') ?? '').trim()
+    const password = String(form.get('password') ?? '')
+
+    if (!email || !password) {
+      setError('Enter your email address and password.')
+      return
+    }
+
     setError(null)
     setSubmitting(true)
-    try {
-      await login(form.email, form.password)
-      navigate('/dashboard')
-    } catch {
-      setError('Invalid email or password.')
-    } finally {
-      setSubmitting(false)
-    }
+    await signIn(email, password)
+    navigate(from, { replace: true })
   }
 
   return (
-    <section className="relative overflow-hidden py-20">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-32 left-1/2 h-72 w-[36rem] -translate-x-1/2 rounded-full bg-primary/15 blur-3xl dark:bg-primary/10"
-      />
-      <div className="relative mx-auto max-w-md px-4">
-        <Card className="fade-up rounded-2xl shadow-xl shadow-primary/5">
-          <CardHeader>
-            <CardTitle className="font-heading text-2xl">Member login</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  required
-                  value={form.email}
-                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={form.password}
-                  onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-                />
-              </div>
-              {error && <p className="text-sm text-destructive">{error}</p>}
-              <Button type="submit" size="lg" className="w-full shadow-lg shadow-primary/25" disabled={submitting}>
-                {submitting ? 'Signing in…' : 'Sign in'}
-              </Button>
-            </form>
-          </CardContent>
-          <CardFooter>
-            <p className="text-sm text-muted-foreground">
-              Not a member yet?{' '}
-              <Link to="/register" className="font-medium text-primary hover:underline">
-                Register here
-              </Link>
-            </p>
-          </CardFooter>
-        </Card>
+    <Section>
+      <div className="mx-auto grid max-w-4xl gap-10 md:grid-cols-2">
+        <div>
+          <h1 className="text-3xl">Sign in</h1>
+          <p className="mt-3 max-w-[45ch] text-[0.95rem] leading-relaxed text-muted-foreground">
+            Signing in applies your member rate at checkout, opens your CPD record, and shows the
+            dues on your account.
+          </p>
+
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email address</Label>
+              <Input id="email" name="email" type="email" autoComplete="email" defaultValue="member@swanabujachapter.com" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" name="password" type="password" autoComplete="current-password" defaultValue="demo-password" />
+            </div>
+
+            {error && (
+              <p role="alert" className="border-l-2 border-destructive bg-destructive/8 px-4 py-3 text-[0.88rem] text-destructive">
+                {error}
+              </p>
+            )}
+
+            <Button type="submit" size="lg" disabled={submitting} className="w-full">
+              {submitting ? 'Signing in…' : 'Sign in'}
+            </Button>
+          </form>
+
+          <p className="mt-6 text-[0.88rem] text-muted-foreground">
+            Not yet on the active roll?{' '}
+            <Link to="/membership/register" className="font-semibold text-plum-700 underline-offset-4 hover:underline dark:text-primary">
+              Register and pay your dues
+            </Link>
+          </p>
+        </div>
+
+        <aside className="border border-border bg-card p-6">
+          <h2 className="text-[1.05rem]">About this build</h2>
+          <p className="mt-3 text-[0.9rem] leading-relaxed text-muted-foreground">
+            There is no backend connected. Any credentials sign you into a demonstration member
+            record so the whole members area can be reviewed — CPD tracker, dues history, tickets
+            and profile.
+          </p>
+          <p className="mt-3 text-[0.9rem] leading-relaxed text-muted-foreground">
+            The session is kept in browser storage and cleared when you sign out.
+          </p>
+        </aside>
       </div>
-    </section>
+    </Section>
   )
 }

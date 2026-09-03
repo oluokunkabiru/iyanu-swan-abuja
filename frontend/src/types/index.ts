@@ -1,134 +1,278 @@
+/** Shared content model. All data is static and lives under `src/data`. */
+
+export interface SocialLink {
+  label: string
+  url: string
+  network: 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube'
+}
+
 export interface SiteSettings {
-  id: number
-  chapter_name: string
-  tagline: string | null
-  mission: string | null
-  vision: string | null
-  address: string | null
-  phone: string | null
-  email: string | null
-  facebook_url: string | null
-  instagram_url: string | null
-  twitter_url: string | null
-  hero_video_url: string | null
-  membership_subscription_fee: number
-  membership_welfare_fee: number
-  logo_url: string | null
+  chapterName: string
+  shortName: string
+  parentBody: string
+  tagline: string
+  vision: string
+  mission: string[]
+  aims: string
+  address: string
+  phone: string
+  email: string
+  socials: SocialLink[]
+  subscriptionFee: number
+  welfareFee: number
 }
 
 export interface CoreValue {
-  id: number
   title: string
-  description: string | null
-  sort_order: number
+  description: string
 }
 
 export interface ExecutiveMember {
-  id: number
+  id: string
   name: string
-  credential: string | null
+  credential: 'ACA' | 'FCA'
   position: string
-  bio: string | null
-  sort_order: number
-  is_active: boolean
-  photo_url: string | null
+  bio: string
+  photoUrl: string | null
+  isPrincipal: boolean
 }
 
-export interface EventTicketType {
-  id: number
-  event_id: number
+export interface TicketTier {
+  id: string
+  audience: 'member' | 'non-member'
+  mode: 'physical' | 'virtual'
   label: string
   price: number
-  currency: string
+  includes: string[]
 }
 
-export interface EventRegistration {
-  id: number
-  event_id: number
-  event_ticket_type_id: number
-  name: string
-  email: string
-  phone: string | null
-  payment_status: 'pending' | 'confirmed'
-  amount: number
-  notes: string | null
-  created_at: string
-  event?: SwanEvent
-  ticket_type?: EventTicketType
-}
-
-export interface SwanEvent {
-  id: number
+export interface ChapterEvent {
+  id: string
   title: string
   slug: string
-  description: string | null
-  location: string | null
-  video_url: string | null
-  starts_at: string
-  ends_at: string | null
-  is_featured: boolean
-  status: 'draft' | 'published'
-  cover_url: string | null
-  ticket_types?: EventTicketType[]
-  gallery_images?: GalleryImage[]
+  summary: string
+  body: string[]
+  category: 'Seminar' | 'Outreach' | 'Training' | 'Meeting' | 'Conference'
+  venue: string
+  startsAt: string
+  endsAt: string | null
+  cpdHours: number
+  isFeatured: boolean
+  status: 'upcoming' | 'past'
+  coverUrl: string | null
+  ticketTiers: TicketTier[]
+  speakers: { name: string; role: string }[]
 }
 
 export interface NewsPost {
-  id: number
+  id: string
   title: string
   slug: string
-  excerpt: string | null
-  body: string | null
-  published_at: string | null
-  is_published: boolean
-  cover_url: string | null
+  excerpt: string
+  body: string[]
+  category: 'Chapter' | 'ICAN' | 'Profession' | 'Advocacy'
+  publishedAt: string
+  author: string
+  coverUrl: string | null
+}
+
+export interface Announcement {
+  id: string
+  title: string
+  date: string
+  href: string
+  kind: 'notice' | 'circular' | 'deadline'
+}
+
+export interface ProgrammeEntry {
+  id: string
+  name: string
+  date: string
+  venue: string
+  href: string
+}
+
+export interface Faq {
+  id: string
+  question: string
+  answer: string
+  topic: 'Membership' | 'Events' | 'Payments' | 'CPD' | 'General'
 }
 
 export interface GalleryImage {
-  id: number
-  caption: string | null
-  event_id: number | null
-  sort_order: number
-  image_url: string | null
-}
-
-export interface MemberSpotlight {
-  id: number
-  name: string
-  quote: string | null
-  sort_order: number
-  photo_url: string | null
+  id: string
+  caption: string
+  album: string
+  year: number
+  imageUrl: string
 }
 
 export interface Partner {
-  id: number
+  id: string
   name: string
-  url: string | null
-  sort_order: number
-  logo_url: string | null
+  url: string
+  scope: 'Parent body' | 'Affiliate' | 'Sponsor'
 }
 
 export interface Publication {
-  id: number
+  id: string
   title: string
-  category: string | null
-  published_at: string | null
-  file_url: string | null
+  category: 'Communiqué' | 'Newsletter' | 'Technical' | 'Report' | 'Address'
+  publishedAt: string
+  fileUrl: string
+  sizeLabel: string
 }
 
-export interface MemberProfile {
-  id: number
-  user_id: number
-  membership_number: string | null
-  membership_status: 'pending' | 'active' | 'expired'
-  phone: string | null
-  joined_at: string | null
+export interface Committee {
+  id: string
+  name: string
+  slug: string
+  remit: string
+  chair: string
+  focusAreas: string[]
+  meetingCadence: string
+}
+
+export interface Training {
+  id: string
+  title: string
+  provider: 'SWAN Abuja' | 'ICAN MPD' | 'Faculty'
+  deliveryMode: 'Physical' | 'Virtual' | 'Hybrid'
+  date: string
+  cpdHours: number
+  fee: number
+  memberFee: number
+  seatsLeft: number
+}
+
+export type Sector =
+  | 'Public practice'
+  | 'Public sector'
+  | 'Financial services'
+  | 'Industry'
+  | 'Academia'
+  | 'Consulting'
+
+export interface DirectoryMember {
+  id: string
+  name: string
+  credential: 'ACA' | 'FCA'
+  membershipNumber: string
+  sector: Sector
+  specialisation: string
+  yearAdmitted: number
+  chapterRole: string | null
+}
+
+export interface Firm {
+  id: string
+  name: string
+  principal: string
+  licenceNumber: string
+  services: string[]
+  area: string
+  licenceStatus: 'Active' | 'Renewal due'
+}
+
+export interface JobListing {
+  id: string
+  title: string
+  organisation: string
+  location: string
+  type: 'Full-time' | 'Contract' | 'Part-time'
+  level: 'Entry' | 'Mid' | 'Senior' | 'Executive'
+  postedAt: string
+  closesAt: string
+  summary: string
+}
+
+export interface ResourceItem {
+  id: string
+  title: string
+  description: string
+  category: 'Form' | 'Guide' | 'Policy' | 'Template' | 'Syllabus'
+  fileUrl: string
+  format: 'PDF' | 'DOCX' | 'XLSX'
+}
+
+export interface MemberBenefit {
+  title: string
+  description: string
+}
+
+export interface RegistrationStep {
+  step: number
+  title: string
+  description: string
+}
+
+export interface ChapterStat {
+  label: string
+  value: string
+  note: string
+}
+
+/* ── Member area ─────────────────────────────────────────────────────────── */
+
+export interface CpdRecord {
+  id: string
+  activity: string
+  date: string
+  hours: number
+  type: 'Structured' | 'Unstructured'
+  verified: boolean
+}
+
+export interface SubscriptionRecord {
+  id: string
+  year: number
+  subscription: number
+  welfare: number
+  status: 'Paid' | 'Outstanding'
+  paidOn: string | null
+  reference: string | null
+}
+
+export interface TicketRecord {
+  id: string
+  eventTitle: string
+  eventSlug: string
+  tier: string
+  amount: number
+  reference: string
+  status: 'Confirmed' | 'Pending'
+  issuedAt: string
 }
 
 export interface AuthUser {
-  id: number
+  id: string
   name: string
   email: string
-  role: 'admin' | 'member'
-  member_profile: MemberProfile | null
+  credential: 'ACA' | 'FCA'
+  membershipNumber: string
+  membershipStatus: 'active' | 'pending' | 'expired'
+  role: 'member' | 'admin'
+  joinedAt: string
+  cpdTarget: number
+}
+
+/* ── Navigation ──────────────────────────────────────────────────────────── */
+
+export interface NavLeaf {
+  label: string
+  to: string
+  description?: string
+  external?: boolean
+}
+
+export interface NavColumn {
+  heading: string
+  items: NavLeaf[]
+}
+
+export interface NavSection {
+  label: string
+  to?: string
+  columns?: NavColumn[]
+  feature?: { title: string; body: string; to: string; cta: string }
 }
