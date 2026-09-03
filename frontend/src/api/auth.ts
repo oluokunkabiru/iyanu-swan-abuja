@@ -1,0 +1,38 @@
+import { api, ensureCsrfCookie } from '@/api/client'
+import type { AuthUser, EventRegistration } from '@/types'
+
+export async function register(payload: {
+  name: string
+  email: string
+  password: string
+  phone?: string
+}): Promise<AuthUser> {
+  await ensureCsrfCookie()
+  const { data } = await api.post<AuthUser>('/register', payload)
+  return data
+}
+
+export async function login(payload: { email: string; password: string }): Promise<AuthUser> {
+  await ensureCsrfCookie()
+  const { data } = await api.post<AuthUser>('/login', payload)
+  return data
+}
+
+export async function logout(): Promise<void> {
+  await api.post('/logout')
+}
+
+export async function fetchMe(): Promise<AuthUser> {
+  const { data } = await api.get<AuthUser>('/me')
+  return data
+}
+
+export async function updateMe(payload: { name?: string; phone?: string }): Promise<AuthUser> {
+  const { data } = await api.put<AuthUser>('/me', payload)
+  return data
+}
+
+export async function fetchMyRegistrations(): Promise<EventRegistration[]> {
+  const { data } = await api.get<EventRegistration[]>('/me/registrations')
+  return data
+}
