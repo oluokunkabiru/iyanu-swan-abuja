@@ -18,4 +18,11 @@ class MemberSpotlight extends Model implements HasMedia
     {
         return $this->getFirstMediaUrl('photo') ?: null;
     }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('photo')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+    }
 }

@@ -16,11 +16,16 @@ class Event extends Model implements HasMedia
     protected $fillable = [
         'title',
         'slug',
+        'summary',
         'description',
+        'body',
+        'category',
         'location',
         'video_url',
         'starts_at',
         'ends_at',
+        'cpd_hours',
+        'speakers',
         'is_featured',
         'status',
     ];
@@ -30,6 +35,9 @@ class Event extends Model implements HasMedia
         return [
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
+            'body' => 'array',
+            'cpd_hours' => 'integer',
+            'speakers' => 'array',
             'is_featured' => 'boolean',
         ];
     }
@@ -52,6 +60,13 @@ class Event extends Model implements HasMedia
     public function getCoverUrlAttribute(): ?string
     {
         return $this->getFirstMediaUrl('cover') ?: null;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('cover')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
     }
 
     public function getRouteKeyName(): string

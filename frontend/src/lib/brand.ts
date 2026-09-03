@@ -11,9 +11,9 @@
  */
 
 const fallbacks = {
-  primary: '#321142',
-  secondary: '#D5A62E',
-  tertiary: '#FFFDFD',
+  primary: '#000066',
+  secondary: '#FFFF00',
+  tertiary: '#FFFFFF',
   radius: '0.375rem',
 } as const
 

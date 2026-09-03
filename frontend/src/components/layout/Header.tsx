@@ -1,23 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { ChevronDown, LogOut, Menu, Search, X } from 'lucide-react'
+import { BrandLogo } from '@/components/common/BrandLogo'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { useAuth } from '@/context/AuthContext'
 import { navigation, site } from '@/data'
 import { cn } from '@/lib/utils'
 import type { NavSection } from '@/types'
-
-function SwanMark() {
-  return (
-    <span
-      aria-hidden="true"
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-gold-500/50 bg-plum-800 font-heading text-[0.7rem] font-semibold tracking-wide text-gold-300"
-    >
-      SWAN
-    </span>
-  )
-}
 
 export function Header() {
   const { user, signOut } = useAuth()
@@ -56,7 +46,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50">
       <div className="hidden border-b border-plum-800/60 bg-plum-900 text-plum-200 md:block">
-        <div className="mx-auto flex h-9 max-w-6xl items-center justify-between px-4 text-[0.78rem]">
+        <div className="mx-auto flex h-9 max-w-7xl items-center justify-between px-4 text-[0.78rem]">
           <p>
             A society of the{' '}
             <a
@@ -80,17 +70,9 @@ export function Header() {
       </div>
 
       <div className="border-b border-border bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center gap-4 px-4">
-          <Link to="/" className="flex min-w-0 items-center gap-3">
-            <SwanMark />
-            <span className="min-w-0">
-              <span className="block truncate font-heading text-[1.05rem] font-semibold leading-tight">
-                {site.shortName}
-              </span>
-              <span className="hidden truncate text-[0.72rem] leading-tight text-muted-foreground lg:block">
-                Society of Women Accountants of Nigeria
-              </span>
-            </span>
+        <div className="mx-auto flex h-[4.75rem] max-w-7xl items-center gap-4 px-4">
+          <Link to="/" aria-label={`${site.shortName} home`} className="shrink-0">
+            <BrandLogo className="h-7 sm:h-10" />
           </Link>
 
           <nav className="ml-auto hidden items-center lg:flex" aria-label="Main">

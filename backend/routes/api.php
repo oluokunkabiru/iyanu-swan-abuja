@@ -1,22 +1,45 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\CommitteeController;
 use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\CoreValueController;
+use App\Http\Controllers\Api\DirectoryMemberController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\EventRegistrationController;
 use App\Http\Controllers\Api\ExecutiveMemberController;
+use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\FirmController;
 use App\Http\Controllers\Api\GalleryImageController;
+use App\Http\Controllers\Api\JobListingController;
+use App\Http\Controllers\Api\MemberCpdRecordController;
 use App\Http\Controllers\Api\MemberSpotlightController;
+use App\Http\Controllers\Api\MemberSubscriptionController;
 use App\Http\Controllers\Api\NewsPostController;
 use App\Http\Controllers\Api\PartnerController;
+use App\Http\Controllers\Api\ProgrammeEntryController;
 use App\Http\Controllers\Api\PublicationController;
+use App\Http\Controllers\Api\ResourceItemController;
 use App\Http\Controllers\Api\SiteSettingController;
+use App\Http\Controllers\Api\SliderController;
+use App\Http\Controllers\Api\TrainingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/settings', [SiteSettingController::class, 'show']);
 Route::get('/core-values', [CoreValueController::class, 'index']);
 Route::get('/executives', [ExecutiveMemberController::class, 'index']);
+Route::get('/sliders', [SliderController::class, 'index']);
+Route::get('/faqs', [FaqController::class, 'index']);
+Route::get('/announcements', [AnnouncementController::class, 'index']);
+Route::get('/programme', [ProgrammeEntryController::class, 'index']);
+Route::get('/committees', [CommitteeController::class, 'index']);
+Route::get('/committees/{committee}', [CommitteeController::class, 'show']);
+Route::get('/trainings', [TrainingController::class, 'index']);
+Route::get('/directory/members', [DirectoryMemberController::class, 'index']);
+Route::get('/directory/firms', [FirmController::class, 'index']);
+Route::get('/jobs', [JobListingController::class, 'index']);
+Route::get('/resources', [ResourceItemController::class, 'index']);
 
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{event}', [EventController::class, 'show']);
@@ -40,4 +63,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/me', [AuthController::class, 'updateMe']);
     Route::get('/me/registrations', [AuthController::class, 'registrations']);
+    Route::get('/me/cpd-records', [MemberCpdRecordController::class, 'index']);
+    Route::get('/me/subscriptions', [MemberSubscriptionController::class, 'index']);
 });

@@ -12,10 +12,17 @@ class Partner extends Model implements HasMedia
 
     protected $appends = ['logo_url'];
 
-    protected $fillable = ['name', 'url', 'sort_order'];
+    protected $fillable = ['name', 'url', 'scope', 'sort_order'];
 
     public function getLogoUrlAttribute(): ?string
     {
         return $this->getFirstMediaUrl('logo') ?: null;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('logo')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class EventRegistrationController extends Controller
 {
@@ -30,6 +31,8 @@ class EventRegistrationController extends Controller
             'notes' => $data['notes'] ?? null,
             'amount' => $ticketType->price,
             'payment_status' => 'pending',
+            'reference' => 'TKT-'.Str::upper(Str::random(10)),
+            'issued_at' => now(),
         ]);
 
         return response()->json($registration, 201);

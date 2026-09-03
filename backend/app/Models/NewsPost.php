@@ -16,6 +16,8 @@ class NewsPost extends Model implements HasMedia
         'title',
         'slug',
         'excerpt',
+        'category',
+        'author',
         'body',
         'published_at',
         'is_published',
@@ -26,12 +28,20 @@ class NewsPost extends Model implements HasMedia
         return [
             'published_at' => 'datetime',
             'is_published' => 'boolean',
+            'body' => 'array',
         ];
     }
 
     public function getCoverUrlAttribute(): ?string
     {
         return $this->getFirstMediaUrl('cover') ?: null;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('cover')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
     }
 
     public function getRouteKeyName(): string

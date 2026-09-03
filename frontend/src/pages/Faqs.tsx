@@ -61,7 +61,7 @@ export default function Faqs() {
                     <ChevronDown
                       aria-hidden="true"
                       className={cn(
-                        'mt-1 h-4 w-4 shrink-0 text-gold-500 transition-transform',
+                        'mt-1 h-4 w-4 shrink-0 text-primary transition-transform',
                         isOpen && 'rotate-180',
                       )}
                     />

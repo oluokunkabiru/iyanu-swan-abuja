@@ -138,7 +138,7 @@ export default function MembershipRegister() {
               <ol className="mt-4 space-y-3.5">
                 {registrationSteps.map((s) => (
                   <li key={s.step} className="flex gap-3">
-                    <Check aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                    <Check aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                     <span className="text-[0.88rem] leading-relaxed">
                       <span className="font-medium">{s.title}.</span>{' '}
                       <span className="text-muted-foreground">{s.description}</span>

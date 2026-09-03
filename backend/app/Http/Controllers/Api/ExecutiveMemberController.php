@@ -12,9 +12,20 @@ class ExecutiveMemberController extends Controller
     {
         return response()->json(
             ExecutiveMember::query()
+                ->with('media')
                 ->where('is_active', true)
                 ->orderBy('sort_order')
+                ->orderBy('id')
                 ->get()
+                ->map(fn (ExecutiveMember $member): array => [
+                    'id' => (string) $member->id,
+                    'name' => $member->name,
+                    'credential' => $member->credential,
+                    'position' => $member->position,
+                    'bio' => $member->bio ?? '',
+                    'photoUrl' => $member->photo_url,
+                    'isPrincipal' => $member->is_principal,
+                ])
         );
     }
 }

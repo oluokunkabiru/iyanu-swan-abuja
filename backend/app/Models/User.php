@@ -49,4 +49,19 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(EventRegistration::class);
     }
+
+    public function cpdRecords(): HasMany
+    {
+        return $this->hasMany(CpdRecord::class);
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function firms(): HasMany
+    {
+        return $this->hasMany(Firm::class, 'principal_user_id');
+    }
 }

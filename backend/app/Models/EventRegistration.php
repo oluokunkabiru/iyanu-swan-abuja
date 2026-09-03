@@ -16,8 +16,18 @@ class EventRegistration extends Model
         'phone',
         'payment_status',
         'amount',
+        'reference',
+        'issued_at',
         'notes',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'amount' => 'integer',
+            'issued_at' => 'datetime',
+        ];
+    }
 
     public function event(): BelongsTo
     {

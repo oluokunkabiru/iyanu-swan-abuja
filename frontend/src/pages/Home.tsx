@@ -1,21 +1,25 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, GraduationCap, Users, Wallet } from 'lucide-react'
 import { EventCard, NewsCard } from '@/components/common/Cards'
 import { Section, SectionHeading, Stat, StatusTag } from '@/components/common/Primitives'
+import { HomeSlider } from '@/components/sections/HomeSlider'
 import { Noticeboard } from '@/components/sections/Noticeboard'
 import { Button } from '@/components/ui/button'
+import { getSliders } from '@/api/sliders'
 import {
   chapterStats,
+  chairpersonWelcome,
   coreValues,
   executives,
   featuredEvents,
+  homeSlides,
   news,
   partners,
   publications,
   registrationSteps,
   site,
   standardTiers,
-  upcomingEvents,
 } from '@/data'
 import { formatDate, formatNaira } from '@/lib/format'
 
@@ -47,81 +51,65 @@ const desks = [
 ]
 
 export default function Home() {
-  const nextEvent = upcomingEvents[0]
+  const [slides, setSlides] = useState(homeSlides)
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    getSliders(controller.signal)
+      .then((managedSlides) => {
+        if (managedSlides.length > 0) setSlides(managedSlides)
+      })
+      .catch(() => {
+        // Keep the local slides when the API is unavailable or has no published slides.
+      })
+
+    return () => controller.abort()
+  }, [])
 
   return (
     <>
-      {/* Hero — a statement of who the chapter is, paired with the three facts
-          a member most often arrives looking for. */}
-      <section className="border-b border-rule bg-plum-900 text-plum-200">
-        <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 lg:grid-cols-[minmax(0,1fr)_22rem] lg:py-24">
-          <div className="hero-rise">
-            <p className="text-[0.9rem] text-gold-300">
-              Society of Women Accountants of Nigeria · Abuja Chapter
-            </p>
-            <h1 className="mt-4 max-w-2xl font-heading text-4xl leading-[1.1] text-white md:text-[3.25rem]">
-              A body of women who hold the Charter, and hold each other to it.
-            </h1>
-            <p className="mt-6 max-w-xl text-[1.02rem] leading-relaxed">
-              Every female member of ICAN is a member of SWAN. The Abuja Chapter is where that
-              membership becomes local: technical sessions that count toward your CPD, a mentorship
-              programme with real pairings, and a welfare fund that stands behind you.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button size="lg" asChild>
-                <Link to="/membership/register">Join the chapter</Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="border-plum-200/40 bg-transparent text-white hover:bg-plum-800 hover:text-white"
-              >
-                <Link to="/events">See what is coming up</Link>
-              </Button>
+      <HomeSlider slides={slides} />
+
+      {/* The slider intentionally leads into the chapter chairperson's welcome. */}
+      <Section>
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(17rem,0.72fr)_minmax(0,1.28fr)] lg:gap-16">
+          <div className="relative mx-auto w-full max-w-sm border border-border bg-secondary p-3 lg:mx-0">
+            {executives[0]?.photoUrl && (
+              <img
+                src={executives[0].photoUrl}
+                alt={`${executives[0].name}, ${executives[0].position}`}
+                className="aspect-[4/5] w-full object-cover object-top"
+              />
+            )}
+            <div className="absolute right-0 bottom-0 bg-plum-900 px-4 py-3 text-right text-white">
+              <p className="text-[0.88rem] font-semibold">
+                {executives[0]?.name}, {executives[0]?.credential}
+              </p>
+              <p className="mt-0.5 text-[0.72rem] text-gold-300">Chapter Chairperson</p>
             </div>
           </div>
 
-          <aside className="hero-rise border border-plum-800 bg-plum-800/50 p-6" style={{ animationDelay: '120ms' }}>
-            <h2 className="font-heading text-[1.05rem] text-white">At a glance</h2>
-            <dl className="mt-5 space-y-5 text-[0.88rem]">
-              <div>
-                <dt className="text-plum-200/70">Annual dues</dt>
-                <dd className="tnum mt-1 font-heading text-2xl text-gold-300">
-                  {formatNaira(site.subscriptionFee + site.welfareFee)}
-                </dd>
-                <dd className="mt-0.5 text-[0.8rem] text-plum-200/70">
-                  {formatNaira(site.subscriptionFee)} subscription and{' '}
-                  {formatNaira(site.welfareFee)} welfare
-                </dd>
-              </div>
-              <div className="border-t border-plum-800 pt-5">
-                <dt className="text-plum-200/70">CPD requirement</dt>
-                <dd className="tnum mt-1 font-heading text-2xl text-gold-300">120 hours</dd>
-                <dd className="mt-0.5 text-[0.8rem] text-plum-200/70">
-                  Over three consecutive years
-                </dd>
-              </div>
-              {nextEvent && (
-                <div className="border-t border-plum-800 pt-5">
-                  <dt className="text-plum-200/70">Next in the diary</dt>
-                  <dd className="mt-1.5">
-                    <Link
-                      to={`/events/${nextEvent.slug}`}
-                      className="font-medium leading-snug text-white underline-offset-4 hover:underline"
-                    >
-                      {nextEvent.title}
-                    </Link>
-                  </dd>
-                  <dd className="tnum mt-1 text-[0.8rem] text-plum-200/70">
-                    {formatDate(nextEvent.startsAt)}
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </aside>
+          <div>
+            <SectionHeading
+              title={chairpersonWelcome.heading}
+              lede="A message from the Chairperson"
+              className="mb-7"
+            />
+            <div className="space-y-4 text-[0.98rem] leading-relaxed text-muted-foreground">
+              {chairpersonWelcome.paragraphs.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+            <p className="mt-7 border-l-2 border-gold-500 pl-4 text-[0.9rem] font-semibold text-foreground">
+              {executives[0]?.name}, {executives[0]?.credential}
+              <span className="mt-1 block text-[0.78rem] font-normal text-muted-foreground">
+                Chairperson, SWAN Abuja Chapter
+              </span>
+            </p>
+          </div>
         </div>
-      </section>
+      </Section>
 
       {/* Quick desks */}
       <section className="border-b border-border bg-card">
@@ -132,7 +120,7 @@ export default function Home() {
               to={desk.to}
               className="group bg-card p-6 transition-colors hover:bg-secondary"
             >
-              <desk.icon aria-hidden="true" className="h-6 w-6 text-gold-500" />
+              <desk.icon aria-hidden="true" className="h-6 w-6 text-primary" />
               <h2 className="mt-4 text-[1.05rem]">{desk.title}</h2>
               <p className="mt-1.5 text-[0.85rem] leading-relaxed text-muted-foreground">
                 {desk.body}

@@ -87,17 +87,17 @@ export default function EventDetail() {
               <dl className="mt-4 space-y-3.5 text-[0.9rem]">
                 <div className="flex gap-3">
                   <dt className="sr-only">Date</dt>
-                  <CalendarDays aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                  <CalendarDays aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <dd>{formatDate(event.startsAt)}</dd>
                 </div>
                 <div className="flex gap-3">
                   <dt className="sr-only">Time</dt>
-                  <Clock aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                  <Clock aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <dd className="tnum">{formatTimeRange(event.startsAt, event.endsAt)}</dd>
                 </div>
                 <div className="flex gap-3">
                   <dt className="sr-only">Venue</dt>
-                  <MapPin aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                  <MapPin aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <dd>{event.venue}</dd>
                 </div>
               </dl>

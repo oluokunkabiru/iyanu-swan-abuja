@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Mail, MapPin, Phone } from 'lucide-react'
+import { BrandLogo } from '@/components/common/BrandLogo'
 import { footerLinks, site } from '@/data'
 
 export function Footer() {
@@ -10,17 +11,13 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-14">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
           <div>
-            <div className="flex items-center gap-3">
-              <span
-                aria-hidden="true"
-                className="flex h-11 w-11 items-center justify-center rounded-sm border border-gold-500/50 bg-plum-800 font-heading text-[0.72rem] font-semibold text-gold-300"
-              >
-                SWAN
-              </span>
-              <span className="font-heading text-lg leading-tight text-white">
-                {site.shortName}
-              </span>
-            </div>
+            <Link
+              to="/"
+              aria-label={`${site.shortName} home`}
+              className="inline-flex bg-white p-2"
+            >
+              <BrandLogo className="h-10" />
+            </Link>
             <p className="mt-4 max-w-xs text-[0.86rem] leading-relaxed">{site.tagline}</p>
 
             <ul className="mt-6 space-y-2.5 text-[0.86rem]">

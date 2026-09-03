@@ -34,6 +34,14 @@ export const site: SiteSettings = {
   welfareFee: 12000,
 }
 
+export const chairpersonWelcome = {
+  heading: 'Welcome to a chapter built for women to thrive.',
+  paragraphs: [
+    'Welcome to the Abuja Chapter of the Society of Women Accountants of Nigeria. Our chapter exists to help women accountants grow in competence, lead with integrity and stay connected to a professional community that supports them.',
+    'I invite you to take part in our technical programmes, mentorship, service projects and chapter life. Whether you are newly inducted or an established leader, there is a place here for your experience, your ambition and your contribution.',
+  ],
+} as const
+
 export const coreValues: CoreValue[] = [
   {
     title: 'Impact',

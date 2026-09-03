@@ -11,7 +11,19 @@ class PublicationController extends Controller
     public function index(): JsonResponse
     {
         return response()->json(
-            Publication::query()->orderBy('published_at', 'desc')->get()
+            Publication::query()
+                ->with('media')
+                ->orderByDesc('published_at')
+                ->orderByDesc('id')
+                ->get()
+                ->map(fn (Publication $publication): array => [
+                    'id' => (string) $publication->id,
+                    'title' => $publication->title,
+                    'category' => $publication->category ?? 'Report',
+                    'publishedAt' => $publication->published_at?->toDateString(),
+                    'fileUrl' => $publication->file_url,
+                    'sizeLabel' => $publication->size_label,
+                ])
         );
     }
 }

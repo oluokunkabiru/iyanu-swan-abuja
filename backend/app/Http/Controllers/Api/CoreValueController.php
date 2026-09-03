@@ -11,7 +11,14 @@ class CoreValueController extends Controller
     public function index(): JsonResponse
     {
         return response()->json(
-            CoreValue::query()->orderBy('sort_order')->get()
+            CoreValue::query()
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get()
+                ->map(fn (CoreValue $value): array => [
+                    'title' => $value->title,
+                    'description' => $value->description ?? '',
+                ])
         );
     }
 }

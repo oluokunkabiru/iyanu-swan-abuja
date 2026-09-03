@@ -17,9 +17,9 @@ The UI has one three-colour palette. Change these values in `.env` and the whole
 follows — you never edit a component to restyle the brand.
 
 ```env
-VITE_PRIMARY_COLOR=#321142     # type and main surfaces
-VITE_SECONDARY_COLOR=#D5A62E   # accents, rules and focus states
-VITE_TERTIARY_COLOR=#FFFDFD    # page and card surfaces
+VITE_PRIMARY_COLOR=#000066     # navy type and main surfaces
+VITE_SECONDARY_COLOR=#FFFF00   # yellow accents, rules and focus states
+VITE_TERTIARY_COLOR=#FFFFFF    # white page and card surfaces
 VITE_BRAND_RADIUS=0.375rem     # corner radius everywhere
 ```
 

@@ -12,9 +12,12 @@ class NewsPostController extends Controller
     {
         return response()->json(
             NewsPost::query()
+                ->with('media')
                 ->where('is_published', true)
-                ->orderBy('published_at', 'desc')
+                ->orderByDesc('published_at')
+                ->orderByDesc('id')
                 ->get()
+                ->map(fn (NewsPost $post): array => $this->payload($post))
         );
     }
 
@@ -22,6 +25,24 @@ class NewsPostController extends Controller
     {
         abort_unless($newsPost->is_published, 404);
 
-        return response()->json($newsPost);
+        $newsPost->load('media');
+
+        return response()->json($this->payload($newsPost));
+    }
+
+    /** @return array<string, mixed> */
+    private function payload(NewsPost $post): array
+    {
+        return [
+            'id' => (string) $post->id,
+            'title' => $post->title,
+            'slug' => $post->slug,
+            'excerpt' => $post->excerpt ?? '',
+            'body' => $post->body ?? [],
+            'category' => $post->category ?? 'Chapter',
+            'publishedAt' => $post->published_at?->toDateString(),
+            'author' => $post->author ?? 'SWAN Abuja Chapter',
+            'coverUrl' => $post->cover_url,
+        ];
     }
 }

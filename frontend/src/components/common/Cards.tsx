@@ -57,12 +57,12 @@ export function EventCard({ event, compact = false }: { event: ChapterEvent; com
         <dl className="mt-4 space-y-1.5 text-[0.82rem] text-muted-foreground">
           <div className="flex items-start gap-2">
             <dt className="sr-only">Venue</dt>
-            <MapPin aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-500" />
+            <MapPin aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
             <dd>{event.venue}</dd>
           </div>
           <div className="flex items-start gap-2">
             <dt className="sr-only">Time</dt>
-            <Clock aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-500" />
+            <Clock aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
             <dd className="tnum">{formatTimeRange(event.startsAt, event.endsAt)}</dd>
           </div>
         </dl>
@@ -199,7 +199,7 @@ export function AnnouncementRow({
   return (
     <li className="border-b border-border last:border-0">
       <Link to={href} className="group flex items-start gap-4 py-3.5">
-        <CalendarDays aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-gold-500" />
+        <CalendarDays aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-primary" />
         <span className="min-w-0 flex-1">
           <span className="block text-[0.92rem] leading-snug group-hover:text-plum-700 dark:group-hover:text-primary">
             {title}

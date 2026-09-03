@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Sparkles } from 'lucide-react'
+import { BrandLogo } from '@/components/common/BrandLogo'
 import { Button } from '@/components/ui/button'
 import { useSettings } from '@/context/SettingsContext'
 
@@ -49,8 +50,8 @@ export function Hero() {
             </div>
           ) : (
             <div className="relative flex aspect-video flex-col items-center justify-center overflow-hidden rounded-2xl border bg-card text-center shadow-2xl shadow-primary/10">
-              <span className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-lg font-bold text-primary-foreground shadow-lg shadow-primary/20">
-                SWAN
+              <span className="relative bg-white p-3 shadow-lg shadow-primary/20">
+                <BrandLogo className="h-10" />
               </span>
               <span className="relative mt-4 px-8 font-heading text-lg font-semibold text-foreground">
                 {settings?.chapter_name ?? 'SWAN Abuja Chapter'}

@@ -22,6 +22,20 @@ export interface SiteSettings {
   welfareFee: number
 }
 
+export interface HomeSlide {
+  id: string
+  badge: string
+  title: string
+  description: string
+  ctaLabel: string
+  ctaLink: string
+  secondaryCtaLabel?: string
+  secondaryCtaLink?: string
+  image: string
+  imageAlt: string
+  imagePosition?: string
+}
+
 export interface CoreValue {
   title: string
   description: string

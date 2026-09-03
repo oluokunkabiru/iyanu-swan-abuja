@@ -93,17 +93,17 @@ export default function Contact() {
               <h2 className="text-[1.05rem]">Chapter contact</h2>
               <ul className="mt-4 space-y-3 text-[0.9rem]">
                 <li className="flex gap-3">
-                  <MapPin aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                  <MapPin aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <span>{site.address}</span>
                 </li>
                 <li className="flex gap-3">
-                  <Mail aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                  <Mail aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <a href={`mailto:${site.email}`} className="underline-offset-4 hover:underline">
                     {site.email}
                   </a>
                 </li>
                 <li className="flex gap-3">
-                  <Phone aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                  <Phone aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <a href={`tel:${site.phone.replace(/\s/g, '')}`} className="underline-offset-4 hover:underline">
                     {site.phone}
                   </a>

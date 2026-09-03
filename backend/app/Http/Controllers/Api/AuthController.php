@@ -36,7 +36,9 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return response()->json($user->load('memberProfile'), 201);
+        $user->load('memberProfile');
+
+        return response()->json($this->userPayload($user), 201);
     }
 
     public function login(Request $request): JsonResponse
@@ -54,7 +56,11 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return response()->json($request->user()->load('memberProfile'));
+        /** @var User $user */
+        $user = $request->user();
+        $user->load('memberProfile');
+
+        return response()->json($this->userPayload($user));
     }
 
     public function logout(Request $request): JsonResponse
@@ -68,11 +74,16 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        return response()->json($request->user()->load('memberProfile'));
+        /** @var User $user */
+        $user = $request->user();
+        $user->load('memberProfile');
+
+        return response()->json($this->userPayload($user));
     }
 
     public function updateMe(Request $request): JsonResponse
     {
+        /** @var User $user */
         $user = $request->user();
 
         $data = $request->validate([
@@ -86,13 +97,48 @@ class AuthController extends Controller
             $user->memberProfile()->updateOrCreate([], ['phone' => $data['phone']]);
         }
 
-        return response()->json($user->fresh('memberProfile'));
+        return response()->json($this->userPayload($user->fresh('memberProfile')));
     }
 
     public function registrations(Request $request): JsonResponse
     {
         return response()->json(
-            $request->user()->eventRegistrations()->with('event', 'ticketType')->get()
+            $request->user()
+                ->eventRegistrations()
+                ->with(['event:id,title,slug', 'ticketType:id,label'])
+                ->orderByDesc('issued_at')
+                ->orderByDesc('id')
+                ->get()
+                ->map(fn ($registration): array => [
+                    'id' => (string) $registration->id,
+                    'eventTitle' => $registration->event->title,
+                    'eventSlug' => $registration->event->slug,
+                    'tier' => $registration->ticketType->label,
+                    'amount' => $registration->amount,
+                    'reference' => $registration->reference,
+                    'status' => in_array($registration->payment_status, ['paid', 'confirmed'], true)
+                        ? 'Confirmed'
+                        : 'Pending',
+                    'issuedAt' => ($registration->issued_at ?? $registration->created_at)->toDateString(),
+                ])
         );
+    }
+
+    /** @return array<string, mixed> */
+    private function userPayload(User $user): array
+    {
+        $profile = $user->memberProfile;
+
+        return [
+            'id' => (string) $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'credential' => $profile?->credential ?? 'ACA',
+            'membershipNumber' => $profile?->membership_number ?? '',
+            'membershipStatus' => $profile?->membership_status ?? 'pending',
+            'role' => $user->role,
+            'joinedAt' => $profile?->joined_at?->toDateString(),
+            'cpdTarget' => $profile?->cpd_target ?? 120,
+        ];
     }
 }

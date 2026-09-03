@@ -7,7 +7,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EventTicketType extends Model
 {
-    protected $fillable = ['event_id', 'label', 'price', 'currency'];
+    protected $fillable = [
+        'event_id',
+        'label',
+        'audience',
+        'mode',
+        'price',
+        'currency',
+        'includes',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'price' => 'integer',
+            'includes' => 'array',
+        ];
+    }
 
     public function event(): BelongsTo
     {

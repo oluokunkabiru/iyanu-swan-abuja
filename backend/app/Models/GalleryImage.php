@@ -13,7 +13,15 @@ class GalleryImage extends Model implements HasMedia
 
     protected $appends = ['image_url'];
 
-    protected $fillable = ['caption', 'event_id', 'sort_order'];
+    protected $fillable = ['caption', 'album', 'year', 'event_id', 'sort_order'];
+
+    protected function casts(): array
+    {
+        return [
+            'year' => 'integer',
+            'sort_order' => 'integer',
+        ];
+    }
 
     public function event(): BelongsTo
     {
@@ -23,5 +31,12 @@ class GalleryImage extends Model implements HasMedia
     public function getImageUrlAttribute(): ?string
     {
         return $this->getFirstMediaUrl('image') ?: null;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('image')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
     }
 }
