@@ -23,5 +23,13 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "src/api",
+    "src/components/EventCard.tsx",
+    "src/components/sections",
+    "src/context/SettingsContext.tsx",
+    "src/pages/Dashboard.tsx",
+    "src/pages/Register.tsx"
+  ]
 }

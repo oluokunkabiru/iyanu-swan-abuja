@@ -44,7 +44,7 @@ export function MembershipSteps() {
               className="card-hover fade-up relative rounded-2xl border bg-card p-6"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <span className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-sm font-bold text-primary-foreground shadow-md shadow-primary/25">
+              <span className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground shadow-md shadow-primary/20">
                 {index + 1}
               </span>
               <h3 className="mt-4 font-heading font-semibold">{step.title}</h3>

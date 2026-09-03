@@ -292,7 +292,7 @@ function MegaItem({
         <div
           onMouseEnter={onCancelClose}
           onMouseLeave={onClose}
-          className="absolute inset-x-0 top-full border-b border-border bg-card shadow-[0_18px_40px_-24px_rgba(44,18,80,0.45)]"
+          className="absolute inset-x-0 top-full border-b border-border bg-card shadow-lg shadow-primary/10"
         >
           <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 lg:grid-cols-[repeat(3,minmax(0,1fr))_20rem]">
             {section.columns.map((col) => (

@@ -50,13 +50,13 @@ export function PageHeader({
           {aside && <div className="shrink-0">{aside}</div>}
         </div>
       </div>
-      <div className="h-[3px] bg-gradient-to-r from-gold-500 via-gold-300 to-transparent" />
+      <div className="h-[3px] bg-gold-500" />
     </header>
   )
 }
 
 /**
- * Section heading with the gold-tipped rule. The rule is the site's one
+ * Section heading with the gold rule. The rule is the site's one
  * structural signature — it marks where a new body of content begins.
  */
 export function SectionHeading({

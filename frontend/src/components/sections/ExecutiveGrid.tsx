@@ -38,7 +38,7 @@ export function ExecutiveGrid({ limit }: { limit?: number }) {
           >
             <Avatar className="mx-auto h-24 w-24 ring-4 ring-background shadow-lg shadow-primary/10 transition-transform duration-300 group-hover:-translate-y-1">
               <AvatarImage src={executive.photo_url ?? undefined} alt={executive.name} />
-              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent font-heading text-lg font-semibold text-primary">
+              <AvatarFallback className="bg-secondary font-heading text-lg font-semibold text-primary">
                 {initials(executive.name)}
               </AvatarFallback>
             </Avatar>

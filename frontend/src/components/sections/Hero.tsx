@@ -7,17 +7,7 @@ export function Hero() {
   const settings = useSettings()
 
   return (
-    <section className="relative overflow-hidden border-b">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 -left-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl dark:bg-primary/15"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 right-0 h-80 w-80 rounded-full bg-accent/60 blur-3xl dark:bg-accent/30"
-      />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-muted/40" />
-
+    <section className="relative overflow-hidden border-b bg-background">
       <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 lg:grid-cols-2 lg:py-28">
         <div className="fade-up">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
@@ -46,7 +36,7 @@ export function Hero() {
         <div className="fade-up relative [animation-delay:150ms]">
           <div
             aria-hidden
-            className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-br from-primary/30 via-accent/40 to-transparent opacity-70 blur-2xl"
+            className="absolute -inset-4 -z-10 rounded-[2rem] border border-secondary/40"
           />
           {settings?.hero_video_url ? (
             <div className="aspect-video overflow-hidden rounded-2xl border bg-card shadow-2xl shadow-primary/10">
@@ -59,11 +49,7 @@ export function Hero() {
             </div>
           ) : (
             <div className="relative flex aspect-video flex-col items-center justify-center overflow-hidden rounded-2xl border bg-card text-center shadow-2xl shadow-primary/10">
-              <div
-                aria-hidden
-                className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,var(--color-border)_1px,transparent_0)] bg-size-[16px_16px] opacity-60"
-              />
-              <span className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/60 text-lg font-bold text-primary-foreground shadow-lg shadow-primary/30">
+              <span className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-lg font-bold text-primary-foreground shadow-lg shadow-primary/20">
                 SWAN
               </span>
               <span className="relative mt-4 px-8 font-heading text-lg font-semibold text-foreground">

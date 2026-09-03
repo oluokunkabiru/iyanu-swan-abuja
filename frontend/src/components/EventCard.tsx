@@ -23,7 +23,7 @@ export function EventCard({ event, delay = 0 }: { event: SwanEvent; delay?: numb
         {event.cover_url ? (
           <img src={event.cover_url} alt={event.title} className="h-full w-full object-cover" />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/25 via-accent/40 to-primary/10">
+          <div className="flex h-full w-full items-center justify-center bg-secondary">
             <CalendarDays className="h-8 w-8 text-primary/60" />
           </div>
         )}

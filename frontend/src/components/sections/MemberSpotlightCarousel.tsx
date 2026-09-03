@@ -34,7 +34,7 @@ export function MemberSpotlightCarousel() {
         <div key={current.id} className="fade-up mt-10 flex flex-col items-center">
           <Avatar className="h-20 w-20 ring-4 ring-background shadow-lg shadow-primary/10">
             <AvatarImage src={current.photo_url ?? undefined} alt={current.name} />
-            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent font-heading font-semibold text-primary">
+            <AvatarFallback className="bg-secondary font-heading font-semibold text-primary">
               {initials(current.name)}
             </AvatarFallback>
           </Avatar>

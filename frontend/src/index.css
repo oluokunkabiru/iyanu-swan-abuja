@@ -7,98 +7,86 @@
 /* ---------------------------------------------------------------------------
    Brand tokens.
    These defaults mirror .env exactly, so the page paints correctly even before
-   applyBrand() runs. At boot, src/lib/brand.ts overwrites them on <html> with
-   whatever VITE_BRAND_* holds. Edit .env, not this block.
+   applyBrand() runs. Three source colours are intentionally the whole palette;
+   softer surfaces use opacity and colour mixing, never additional hues.
 --------------------------------------------------------------------------- */
 :root {
-  --swan-purple-900: #2c1250;
-  --swan-purple-800: #3d1a6b;
-  --swan-purple-700: #5a2d91;
-  --swan-purple-500: #7c4dbe;
-  --swan-purple-200: #ddd0ef;
-  --swan-purple-050: #f4eefb;
-  --swan-gold-700: #8f6a17;
-  --swan-gold-500: #b8892b;
-  --swan-gold-300: #e5c76b;
-  --swan-gold-050: #fbf4e2;
-  --swan-paper: #faf8fc;
-  --swan-ink: #1b1024;
-  --swan-success: #1f6f43;
-  --swan-danger: #b3261e;
-  --swan-dark-bg: #150c1e;
-  --swan-dark-surface: #1e1229;
-  --swan-dark-primary: #b58ce6;
+  --brand-primary: #321142;
+  --brand-secondary: #d5a62e;
+  --brand-tertiary: #fffdfd;
   --radius: 0.375rem;
 
   /* Semantic layer — everything below is derived, never hard-coded. */
-  --background: var(--swan-paper);
-  --foreground: var(--swan-ink);
-  --card: #ffffff;
-  --card-foreground: var(--swan-ink);
-  --popover: #ffffff;
-  --popover-foreground: var(--swan-ink);
-  --primary: var(--swan-purple-700);
-  --primary-foreground: #ffffff;
-  --secondary: var(--swan-purple-050);
-  --secondary-foreground: var(--swan-purple-800);
-  --muted: color-mix(in srgb, var(--swan-purple-050) 70%, #ffffff);
-  --muted-foreground: color-mix(in srgb, var(--swan-ink) 58%, #ffffff);
-  --accent: var(--swan-gold-050);
-  --accent-foreground: var(--swan-gold-700);
-  --destructive: var(--swan-danger);
-  --success: var(--swan-success);
-  --border: color-mix(in srgb, var(--swan-purple-200) 55%, #ffffff);
-  --rule: var(--swan-purple-200);
-  --input: color-mix(in srgb, var(--swan-purple-200) 75%, #ffffff);
-  --ring: var(--swan-purple-500);
+  --background: var(--brand-tertiary);
+  --foreground: var(--brand-primary);
+  --card: var(--brand-tertiary);
+  --card-foreground: var(--brand-primary);
+  --popover: var(--brand-tertiary);
+  --popover-foreground: var(--brand-primary);
+  --primary: var(--brand-primary);
+  --primary-foreground: var(--brand-tertiary);
+  --secondary: color-mix(in srgb, var(--brand-primary) 6%, var(--brand-tertiary));
+  --secondary-foreground: var(--brand-primary);
+  --muted: color-mix(in srgb, var(--brand-primary) 5%, var(--brand-tertiary));
+  --muted-foreground: color-mix(in srgb, var(--brand-primary) 64%, var(--brand-tertiary));
+  --accent: color-mix(in srgb, var(--brand-secondary) 18%, var(--brand-tertiary));
+  --accent-foreground: var(--brand-primary);
+  --destructive: var(--brand-primary);
+  --success: var(--brand-primary);
+  --border: color-mix(in srgb, var(--brand-primary) 15%, var(--brand-tertiary));
+  --rule: color-mix(in srgb, var(--brand-primary) 18%, var(--brand-tertiary));
+  --input: color-mix(in srgb, var(--brand-primary) 20%, var(--brand-tertiary));
+  --ring: var(--brand-secondary);
 
-  --chart-1: var(--swan-purple-700);
-  --chart-2: var(--swan-gold-500);
-  --chart-3: var(--swan-purple-500);
-  --chart-4: var(--swan-success);
-  --chart-5: var(--swan-gold-700);
+  --chart-1: var(--brand-primary);
+  --chart-2: var(--brand-secondary);
+  --chart-3: color-mix(in srgb, var(--brand-primary) 70%, var(--brand-tertiary));
+  --chart-4: color-mix(in srgb, var(--brand-secondary) 70%, var(--brand-primary));
+  --chart-5: color-mix(in srgb, var(--brand-secondary) 55%, var(--brand-tertiary));
 
-  --sidebar: #ffffff;
-  --sidebar-foreground: var(--swan-ink);
-  --sidebar-primary: var(--swan-purple-700);
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: var(--swan-purple-050);
-  --sidebar-accent-foreground: var(--swan-purple-800);
-  --sidebar-border: color-mix(in srgb, var(--swan-purple-200) 55%, #ffffff);
-  --sidebar-ring: var(--swan-purple-500);
+  --sidebar: var(--brand-tertiary);
+  --sidebar-foreground: var(--brand-primary);
+  --sidebar-primary: var(--brand-primary);
+  --sidebar-primary-foreground: var(--brand-tertiary);
+  --sidebar-accent: color-mix(in srgb, var(--brand-primary) 6%, var(--brand-tertiary));
+  --sidebar-accent-foreground: var(--brand-primary);
+  --sidebar-border: color-mix(in srgb, var(--brand-primary) 15%, var(--brand-tertiary));
+  --sidebar-ring: var(--brand-secondary);
 
-  --font-sans: 'Public Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-heading: 'Newsreader', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-sans: Inter, Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-heading: Inter, Arial, ui-sans-serif, system-ui, sans-serif;
 }
 
 .dark {
-  --background: var(--swan-dark-bg);
-  --foreground: color-mix(in srgb, var(--swan-purple-050) 92%, #ffffff);
-  --card: var(--swan-dark-surface);
-  --card-foreground: color-mix(in srgb, var(--swan-purple-050) 92%, #ffffff);
-  --popover: var(--swan-dark-surface);
-  --popover-foreground: color-mix(in srgb, var(--swan-purple-050) 92%, #ffffff);
-  --primary: var(--swan-dark-primary);
-  --primary-foreground: var(--swan-purple-900);
-  --secondary: color-mix(in srgb, var(--swan-purple-700) 28%, var(--swan-dark-bg));
-  --secondary-foreground: color-mix(in srgb, var(--swan-purple-050) 92%, #ffffff);
-  --muted: color-mix(in srgb, var(--swan-purple-700) 20%, var(--swan-dark-bg));
-  --muted-foreground: color-mix(in srgb, var(--swan-purple-200) 78%, var(--swan-dark-bg));
-  --accent: color-mix(in srgb, var(--swan-gold-700) 26%, var(--swan-dark-bg));
-  --accent-foreground: var(--swan-gold-300);
-  --border: color-mix(in srgb, var(--swan-purple-500) 26%, var(--swan-dark-bg));
-  --rule: color-mix(in srgb, var(--swan-purple-500) 34%, var(--swan-dark-bg));
-  --input: color-mix(in srgb, var(--swan-purple-500) 34%, var(--swan-dark-bg));
-  --ring: var(--swan-dark-primary);
+  --background: var(--brand-primary);
+  --foreground: var(--brand-tertiary);
+  --card: color-mix(in srgb, var(--brand-tertiary) 6%, var(--brand-primary));
+  --card-foreground: var(--brand-tertiary);
+  --popover: color-mix(in srgb, var(--brand-tertiary) 6%, var(--brand-primary));
+  --popover-foreground: var(--brand-tertiary);
+  --primary: var(--brand-secondary);
+  --primary-foreground: var(--brand-primary);
+  --secondary: color-mix(in srgb, var(--brand-tertiary) 8%, var(--brand-primary));
+  --secondary-foreground: var(--brand-tertiary);
+  --muted: color-mix(in srgb, var(--brand-tertiary) 8%, var(--brand-primary));
+  --muted-foreground: color-mix(in srgb, var(--brand-tertiary) 68%, var(--brand-primary));
+  --accent: var(--brand-secondary);
+  --accent-foreground: var(--brand-primary);
+  --destructive: var(--brand-secondary);
+  --success: var(--brand-secondary);
+  --border: color-mix(in srgb, var(--brand-tertiary) 18%, var(--brand-primary));
+  --rule: color-mix(in srgb, var(--brand-tertiary) 20%, var(--brand-primary));
+  --input: color-mix(in srgb, var(--brand-tertiary) 22%, var(--brand-primary));
+  --ring: var(--brand-secondary);
 
-  --sidebar: var(--swan-dark-surface);
-  --sidebar-foreground: color-mix(in srgb, var(--swan-purple-050) 92%, #ffffff);
-  --sidebar-primary: var(--swan-dark-primary);
-  --sidebar-primary-foreground: var(--swan-purple-900);
-  --sidebar-accent: color-mix(in srgb, var(--swan-purple-700) 28%, var(--swan-dark-bg));
-  --sidebar-accent-foreground: color-mix(in srgb, var(--swan-purple-050) 92%, #ffffff);
-  --sidebar-border: color-mix(in srgb, var(--swan-purple-500) 26%, var(--swan-dark-bg));
-  --sidebar-ring: var(--swan-dark-primary);
+  --sidebar: var(--brand-primary);
+  --sidebar-foreground: var(--brand-tertiary);
+  --sidebar-primary: var(--brand-secondary);
+  --sidebar-primary-foreground: var(--brand-primary);
+  --sidebar-accent: color-mix(in srgb, var(--brand-tertiary) 8%, var(--brand-primary));
+  --sidebar-accent-foreground: var(--brand-tertiary);
+  --sidebar-border: color-mix(in srgb, var(--brand-tertiary) 18%, var(--brand-primary));
+  --sidebar-ring: var(--brand-secondary);
 }
 
 @theme inline {
@@ -128,16 +116,18 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --color-plum-900: var(--swan-purple-900);
-  --color-plum-800: var(--swan-purple-800);
-  --color-plum-700: var(--swan-purple-700);
-  --color-plum-500: var(--swan-purple-500);
-  --color-plum-200: var(--swan-purple-200);
-  --color-plum-50: var(--swan-purple-050);
-  --color-gold-700: var(--swan-gold-700);
-  --color-gold-500: var(--swan-gold-500);
-  --color-gold-300: var(--swan-gold-300);
-  --color-gold-50: var(--swan-gold-050);
+  --color-plum-900: var(--brand-primary);
+  --color-plum-800: var(--brand-primary);
+  --color-plum-700: var(--brand-primary);
+  --color-plum-500: var(--brand-primary);
+  --color-plum-200: var(--brand-tertiary);
+  --color-plum-50: var(--brand-tertiary);
+  --color-gold-700: var(--brand-secondary);
+  --color-gold-500: var(--brand-secondary);
+  --color-gold-300: var(--brand-secondary);
+  --color-gold-50: var(--brand-secondary);
+  --color-white: var(--brand-tertiary);
+  --color-black: var(--brand-primary);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -180,8 +170,8 @@
   h3,
   h4 {
     font-family: var(--font-heading);
-    font-weight: 600;
-    letter-spacing: -0.011em;
+    font-weight: 700;
+    letter-spacing: -0.025em;
     text-wrap: balance;
   }
 
@@ -211,14 +201,9 @@
 }
 
 @layer components {
-  /* Gold-tipped hairline that heads each section. Carries hierarchy so we
-     don't need drop shadows or all-caps eyebrow labels. */
+  /* A restrained gold rule is the shared section marker. */
   .rule-gold {
-    background-image: linear-gradient(
-      to right,
-      var(--swan-gold-500) 0 3.5rem,
-      var(--rule) 3.5rem 100%
-    );
+    background-color: var(--brand-secondary);
     block-size: 2px;
   }
 

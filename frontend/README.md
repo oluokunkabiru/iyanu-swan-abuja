@@ -13,15 +13,14 @@ npm run lint
 
 ## Changing the colours
 
-Every colour on the site comes from `.env`. Change a value there and the whole site
+The UI has one three-colour palette. Change these values in `.env` and the whole site
 follows — you never edit a component to restyle the brand.
 
 ```env
-VITE_BRAND_PURPLE_700=#5A2D91   # primary
-VITE_BRAND_GOLD_500=#B8892B     # accent, rules, marks
-VITE_BRAND_PAPER=#FAF8FC        # page background
-VITE_BRAND_INK=#1B1024          # body text
-VITE_BRAND_RADIUS=0.375rem      # corner radius everywhere
+VITE_PRIMARY_COLOR=#321142     # type and main surfaces
+VITE_SECONDARY_COLOR=#D5A62E   # accents, rules and focus states
+VITE_TERTIARY_COLOR=#FFFDFD    # page and card surfaces
+VITE_BRAND_RADIUS=0.375rem     # corner radius everywhere
 ```
 
 **Restart the dev server after editing `.env`.** Vite inlines environment variables at
@@ -31,21 +30,20 @@ How it flows:
 
 1. `.env` holds the raw values. `.env.example` documents every variable.
 2. `src/lib/brand.ts` reads them (with hard-coded fallbacks) and `applyBrand()` writes
-   each one onto `<html>` as a CSS custom property — `--swan-purple-700`, and so on.
+   each one onto `<html>` as a CSS custom property — `--brand-primary`, and so on.
    `src/main.tsx` calls this before the first render.
 3. `src/index.css` declares the same variables with identical defaults, so the page
    still paints correctly if the script never runs, then derives every semantic token
    from them: `--primary`, `--background`, `--border`, `--muted`, `--accent`, and the
-   rest. Dark mode overrides only the semantic layer, using `color-mix()` against the
-   dark surface tokens.
+   rest. Subtle muted surfaces and borders are mixes of the same three source colours.
 4. Components use semantic classes (`bg-card`, `text-primary`, `border-border`) or the
-   brand ramp (`bg-plum-800`, `text-gold-300`) for the always-dark surfaces — the hero,
+   palette aliases (`bg-plum-800`, `text-gold-300`) for the always-dark surfaces — the hero,
    the page headers and the footer.
 
 Because `applyBrand()` sets the brand variables as inline styles on `<html>`, a `.dark`
 rule cannot override them. That is deliberate: dark mode belongs in the semantic layer.
 If you need a surface to change between light and dark, reach for `bg-secondary` or
-`bg-accent` rather than `bg-plum-50` or `bg-gold-50`.
+`bg-accent`. Gradients are intentionally not part of the visual system.
 
 Site identity is env-driven too: `VITE_APP_NAME`, `VITE_SITE_TAGLINE`,
 `VITE_CONTACT_EMAIL`, `VITE_CONTACT_PHONE`, `VITE_CONTACT_ADDRESS`.
@@ -70,6 +68,10 @@ single barrel. To change copy, edit the data file — not the component.
 
 Types for all of it are in `src/types/index.ts`.
 
+Static photographs are stored in `src/assets/images` and imported by the data files.
+External URLs in the content layer are navigation links, not hotlinked presentation
+images.
+
 ## Authentication
 
 `src/context/AuthContext.tsx` is a stand-in. Any credentials sign you into the
@@ -84,6 +86,7 @@ The member rate on events keys off `user.membershipStatus === 'active'`, which i
 
 ```
 src/
+  assets/images/ Local photographs used by static content
   components/
     common/      Primitives (page and section headers, stats, tags) and content cards
     layout/      Header with mega menu, footer, page layout, members-area shell
@@ -98,6 +101,6 @@ src/
 
 ## Typography
 
-Newsreader for headings, Public Sans for body and tabular figures, both loaded from
-Google Fonts in `index.html`. Numbers in tables and figures use `font-variant-numeric:
-tabular-nums` so columns align.
+Inter is used for headings and body copy, with Arial and the system sans-serif stack as
+local fallbacks. No remote font request is needed. Numbers in tables and figures use
+`font-variant-numeric: tabular-nums` so columns align.

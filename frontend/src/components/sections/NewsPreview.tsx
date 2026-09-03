@@ -37,7 +37,7 @@ export function NewsPreview() {
                 {post.cover_url ? (
                   <img src={post.cover_url} alt={post.title} className="h-full w-full object-cover" />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/25 via-accent/40 to-primary/10">
+                  <div className="flex h-full w-full items-center justify-center bg-secondary">
                     <Newspaper className="h-8 w-8 text-primary/60" />
                   </div>
                 )}

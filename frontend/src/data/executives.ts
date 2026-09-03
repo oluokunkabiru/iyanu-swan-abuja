@@ -1,7 +1,16 @@
 import type { ExecutiveMember } from '@/types'
-
-const uploads = 'https://swanabujachapter.com/wp-content/uploads/2026/07'
-const placeholder = `${uploads}/gray-female-avatar-placeholder-nobg.png`
+import {
+  assistantSecretaryPhoto,
+  chairpersonPhoto,
+  exOfficioPhoto,
+  financialSecretaryPhoto,
+  generalSecretaryPhoto,
+  membershipSecretaryPhoto,
+  placeholderPhoto,
+  publicitySecretaryPhoto,
+  treasurerPhoto,
+  viceChairpersonPhoto,
+} from '@/assets/images'
 
 export const executives: ExecutiveMember[] = [
   {
@@ -10,7 +19,7 @@ export const executives: ExecutiveMember[] = [
     credential: 'ACA',
     position: 'Chairperson',
     bio: 'Leads the chapter council, represents SWAN Abuja before ICAN and the district societies, and sets the technical and outreach agenda for the year.',
-    photoUrl: `${uploads}/chairperson-cropped.jpeg`,
+    photoUrl: chairpersonPhoto,
     isPrincipal: true,
   },
   {
@@ -19,7 +28,7 @@ export const executives: ExecutiveMember[] = [
     credential: 'FCA',
     position: 'Vice Chairperson',
     bio: 'Deputises for the Chairperson and oversees the standing committees, with a particular focus on technical programming.',
-    photoUrl: `${uploads}/Vice-chair-cropped-1024x1024.jpeg`,
+    photoUrl: viceChairpersonPhoto,
     isPrincipal: true,
   },
   {
@@ -28,7 +37,7 @@ export const executives: ExecutiveMember[] = [
     credential: 'ACA',
     position: 'General Secretary',
     bio: 'Keeps the records of the Society, convenes meetings, and handles correspondence between the chapter, members and the national body.',
-    photoUrl: `${uploads}/Gen-sec-cropped.jpeg`,
+    photoUrl: generalSecretaryPhoto,
     isPrincipal: true,
   },
   {
@@ -37,7 +46,7 @@ export const executives: ExecutiveMember[] = [
     credential: 'FCA',
     position: 'Treasurer',
     bio: 'Custodian of chapter funds. Prepares the annual accounts presented to members at the general meeting.',
-    photoUrl: `${uploads}/treasurer-cropped.jpeg`,
+    photoUrl: treasurerPhoto,
     isPrincipal: true,
   },
   {
@@ -46,7 +55,7 @@ export const executives: ExecutiveMember[] = [
     credential: 'FCA',
     position: 'Financial Secretary',
     bio: 'Confirms subscription and welfare payments, maintains the financial roll, and issues membership confirmations.',
-    photoUrl: `${uploads}/Fin-sec-cropped.jpeg`,
+    photoUrl: financialSecretaryPhoto,
     isPrincipal: true,
   },
   {
@@ -55,7 +64,7 @@ export const executives: ExecutiveMember[] = [
     credential: 'FCA',
     position: 'Membership Secretary',
     bio: 'Manages the chapter roll, onboards newly inducted members, and runs the annual membership drive.',
-    photoUrl: `${uploads}/Membership-sec-cropped.jpeg`,
+    photoUrl: membershipSecretaryPhoto,
     isPrincipal: false,
   },
   {
@@ -64,7 +73,7 @@ export const executives: ExecutiveMember[] = [
     credential: 'ACA',
     position: 'Welfare Officer',
     bio: 'Administers the welfare fund and coordinates the chapter response when members face bereavement or illness.',
-    photoUrl: placeholder,
+    photoUrl: placeholderPhoto,
     isPrincipal: false,
   },
   {
@@ -73,7 +82,7 @@ export const executives: ExecutiveMember[] = [
     credential: 'FCA',
     position: 'Publicity Officer',
     bio: 'Runs chapter communications, the website and social channels, and media relations for chapter events.',
-    photoUrl: `${uploads}/Public-Sec-cropped-1024x1024.jpeg`,
+    photoUrl: publicitySecretaryPhoto,
     isPrincipal: false,
   },
   {
@@ -82,7 +91,7 @@ export const executives: ExecutiveMember[] = [
     credential: 'FCA',
     position: 'Assistant General Secretary',
     bio: 'Supports the General Secretary on minutes, notices and the meeting calendar.',
-    photoUrl: `${uploads}/Asst-Gen-sec-cropped.jpeg`,
+    photoUrl: assistantSecretaryPhoto,
     isPrincipal: false,
   },
   {
@@ -91,7 +100,7 @@ export const executives: ExecutiveMember[] = [
     credential: 'FCA',
     position: 'Technical Secretary',
     bio: 'Curates technical content, coordinates faculty liaison, and reviews chapter submissions on exposure drafts.',
-    photoUrl: placeholder,
+    photoUrl: placeholderPhoto,
     isPrincipal: false,
   },
   {
@@ -100,7 +109,7 @@ export const executives: ExecutiveMember[] = [
     credential: 'FCA',
     position: 'Immediate Past Chairperson',
     bio: 'Provides continuity and institutional memory to the council, and chairs the elections committee.',
-    photoUrl: placeholder,
+    photoUrl: placeholderPhoto,
     isPrincipal: false,
   },
   {
@@ -109,7 +118,7 @@ export const executives: ExecutiveMember[] = [
     credential: 'FCA',
     position: 'Ex-Officio Member',
     bio: 'Advises council on governance, past practice and long-range planning for the chapter.',
-    photoUrl: `${uploads}/Ex-officio-cropped-1024x1024.jpeg`,
+    photoUrl: exOfficioPhoto,
     isPrincipal: false,
   },
 ]

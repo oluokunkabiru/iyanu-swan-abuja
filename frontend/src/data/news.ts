@@ -1,6 +1,11 @@
 import type { Announcement, NewsPost, ProgrammeEntry } from '@/types'
-
-const uploads = 'https://swanabujachapter.com/wp-content/uploads/2026/07'
+import {
+  annualSeminarImage,
+  chapterPicnicImage,
+  conferenceImage,
+  generalMeetingImage,
+  orphanageOutreachImage,
+} from '@/assets/images'
 
 export const news: NewsPost[] = [
   {
@@ -18,7 +23,7 @@ export const news: NewsPost[] = [
     category: 'Advocacy',
     publishedAt: '2026-06-04',
     author: 'Technical Committee',
-    coverUrl: `${uploads}/SWAN-17-1024x684.jpg`,
+    coverUrl: annualSeminarImage,
   },
   {
     id: 'news-mentorship-cohort',
@@ -34,7 +39,7 @@ export const news: NewsPost[] = [
     category: 'Chapter',
     publishedAt: '2026-05-19',
     author: 'Nsini Bassey, FCA',
-    coverUrl: `${uploads}/SWAN-ABUJA-PICNIC-085-1024x663.jpg`,
+    coverUrl: chapterPicnicImage,
   },
   {
     id: 'news-ican-conference',
@@ -49,7 +54,7 @@ export const news: NewsPost[] = [
     category: 'ICAN',
     publishedAt: '2026-04-30',
     author: 'Publicity Committee',
-    coverUrl: `${uploads}/DSC06955-1.jpg`,
+    coverUrl: conferenceImage,
   },
   {
     id: 'news-women-in-practice',
@@ -64,7 +69,7 @@ export const news: NewsPost[] = [
     category: 'Profession',
     publishedAt: '2026-03-12',
     author: 'Technical Committee',
-    coverUrl: `${uploads}/WhatsApp-Image-2026-07-06-at-16.15.25-967x1024.jpeg`,
+    coverUrl: generalMeetingImage,
   },
   {
     id: 'news-outreach-report',
@@ -80,7 +85,7 @@ export const news: NewsPost[] = [
     category: 'Chapter',
     publishedAt: '2026-02-28',
     author: 'Taiye Fasan, ACA',
-    coverUrl: `${uploads}/SWAN-KWALI-ORPHANAGE-22-1024x683.jpg`,
+    coverUrl: orphanageOutreachImage,
   },
 ]
 

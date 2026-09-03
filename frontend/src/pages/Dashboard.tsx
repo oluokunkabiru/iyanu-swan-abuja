@@ -62,7 +62,7 @@ export default function Dashboard() {
       <div className="fade-up flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Avatar className="h-12 w-12 ring-4 ring-background shadow-md shadow-primary/10">
-            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent font-heading font-semibold text-primary">
+            <AvatarFallback className="bg-secondary font-heading font-semibold text-primary">
               {initials(user.name)}
             </AvatarFallback>
           </Avatar>

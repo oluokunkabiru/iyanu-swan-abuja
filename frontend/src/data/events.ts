@@ -1,6 +1,11 @@
 import type { ChapterEvent, TicketTier } from '@/types'
-
-const uploads = 'https://swanabujachapter.com/wp-content/uploads/2026/07'
+import {
+  annualSeminarImage,
+  chapterPicnicImage,
+  conferenceImage,
+  medicalOutreachImage,
+  orphanageOutreachImage,
+} from '@/assets/images'
 
 /** The four-tier structure the chapter uses for paid technical events. */
 export const standardTiers: TicketTier[] = [
@@ -77,7 +82,7 @@ export const events: ChapterEvent[] = [
     cpdHours: 6,
     isFeatured: true,
     status: 'past',
-    coverUrl: `${uploads}/SWAN-17-1024x684.jpg`,
+    coverUrl: annualSeminarImage,
     ticketTiers: standardTiers,
     speakers: [
       { name: 'Dr Maryam Danna Mohammed, FCA', role: 'Session chair' },
@@ -102,7 +107,7 @@ export const events: ChapterEvent[] = [
     cpdHours: 7,
     isFeatured: true,
     status: 'upcoming',
-    coverUrl: `${uploads}/DSC06955-1.jpg`,
+    coverUrl: conferenceImage,
     ticketTiers: standardTiers,
     speakers: [
       { name: 'Patricia Chinwe Ofili, ACA', role: 'Opening remarks' },
@@ -127,7 +132,7 @@ export const events: ChapterEvent[] = [
     cpdHours: 3,
     isFeatured: false,
     status: 'upcoming',
-    coverUrl: `${uploads}/SWAN-ABUJA-PICNIC-085-1024x663.jpg`,
+    coverUrl: chapterPicnicImage,
     ticketTiers: [standardTiers[1], standardTiers[0]],
     speakers: [{ name: 'Nsini Bassey, FCA', role: 'Clinic convener' }],
   },
@@ -169,7 +174,7 @@ export const events: ChapterEvent[] = [
     cpdHours: 0,
     isFeatured: true,
     status: 'past',
-    coverUrl: `${uploads}/SWAN-KWALI-ORPHANAGE-22-1024x683.jpg`,
+    coverUrl: orphanageOutreachImage,
     ticketTiers: [],
     speakers: [],
   },
@@ -190,7 +195,7 @@ export const events: ChapterEvent[] = [
     cpdHours: 0,
     isFeatured: true,
     status: 'past',
-    coverUrl: `${uploads}/DSC05883-1024x684.jpg`,
+    coverUrl: medicalOutreachImage,
     ticketTiers: [],
     speakers: [],
   },
