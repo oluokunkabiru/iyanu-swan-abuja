@@ -5,11 +5,11 @@ namespace App\Filament\Resources\Partners;
 use App\Filament\Resources\Partners\Pages\ManagePartners;
 use App\Models\Partner;
 use BackedEnum;
-use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -18,6 +18,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class PartnerResource extends Resource
 {
@@ -41,6 +42,13 @@ class PartnerResource extends Resource
                 TextInput::make('url')
                     ->url()
                     ->maxLength(255),
+                Select::make('scope')
+                    ->options([
+                        'Parent body' => 'Parent body',
+                        'Affiliate' => 'Affiliate',
+                        'Sponsor' => 'Sponsor',
+                    ])
+                    ->required(),
                 TextInput::make('sort_order')
                     ->numeric()
                     ->default(0)
@@ -55,6 +63,7 @@ class PartnerResource extends Resource
             ->columns([
                 SpatieMediaLibraryImageColumn::make('logo')->collection('logo'),
                 TextColumn::make('name')->searchable(),
+                TextColumn::make('scope')->badge(),
                 TextColumn::make('url'),
             ])
             ->filters([

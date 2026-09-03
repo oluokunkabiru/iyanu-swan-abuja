@@ -20,9 +20,11 @@ class EventsTable
             ->defaultSort('starts_at', 'desc')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('cover')->collection('cover'),
-                TextColumn::make('title')->searchable(),
+                TextColumn::make('title')->searchable()->wrap(),
+                TextColumn::make('category')->badge(),
                 TextColumn::make('starts_at')->dateTime()->sortable(),
                 TextColumn::make('location'),
+                TextColumn::make('cpd_hours')->label('CPD'),
                 TextColumn::make('status')->badge(),
                 IconColumn::make('is_featured')->boolean(),
                 TextColumn::make('registrations_count')->counts('registrations')->label('Registrations'),

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\CoreValue;
-use App\Models\Event;
 use App\Models\ExecutiveMember;
 use App\Models\Partner;
 use App\Models\SiteSetting;
@@ -62,37 +61,6 @@ class SwanContentSeeder extends Seeder
             'url' => 'https://icanig.org',
             'sort_order' => 1,
         ]);
-
-        $seminar = Event::query()->updateOrCreate(['slug' => 'swan-seminar-2026'], [
-            'title' => "SWAN Seminar 2026: Demystifying Nigeria's New Tax Reform",
-            'description' => "A seminar demystifying Nigeria's new tax reform for members and the public.",
-            'location' => 'Abuja, Nigeria',
-            'starts_at' => now()->addMonths(2)->setTime(9, 0),
-            'status' => 'published',
-            'is_featured' => true,
-        ]);
-        $seminar->ticketTypes()->updateOrCreate(['label' => 'Member Physical'], ['price' => 30000]);
-        $seminar->ticketTypes()->updateOrCreate(['label' => 'Member Virtual'], ['price' => 15000]);
-        $seminar->ticketTypes()->updateOrCreate(['label' => 'Non-Member Physical'], ['price' => 50000]);
-        $seminar->ticketTypes()->updateOrCreate(['label' => 'Non-Member Virtual'], ['price' => 15000]);
-
-        $orphanage = Event::query()->updateOrCreate(['slug' => 'kwali-orphanage-visit'], [
-            'title' => 'Visit to Kwali Orphanage',
-            'description' => 'A charitable visit and donation drive to the Kwali Orphanage.',
-            'location' => 'Kwali, Abuja',
-            'starts_at' => now()->addMonth()->setTime(10, 0),
-            'status' => 'published',
-        ]);
-        $orphanage->ticketTypes()->updateOrCreate(['label' => 'Volunteer'], ['price' => 0]);
-
-        $outreach = Event::query()->updateOrCreate(['slug' => 'medical-outreach'], [
-            'title' => 'Medical Outreach',
-            'description' => 'A free community medical outreach programme organised by SWAN Abuja Chapter.',
-            'location' => 'Abuja, Nigeria',
-            'starts_at' => now()->addWeeks(6)->setTime(9, 0),
-            'status' => 'published',
-        ]);
-        $outreach->ticketTypes()->updateOrCreate(['label' => 'Volunteer'], ['price' => 0]);
 
         $slides = [
             [

@@ -5,20 +5,20 @@ namespace App\Filament\Resources\Faqs;
 use App\Filament\Resources\Faqs\Pages\ManageFaqs;
 use App\Models\Faq;
 use BackedEnum;
-use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class FaqResource extends Resource
 {
@@ -35,10 +35,13 @@ class FaqResource extends Resource
         return $schema
             ->components([
                 Select::make('topic')
-                    ->options(array_combine(
-                        ['General', 'Membership', 'Events', 'Payments', 'CPD'],
-                        ['General', 'Membership', 'Events', 'Payments', 'CPD'],
-                    ))
+                    ->options([
+                        'General' => 'General',
+                        'Membership' => 'Membership',
+                        'Events' => 'Events',
+                        'Payments' => 'Payments',
+                        'CPD' => 'CPD',
+                    ])
                     ->required(),
                 TextInput::make('question')
                     ->required()

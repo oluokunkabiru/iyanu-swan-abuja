@@ -20,6 +20,12 @@ export interface SiteSettings {
   socials: SocialLink[]
   subscriptionFee: number
   welfareFee: number
+  logoUrl?: string | null
+  chairpersonWelcome?: { heading: string; paragraphs: string[] }
+  chapterStats?: ChapterStat[]
+  registrationSteps?: RegistrationStep[]
+  memberBenefits?: MemberBenefit[]
+  aimsAndObjectives?: string[]
 }
 
 export interface HomeSlide {
@@ -49,6 +55,13 @@ export interface ExecutiveMember {
   bio: string
   photoUrl: string | null
   isPrincipal: boolean
+}
+
+export interface MemberSpotlight {
+  id: string
+  name: string
+  quote: string
+  photoUrl: string | null
 }
 
 export interface TicketTier {
@@ -198,6 +211,7 @@ export interface JobListing {
   postedAt: string
   closesAt: string
   summary: string
+  applicationUrl?: string | null
 }
 
 export interface ResourceItem {

@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\NewsPosts\Tables;
 
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
@@ -19,7 +19,9 @@ class NewsPostsTable
             ->defaultSort('published_at', 'desc')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('cover')->collection('cover'),
-                TextColumn::make('title')->searchable(),
+                TextColumn::make('title')->searchable()->wrap(),
+                TextColumn::make('category')->badge(),
+                TextColumn::make('author')->searchable(),
                 IconColumn::make('is_published')->boolean(),
                 TextColumn::make('published_at')->dateTime()->sortable(),
             ])

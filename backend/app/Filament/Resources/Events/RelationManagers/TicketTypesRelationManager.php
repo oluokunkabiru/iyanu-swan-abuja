@@ -8,6 +8,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -26,6 +27,18 @@ class TicketTypesRelationManager extends RelationManager
                     ->required()
                     ->placeholder('Member Physical, Non-Member Virtual...')
                     ->maxLength(255),
+                Select::make('audience')
+                    ->options([
+                        'member' => 'Member',
+                        'non-member' => 'Non-member',
+                    ])
+                    ->required(),
+                Select::make('mode')
+                    ->options([
+                        'physical' => 'Physical',
+                        'virtual' => 'Virtual',
+                    ])
+                    ->required(),
                 TextInput::make('price')
                     ->numeric()
                     ->required()
@@ -34,6 +47,7 @@ class TicketTypesRelationManager extends RelationManager
                     ->options(['NGN' => 'NGN', 'USD' => 'USD'])
                     ->default('NGN')
                     ->required(),
+                TagsInput::make('includes')->columnSpanFull(),
             ]);
     }
 
@@ -43,6 +57,8 @@ class TicketTypesRelationManager extends RelationManager
             ->recordTitleAttribute('label')
             ->columns([
                 TextColumn::make('label')->searchable(),
+                TextColumn::make('audience')->badge(),
+                TextColumn::make('mode')->badge(),
                 TextColumn::make('price')->money('NGN', divideBy: 1),
                 TextColumn::make('currency'),
             ])

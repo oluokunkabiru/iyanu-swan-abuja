@@ -3,10 +3,11 @@
 namespace App\Filament\Resources\NewsPosts\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
@@ -29,7 +30,17 @@ class NewsPostForm
                 Textarea::make('excerpt')
                     ->rows(2)
                     ->columnSpanFull(),
-                RichEditor::make('body')
+                Select::make('category')
+                    ->options([
+                        'Chapter' => 'Chapter',
+                        'ICAN' => 'ICAN',
+                        'Profession' => 'Profession',
+                        'Advocacy' => 'Advocacy',
+                    ])
+                    ->required(),
+                TextInput::make('author')->required()->maxLength(255),
+                Repeater::make('body')
+                    ->simple(Textarea::make('paragraph')->required())
                     ->columnSpanFull(),
                 SpatieMediaLibraryFileUpload::make('cover')
                     ->collection('cover')

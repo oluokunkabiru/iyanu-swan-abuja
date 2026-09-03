@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Users\Schemas;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Schema;
 
@@ -40,6 +41,11 @@ class UserForm
                     ->schema([
                         TextInput::make('membership_number')
                             ->maxLength(50),
+                        Select::make('credential')
+                            ->options([
+                                'ACA' => 'ACA',
+                                'FCA' => 'FCA',
+                            ]),
                         Select::make('membership_status')
                             ->options([
                                 'pending' => 'Pending',
@@ -50,8 +56,31 @@ class UserForm
                             ->required(),
                         TextInput::make('phone')
                             ->maxLength(50),
+                        Select::make('sector')
+                            ->options([
+                                'Public practice' => 'Public practice',
+                                'Public sector' => 'Public sector',
+                                'Financial services' => 'Financial services',
+                                'Industry' => 'Industry',
+                                'Academia' => 'Academia',
+                                'Consulting' => 'Consulting',
+                            ]),
+                        TextInput::make('specialisation')->maxLength(255),
+                        TextInput::make('year_admitted')
+                            ->numeric()
+                            ->minValue(1950)
+                            ->maxValue(2100),
+                        TextInput::make('chapter_role')->maxLength(255),
+                        TextInput::make('cpd_target')
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(120),
+                        Toggle::make('is_directory_listed')
+                            ->label('Show in public directory')
+                            ->default(true),
                         DatePicker::make('joined_at'),
-                    ]),
+                    ])
+                    ->columns(2),
             ]);
     }
 }

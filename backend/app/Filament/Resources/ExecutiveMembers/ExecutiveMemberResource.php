@@ -5,14 +5,13 @@ namespace App\Filament\Resources\ExecutiveMembers;
 use App\Filament\Resources\ExecutiveMembers\Pages\ManageExecutiveMembers;
 use App\Models\ExecutiveMember;
 use BackedEnum;
-use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -21,6 +20,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class ExecutiveMemberResource extends Resource
 {
@@ -57,6 +57,9 @@ class ExecutiveMemberResource extends Resource
                     ->required(),
                 Toggle::make('is_active')
                     ->default(true),
+                Toggle::make('is_principal')
+                    ->label('Principal officer')
+                    ->default(false),
             ]);
     }
 
@@ -70,6 +73,7 @@ class ExecutiveMemberResource extends Resource
                 TextColumn::make('position')->searchable(),
                 TextColumn::make('credential'),
                 IconColumn::make('is_active')->boolean(),
+                IconColumn::make('is_principal')->label('Principal')->boolean(),
             ])
             ->filters([
                 //

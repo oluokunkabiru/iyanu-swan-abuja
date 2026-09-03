@@ -4,9 +4,11 @@ namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
 use BackedEnum;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
@@ -42,13 +44,57 @@ class ManageSiteSettings extends Page
                         SpatieMediaLibraryFileUpload::make('logo')
                             ->collection('logo')
                             ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(5120)
                             ->columnSpanFull(),
                         TextInput::make('chapter_name')->required()->maxLength(255),
+                        TextInput::make('short_name')->required()->maxLength(100),
+                        TextInput::make('parent_body')->required()->maxLength(255),
                         TextInput::make('tagline')->maxLength(255),
-                        Textarea::make('mission')->rows(3)->columnSpanFull(),
                         Textarea::make('vision')->rows(3)->columnSpanFull(),
+                        Textarea::make('aims')->rows(3)->columnSpanFull(),
+                        Repeater::make('mission_items')
+                            ->label('Mission statements')
+                            ->simple(Textarea::make('mission')->required())
+                            ->columnSpanFull(),
                     ])
                     ->columns(2),
+                Section::make('Chairperson welcome')
+                    ->schema([
+                        TextInput::make('chairperson_heading')->maxLength(255),
+                        Repeater::make('chairperson_message')
+                            ->simple(Textarea::make('paragraph')->required())
+                            ->columnSpanFull(),
+                    ]),
+                Section::make('Homepage and membership content')
+                    ->schema([
+                        Repeater::make('chapter_stats')
+                            ->schema([
+                                TextInput::make('label')->required(),
+                                TextInput::make('value')->required(),
+                                TextInput::make('note')->required(),
+                            ])
+                            ->columns(3)
+                            ->columnSpanFull(),
+                        Repeater::make('registration_steps')
+                            ->schema([
+                                TextInput::make('step')->numeric()->required(),
+                                TextInput::make('title')->required(),
+                                Textarea::make('description')->required()->columnSpanFull(),
+                            ])
+                            ->columns(2)
+                            ->columnSpanFull(),
+                        Repeater::make('member_benefits')
+                            ->schema([
+                                TextInput::make('title')->required(),
+                                Textarea::make('description')->required()->columnSpanFull(),
+                            ])
+                            ->columnSpanFull(),
+                        Repeater::make('aims_objectives')
+                            ->label('Aims and objectives')
+                            ->simple(Textarea::make('objective')->required())
+                            ->columnSpanFull(),
+                    ]),
                 Section::make('Contact & social')
                     ->schema([
                         TextInput::make('address')->maxLength(255),
@@ -57,7 +103,24 @@ class ManageSiteSettings extends Page
                         TextInput::make('facebook_url')->url()->maxLength(255),
                         TextInput::make('instagram_url')->url()->maxLength(255),
                         TextInput::make('twitter_url')->url()->maxLength(255),
+                        TextInput::make('linkedin_url')->url()->maxLength(255),
                         TextInput::make('hero_video_url')->url()->maxLength(255),
+                        Repeater::make('social_links')
+                            ->schema([
+                                TextInput::make('label')->required(),
+                                Select::make('network')
+                                    ->options([
+                                        'facebook' => 'Facebook',
+                                        'twitter' => 'X / Twitter',
+                                        'instagram' => 'Instagram',
+                                        'linkedin' => 'LinkedIn',
+                                        'youtube' => 'YouTube',
+                                    ])
+                                    ->required(),
+                                TextInput::make('url')->url()->required(),
+                            ])
+                            ->columns(3)
+                            ->columnSpanFull(),
                     ])
                     ->columns(2),
                 Section::make('Membership fees (₦)')

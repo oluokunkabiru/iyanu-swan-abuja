@@ -6,7 +6,6 @@ use App\Filament\Resources\GalleryImages\Pages\ManageGalleryImages;
 use App\Models\Event;
 use App\Models\GalleryImage;
 use BackedEnum;
-use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -20,6 +19,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class GalleryImageResource extends Resource
 {
@@ -40,6 +40,14 @@ class GalleryImageResource extends Resource
                     ->columnSpanFull(),
                 TextInput::make('caption')
                     ->maxLength(255),
+                TextInput::make('album')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('year')
+                    ->numeric()
+                    ->minValue(2000)
+                    ->maxValue(2100)
+                    ->required(),
                 Select::make('event_id')
                     ->label('Related event')
                     ->options(fn () => Event::query()->pluck('title', 'id'))
@@ -58,6 +66,8 @@ class GalleryImageResource extends Resource
             ->columns([
                 SpatieMediaLibraryImageColumn::make('image')->collection('image'),
                 TextColumn::make('caption'),
+                TextColumn::make('album')->searchable(),
+                TextColumn::make('year')->sortable(),
                 TextColumn::make('event.title')->label('Event'),
             ])
             ->filters([

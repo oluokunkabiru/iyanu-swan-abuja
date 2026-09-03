@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Subscriptions;
 use App\Filament\Resources\Subscriptions\Pages\ManageSubscriptions;
 use App\Models\Subscription;
 use BackedEnum;
-use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -18,6 +17,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class SubscriptionResource extends Resource
 {
@@ -42,8 +42,7 @@ class SubscriptionResource extends Resource
                     ->numeric()
                     ->minValue(2000)
                     ->maxValue(2100)
-                    ->required()
-                    ->unique(modifyRuleUsing: fn ($rule, $get) => $rule->where('user_id', $get('user_id')), ignoreRecord: true),
+                    ->required(),
                 TextInput::make('subscription_amount')->numeric()->minValue(0)->prefix('₦')->required(),
                 TextInput::make('welfare_amount')->numeric()->minValue(0)->prefix('₦')->required(),
                 Select::make('status')
