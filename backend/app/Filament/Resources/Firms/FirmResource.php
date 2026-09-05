@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Firms;
 use App\Filament\Resources\Firms\Pages\ManageFirms;
 use App\Models\Firm;
 use BackedEnum;
-use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -17,8 +16,10 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class FirmResource extends Resource
 {
@@ -91,4 +92,3 @@ class FirmResource extends Resource
         ];
     }
 }
-use Filament\Tables\Columns\IconColumn;

@@ -5,21 +5,22 @@ namespace App\Filament\Resources\JobListings;
 use App\Filament\Resources\JobListings\Pages\ManageJobListings;
 use App\Models\JobListing;
 use BackedEnum;
-use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class JobListingResource extends Resource
 {
@@ -99,4 +100,3 @@ class JobListingResource extends Resource
         ];
     }
 }
-use Filament\Tables\Columns\IconColumn;

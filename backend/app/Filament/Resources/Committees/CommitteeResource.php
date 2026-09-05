@@ -5,21 +5,22 @@ namespace App\Filament\Resources\Committees;
 use App\Filament\Resources\Committees\Pages\ManageCommittees;
 use App\Models\Committee;
 use BackedEnum;
-use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TagsInput;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use UnitEnum;
 
 class CommitteeResource extends Resource
 {
@@ -84,4 +85,3 @@ class CommitteeResource extends Resource
         ];
     }
 }
-use Filament\Tables\Columns\IconColumn;

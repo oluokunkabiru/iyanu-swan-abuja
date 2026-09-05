@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Frontend Application URL
+    |--------------------------------------------------------------------------
+    |
+    | The React SPA is a separate application from this API/admin backend.
+    | This URL points to it, e.g. for linking out from the backend's root page.
+    |
+    */
+
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:5176'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

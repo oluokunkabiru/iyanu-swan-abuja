@@ -5,7 +5,6 @@ namespace App\Filament\Resources\CpdRecords;
 use App\Filament\Resources\CpdRecords\Pages\ManageCpdRecords;
 use App\Models\CpdRecord;
 use BackedEnum;
-use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -17,8 +16,10 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class CpdRecordResource extends Resource
 {
@@ -94,4 +95,3 @@ class CpdRecordResource extends Resource
         ];
     }
 }
-use Filament\Tables\Columns\IconColumn;
