@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
+import { getAnnouncements, getNews, getProgramme } from '@/api/content'
 import { AnnouncementRow } from '@/components/common/Cards'
-import { announcements, news, programme } from '@/data'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
 import { formatShortDate } from '@/lib/format'
+import type { Announcement, NewsPost, ProgrammeEntry } from '@/types'
 
 /**
  * The chapter noticeboard. ICAN's most useful home module is its tabbed panel
@@ -10,6 +13,13 @@ import { formatShortDate } from '@/lib/format'
  * with the chapter's own content.
  */
 export function Noticeboard() {
+  const { data: announcements, isLoading: loadingAnnouncements } = useApiData(
+    getAnnouncements,
+    [] as Announcement[],
+  )
+  const { data: news, isLoading: loadingNews } = useApiData(getNews, [] as NewsPost[])
+  const { data: programme, isLoading: loadingProgramme } = useApiData(getProgramme, [] as ProgrammeEntry[])
+
   return (
     <Tabs defaultValue="notices" className="gap-0">
       <TabsList className="h-auto w-full justify-start rounded-none border-b border-rule bg-transparent p-0">
@@ -34,11 +44,19 @@ export function Noticeboard() {
       </TabsList>
 
       <TabsContent value="notices" className="mt-0">
-        <ul>
-          {announcements.slice(0, 6).map((a) => (
-            <AnnouncementRow key={a.id} {...a} />
-          ))}
-        </ul>
+        {loadingAnnouncements ? (
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-12" />
+            ))}
+          </div>
+        ) : (
+          <ul>
+            {announcements.slice(0, 6).map((a) => (
+              <AnnouncementRow key={a.id} {...a} />
+            ))}
+          </ul>
+        )}
         <Link
           to="/announcements"
           className="mt-4 inline-block border-b border-plum-700 pb-0.5 text-[0.85rem] font-semibold text-plum-700 dark:border-primary dark:text-primary"
@@ -48,20 +66,28 @@ export function Noticeboard() {
       </TabsContent>
 
       <TabsContent value="news" className="mt-0">
-        <ul>
-          {news.slice(0, 5).map((post) => (
-            <li key={post.id} className="border-b border-border last:border-0">
-              <Link to={`/news/${post.slug}`} className="group block py-3.5">
-                <span className="block text-[0.92rem] leading-snug group-hover:text-plum-700 dark:group-hover:text-primary">
-                  {post.title}
-                </span>
-                <span className="mt-1 block text-[0.78rem] text-muted-foreground">
-                  {formatShortDate(post.publishedAt)} · {post.author}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {loadingNews ? (
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-12" />
+            ))}
+          </div>
+        ) : (
+          <ul>
+            {news.slice(0, 5).map((post) => (
+              <li key={post.id} className="border-b border-border last:border-0">
+                <Link to={`/news/${post.slug}`} className="group block py-3.5">
+                  <span className="block text-[0.92rem] leading-snug group-hover:text-plum-700 dark:group-hover:text-primary">
+                    {post.title}
+                  </span>
+                  <span className="mt-1 block text-[0.78rem] text-muted-foreground">
+                    {formatShortDate(post.publishedAt)} · {post.author}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
         <Link
           to="/news"
           className="mt-4 inline-block border-b border-plum-700 pb-0.5 text-[0.85rem] font-semibold text-plum-700 dark:border-primary dark:text-primary"
@@ -71,6 +97,13 @@ export function Noticeboard() {
       </TabsContent>
 
       <TabsContent value="programme" className="mt-0">
+        {loadingProgramme ? (
+          <div className="space-y-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-10" />
+            ))}
+          </div>
+        ) : (
         <table className="w-full text-left">
           <caption className="sr-only">Forthcoming chapter programme</caption>
           <thead>
@@ -105,6 +138,7 @@ export function Noticeboard() {
             ))}
           </tbody>
         </table>
+        )}
       </TabsContent>
     </Tabs>
   )

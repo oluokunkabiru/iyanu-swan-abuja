@@ -1,9 +1,14 @@
 import { Link } from 'react-router-dom'
+import { getFirms, getResources } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
-import { firms, resources } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
+import type { Firm, ResourceItem } from '@/types'
 
 export default function Practice() {
+  const { data: firms, isLoading: loadingFirms } = useApiData(getFirms, [] as Firm[])
+  const { data: resources, isLoading: loadingResources } = useApiData(getResources, [] as ResourceItem[])
   const guides = resources.filter((r) => r.category === 'Guide' || r.category === 'Form')
 
   return (
@@ -54,20 +59,28 @@ export default function Practice() {
           <aside id="registration" className="scroll-mt-24 space-y-6">
             <div className="border border-border bg-card p-6">
               <h2 className="text-[1.05rem]">Forms and procedures</h2>
-              <ul className="mt-4 divide-y divide-border border-y border-border">
-                {guides.map((g) => (
-                  <li key={g.id}>
-                    <a href={g.fileUrl} className="group block py-3">
-                      <span className="block text-[0.9rem] leading-snug group-hover:text-plum-700 dark:group-hover:text-primary">
-                        {g.title}
-                      </span>
-                      <span className="mt-0.5 block text-[0.78rem] text-muted-foreground">
-                        {g.format}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              {loadingResources ? (
+                <div className="mt-4 space-y-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className="h-10" />
+                  ))}
+                </div>
+              ) : (
+                <ul className="mt-4 divide-y divide-border border-y border-border">
+                  {guides.map((g) => (
+                    <li key={g.id}>
+                      <a href={g.fileUrl} className="group block py-3">
+                        <span className="block text-[0.9rem] leading-snug group-hover:text-plum-700 dark:group-hover:text-primary">
+                          {g.title}
+                        </span>
+                        <span className="mt-0.5 block text-[0.78rem] text-muted-foreground">
+                          {g.format}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
               <Button variant="outline" asChild className="mt-5 w-full">
                 <Link to="/resources">All forms and downloads</Link>
               </Button>
@@ -121,16 +134,24 @@ export default function Practice() {
             }
             className="mb-8"
           />
-          <ul className="grid gap-px bg-border md:grid-cols-2 lg:grid-cols-3">
-            {firms.map((f) => (
-              <li key={f.id} className="bg-card p-5">
-                <h3 className="text-[1rem] leading-snug">{f.name}</h3>
-                <p className="mt-1 text-[0.82rem] text-accent-foreground">{f.principal}</p>
-                <p className="mt-2 text-[0.84rem] text-muted-foreground">{f.services.join(' · ')}</p>
-                <p className="mt-2 text-[0.8rem] text-muted-foreground">{f.area}</p>
-              </li>
-            ))}
-          </ul>
+          {loadingFirms ? (
+            <div className="grid gap-px bg-border md:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-28" />
+              ))}
+            </div>
+          ) : (
+            <ul className="grid gap-px bg-border md:grid-cols-2 lg:grid-cols-3">
+              {firms.map((f) => (
+                <li key={f.id} className="bg-card p-5">
+                  <h3 className="text-[1rem] leading-snug">{f.name}</h3>
+                  <p className="mt-1 text-[0.82rem] text-accent-foreground">{f.principal}</p>
+                  <p className="mt-2 text-[0.84rem] text-muted-foreground">{f.services.join(' · ')}</p>
+                  <p className="mt-2 text-[0.8rem] text-muted-foreground">{f.area}</p>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </Section>
     </>

@@ -1,11 +1,15 @@
+import { fetchMyCpdRecords } from '@/api/auth'
 import { SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
-import { cpdRecords } from '@/data'
+import { useApiData } from '@/hooks/useApiData'
 import { formatShortDate } from '@/lib/format'
+import type { CpdRecord } from '@/types'
 
 export default function MembersCpd() {
   const { user } = useAuth()
+  const { data: cpdRecords, isLoading } = useApiData(fetchMyCpdRecords, [] as CpdRecord[])
   if (!user) return null
 
   const cycleStart = new Date().getFullYear() - 2
@@ -23,6 +27,13 @@ export default function MembersCpd() {
           lede={`Your ${cycleStart}–${new Date().getFullYear()} cycle. The requirement is ${user.cpdTarget} credit hours over three consecutive years.`}
           className="mb-6"
         />
+        {isLoading ? (
+          <div className="grid gap-px bg-border sm:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-20" />
+            ))}
+          </div>
+        ) : (
         <div className="grid gap-px bg-border sm:grid-cols-4">
           <div className="bg-card p-5">
             <p className="text-[0.8rem] text-muted-foreground">Total logged</p>
@@ -41,6 +52,7 @@ export default function MembersCpd() {
             <p className="tnum mt-2 font-heading text-3xl text-accent-foreground">{remaining}</p>
           </div>
         </div>
+        )}
       </div>
 
       <div>
@@ -53,6 +65,13 @@ export default function MembersCpd() {
           }
           className="mb-6"
         />
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-10" />
+            ))}
+          </div>
+        ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[40rem] text-left">
             <caption className="sr-only">CPD activity log</caption>
@@ -84,6 +103,7 @@ export default function MembersCpd() {
             </tbody>
           </table>
         </div>
+        )}
       </div>
 
       <div className="border-l-2 border-gold-500 bg-accent px-5 py-4">

@@ -1,21 +1,23 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, type ReactNode } from 'react'
 import { getSettings } from '@/api/content'
+import { useApiData } from '@/hooks/useApiData'
 import type { SiteSettings } from '@/types'
 
-const SettingsContext = createContext<SiteSettings | null>(null)
-
-export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<SiteSettings | null>(null)
-
-  useEffect(() => {
-    getSettings()
-      .then(setSettings)
-      .catch(() => setSettings(null))
-  }, [])
-
-  return <SettingsContext.Provider value={settings}>{children}</SettingsContext.Provider>
+interface SettingsContextValue {
+  settings: SiteSettings | null
+  isLoading: boolean
 }
 
-export function useSettings(): SiteSettings | null {
+const SettingsContext = createContext<SettingsContextValue>({ settings: null, isLoading: true })
+
+export function SettingsProvider({ children }: { children: ReactNode }) {
+  const { data: settings, isLoading } = useApiData(getSettings, null as SiteSettings | null)
+
+  return (
+    <SettingsContext.Provider value={{ settings, isLoading }}>{children}</SettingsContext.Provider>
+  )
+}
+
+export function useSettings(): SettingsContextValue {
   return useContext(SettingsContext)
 }

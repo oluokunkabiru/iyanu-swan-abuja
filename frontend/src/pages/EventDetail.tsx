@@ -1,18 +1,49 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { CalendarDays, Clock, MapPin } from 'lucide-react'
+import { getEvent, getEvents, registerForEvent } from '@/api/content'
 import { EmptyState, PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
-import { events, findEvent } from '@/data'
+import { useApiData } from '@/hooks/useApiData'
 import { formatDate, formatNaira, formatTimeRange } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import type { ChapterEvent } from '@/types'
 
 export default function EventDetail() {
   const { slug } = useParams<{ slug: string }>()
   const { user } = useAuth()
-  const event = slug ? findEvent(slug) : undefined
+
+  const { data: event, isLoading } = useApiData(
+    () => (slug ? getEvent(slug) : Promise.resolve(null)),
+    null as ChapterEvent | null,
+    [slug],
+  )
+  const { data: upcoming } = useApiData(() => getEvents('upcoming'), [] as ChapterEvent[])
+
   const [selectedTier, setSelectedTier] = useState<string | null>(null)
+  const [registering, setRegistering] = useState(false)
+  const [registered, setRegistered] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setSelectedTier(null)
+    setRegistered(false)
+    setError(null)
+  }, [slug])
+
+  if (isLoading) {
+    return (
+      <Section>
+        <Skeleton className="h-10 w-2/3" />
+        <div className="mt-8 grid gap-12 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+          <Skeleton className="h-96" />
+          <Skeleton className="h-64" />
+        </div>
+      </Section>
+    )
+  }
 
   if (!event) {
     return (
@@ -35,7 +66,25 @@ export default function EventDetail() {
     isMember ? t.audience === 'member' : t.audience === 'non-member',
   )
   const shownTiers = relevantTiers.length > 0 ? relevantTiers : event.ticketTiers
-  const others = events.filter((e) => e.id !== event.id && e.status === 'upcoming').slice(0, 3)
+  const others = upcoming.filter((e) => e.id !== event.id).slice(0, 3)
+
+  async function handleRegister() {
+    if (!event || !selectedTier || !user) return
+    setRegistering(true)
+    setError(null)
+    try {
+      await registerForEvent(event.slug, {
+        event_ticket_type_id: Number(selectedTier),
+        name: user.name,
+        email: user.email,
+      })
+      setRegistered(true)
+    } catch {
+      setError('Something went wrong submitting your registration. Please try again.')
+    } finally {
+      setRegistering(false)
+    }
+  }
 
   return (
     <>
@@ -111,46 +160,61 @@ export default function EventDetail() {
             {event.ticketTiers.length > 0 && event.status === 'upcoming' && (
               <div className="border border-border bg-card p-6">
                 <h2 className="text-[1.05rem]">Register</h2>
-                <p className="mt-2 text-[0.85rem] leading-relaxed text-muted-foreground">
-                  {isMember
-                    ? 'Your member rate is applied below.'
-                    : 'Sign in with an active membership to see member rates.'}
-                </p>
 
-                <ul className="mt-4 space-y-2">
-                  {shownTiers.map((tier) => (
-                    <li key={tier.id}>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedTier(tier.id)}
-                        aria-pressed={selectedTier === tier.id}
-                        className={cn(
-                          'flex w-full items-baseline justify-between gap-3 rounded-sm border px-4 py-3 text-left transition-colors',
-                          selectedTier === tier.id
-                            ? 'border-plum-700 bg-secondary dark:border-primary'
-                            : 'border-border hover:border-plum-500',
-                        )}
-                      >
-                        <span className="text-[0.86rem] leading-snug">{tier.label}</span>
-                        <span className="tnum shrink-0 font-heading text-lg text-plum-700 dark:text-primary">
-                          {formatNaira(tier.price)}
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button className="mt-5 w-full" disabled={!selectedTier}>
-                  {selectedTier ? 'Continue to payment' : 'Choose a ticket'}
-                </Button>
-
-                {!user && (
-                  <p className="mt-3 text-center text-[0.82rem] text-muted-foreground">
-                    <Link to="/login" className="font-semibold text-plum-700 underline-offset-4 hover:underline dark:text-primary">
-                      Sign in
-                    </Link>{' '}
-                    for the member rate
+                {registered ? (
+                  <p className="mt-2 text-[0.88rem] leading-relaxed text-muted-foreground">
+                    You&rsquo;re registered. A confirmation has been sent to {user?.email}.
                   </p>
+                ) : (
+                  <>
+                    <p className="mt-2 text-[0.85rem] leading-relaxed text-muted-foreground">
+                      {isMember
+                        ? 'Your member rate is applied below.'
+                        : 'Sign in with an active membership to see member rates.'}
+                    </p>
+
+                    <ul className="mt-4 space-y-2">
+                      {shownTiers.map((tier) => (
+                        <li key={tier.id}>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedTier(tier.id)}
+                            aria-pressed={selectedTier === tier.id}
+                            className={cn(
+                              'flex w-full items-baseline justify-between gap-3 rounded-sm border px-4 py-3 text-left transition-colors',
+                              selectedTier === tier.id
+                                ? 'border-plum-700 bg-secondary dark:border-primary'
+                                : 'border-border hover:border-plum-500',
+                            )}
+                          >
+                            <span className="text-[0.86rem] leading-snug">{tier.label}</span>
+                            <span className="tnum shrink-0 font-heading text-lg text-plum-700 dark:text-primary">
+                              {formatNaira(tier.price)}
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {error && <p className="mt-3 text-[0.82rem] text-destructive">{error}</p>}
+
+                    <Button
+                      className="mt-5 w-full"
+                      disabled={!selectedTier || !user || registering}
+                      onClick={handleRegister}
+                    >
+                      {registering ? 'Submitting…' : selectedTier ? 'Continue to payment' : 'Choose a ticket'}
+                    </Button>
+
+                    {!user && (
+                      <p className="mt-3 text-center text-[0.82rem] text-muted-foreground">
+                        <Link to="/login" className="font-semibold text-plum-700 underline-offset-4 hover:underline dark:text-primary">
+                          Sign in
+                        </Link>{' '}
+                        for the member rate
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             )}

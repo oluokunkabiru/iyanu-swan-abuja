@@ -1,9 +1,19 @@
 import { Link } from 'react-router-dom'
+import { getCoreValues, getPartners } from '@/api/content'
 import { PageHeader, Section, SectionHeading, Stat } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
-import { aimsAndObjectives, chapterStats, coreValues, partners, site } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useSettings } from '@/context/SettingsContext'
+import { useApiData } from '@/hooks/useApiData'
+import type { CoreValue, Partner } from '@/types'
 
 export default function About() {
+  const { settings, isLoading: loadingSettings } = useSettings()
+  const { data: coreValues, isLoading: loadingCoreValues } = useApiData(getCoreValues, [] as CoreValue[])
+  const { data: partners, isLoading: loadingPartners } = useApiData(getPartners, [] as Partner[])
+  const chapterStats = settings?.chapterStats ?? []
+  const aimsAndObjectives = settings?.aimsAndObjectives ?? []
+
   return (
     <>
       <PageHeader
@@ -24,7 +34,7 @@ export default function About() {
                 calendar of accredited technical sessions, a mentorship programme, a welfare fund,
                 and a body of women who will take your call.
               </p>
-              <p>{site.aims}</p>
+              <p>{settings?.aims}</p>
               <p>
                 The chapter is run by an elected council of twelve, supported by eight standing
                 committees. Accounts are presented to members annually, and outreach spending is
@@ -34,9 +44,11 @@ export default function About() {
           </div>
 
           <div className="space-y-8">
-            {chapterStats.map((s) => (
-              <Stat key={s.label} value={s.value} label={s.label} note={s.note} />
-            ))}
+            {loadingSettings
+              ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16" />)
+              : chapterStats.map((s) => (
+                  <Stat key={s.label} value={s.value} label={s.label} note={s.note} />
+                ))}
           </div>
         </div>
       </Section>
@@ -47,12 +59,12 @@ export default function About() {
             <SectionHeading title="Vision and mission" />
             <div className="mt-6 space-y-6">
               <blockquote className="border-l-2 border-gold-500 pl-5 font-heading text-[1.2rem] leading-relaxed">
-                {site.vision}
+                {settings?.vision}
               </blockquote>
               <div>
                 <h3 className="text-[1.05rem] text-plum-700 dark:text-primary">Our mission</h3>
                 <ul className="mt-3 space-y-3">
-                  {site.mission.map((m) => (
+                  {(settings?.mission ?? []).map((m) => (
                     <li key={m} className="text-[0.95rem] leading-relaxed text-muted-foreground">
                       {m}
                     </li>
@@ -77,16 +89,24 @@ export default function About() {
 
       <Section>
         <SectionHeading title="Core values" lede="Five commitments the chapter is measured against." className="mb-8" />
-        <dl className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
-          {coreValues.map((v) => (
-            <div key={v.title} className="bg-card p-6">
-              <dt className="font-heading text-[1.15rem] text-accent-foreground">{v.title}</dt>
-              <dd className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
-                {v.description}
-              </dd>
-            </div>
-          ))}
-        </dl>
+        {loadingCoreValues ? (
+          <div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-24" />
+            ))}
+          </div>
+        ) : (
+          <dl className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+            {coreValues.map((v) => (
+              <div key={v.title} className="bg-card p-6">
+                <dt className="font-heading text-[1.15rem] text-accent-foreground">{v.title}</dt>
+                <dd className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
+                  {v.description}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </Section>
 
       <Section tone="tinted">
@@ -115,18 +135,26 @@ export default function About() {
 
           <div id="partners" className="scroll-mt-24">
             <SectionHeading title="Affiliates and partners" />
-            <ul className="mt-6 divide-y divide-border border-y border-border">
-              {partners.map((p) => (
-                <li key={p.id} className="py-3.5">
-                  <a href={p.url} target="_blank" rel="noreferrer" className="group block">
-                    <span className="text-[0.76rem] font-semibold text-accent-foreground">{p.scope}</span>
-                    <span className="mt-0.5 block text-[0.93rem] group-hover:text-plum-700 dark:group-hover:text-primary">
-                      {p.name}
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
+            {loadingPartners ? (
+              <div className="mt-6 space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-10" />
+                ))}
+              </div>
+            ) : (
+              <ul className="mt-6 divide-y divide-border border-y border-border">
+                {partners.map((p) => (
+                  <li key={p.id} className="py-3.5">
+                    <a href={p.url} target="_blank" rel="noreferrer" className="group block">
+                      <span className="text-[0.76rem] font-semibold text-accent-foreground">{p.scope}</span>
+                      <span className="mt-0.5 block text-[0.93rem] group-hover:text-plum-700 dark:group-hover:text-primary">
+                        {p.name}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </Section>

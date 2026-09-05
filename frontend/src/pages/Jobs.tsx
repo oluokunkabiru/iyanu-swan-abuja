@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { getJobs } from '@/api/content'
 import { PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
-import { jobs } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
 import { formatShortDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { JobListing } from '@/types'
@@ -11,9 +13,10 @@ const levels: (JobListing['level'] | 'All')[] = ['All', 'Entry', 'Mid', 'Senior'
 
 export default function Jobs() {
   const [level, setLevel] = useState<(typeof levels)[number]>('All')
+  const { data: jobs, isLoading } = useApiData(getJobs, [] as JobListing[])
   const visible = useMemo(
     () => (level === 'All' ? jobs : jobs.filter((j) => j.level === level)),
-    [level],
+    [jobs, level],
   )
 
   return (
@@ -25,7 +28,11 @@ export default function Jobs() {
       />
 
       <Section>
-        <SectionHeading title="Open roles" lede={`${visible.length} listings.`} className="mb-6" />
+        <SectionHeading
+          title="Open roles"
+          lede={isLoading ? 'Loading…' : `${visible.length} listings.`}
+          className="mb-6"
+        />
 
         <div className="flex flex-wrap gap-2">
           {levels.map((l) => (
@@ -46,6 +53,14 @@ export default function Jobs() {
           ))}
         </div>
 
+        {isLoading && (
+          <div className="mt-8 space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24" />
+            ))}
+          </div>
+        )}
+        {!isLoading && (
         <ul className="mt-8 divide-y divide-border border-y border-border">
           {visible.map((job) => (
             <li key={job.id} className="py-5">
@@ -70,6 +85,7 @@ export default function Jobs() {
             </li>
           ))}
         </ul>
+        )}
       </Section>
 
       <Section tone="tinted">

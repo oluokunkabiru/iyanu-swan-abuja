@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { getPublications } from '@/api/content'
 import { DocumentRow } from '@/components/common/Cards'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
-import { publications } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
 import { cn } from '@/lib/utils'
 import type { Publication } from '@/types'
 
@@ -16,6 +18,7 @@ const categories: (Publication['category'] | 'All')[] = [
 
 export default function Publications() {
   const [category, setCategory] = useState<(typeof categories)[number]>('All')
+  const { data: publications, isLoading } = useApiData(getPublications, [] as Publication[])
   const visible =
     category === 'All' ? publications : publications.filter((p) => p.category === category)
 
@@ -28,7 +31,11 @@ export default function Publications() {
       />
 
       <Section>
-        <SectionHeading title="Library" lede={`${visible.length} documents.`} className="mb-6" />
+        <SectionHeading
+          title="Library"
+          lede={isLoading ? 'Loading…' : `${visible.length} documents.`}
+          className="mb-6"
+        />
         <div className="flex flex-wrap gap-2">
           {categories.map((c) => (
             <button
@@ -48,11 +55,19 @@ export default function Publications() {
           ))}
         </div>
 
-        <ul className="mt-8 divide-y divide-border border-y border-border">
-          {visible.map((p) => (
-            <DocumentRow key={p.id} item={p} />
-          ))}
-        </ul>
+        {isLoading ? (
+          <div className="mt-8 space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-14" />
+            ))}
+          </div>
+        ) : (
+          <ul className="mt-8 divide-y divide-border border-y border-border">
+            {visible.map((p) => (
+              <DocumentRow key={p.id} item={p} />
+            ))}
+          </ul>
+        )}
       </Section>
     </>
   )

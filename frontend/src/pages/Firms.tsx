@@ -1,14 +1,18 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
+import { getFirms } from '@/api/content'
 import { PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { firms } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
+import type { Firm } from '@/types'
 
 export default function Firms() {
   const [query, setQuery] = useState('')
+  const { data: firms, isLoading } = useApiData(getFirms, [] as Firm[])
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -20,7 +24,7 @@ export default function Firms() {
         f.area.toLowerCase().includes(q) ||
         f.services.some((s) => s.toLowerCase().includes(q)),
     )
-  }, [query])
+  }, [firms, query])
 
   return (
     <>
@@ -35,7 +39,11 @@ export default function Firms() {
       />
 
       <Section>
-        <SectionHeading title="Search firms" lede={`${visible.length} firms listed.`} className="mb-6" />
+        <SectionHeading
+          title="Search firms"
+          lede={isLoading ? 'Loading…' : `${visible.length} firms listed.`}
+          className="mb-6"
+        />
 
         <div className="max-w-md space-y-2">
           <Label htmlFor="firm-search">Firm, principal, service or area</Label>
@@ -54,35 +62,43 @@ export default function Firms() {
           </div>
         </div>
 
-        <ul className="mt-8 grid gap-px bg-border md:grid-cols-2">
-          {visible.map((f) => (
-            <li key={f.id} className="bg-card p-6">
-              <div className="flex items-start justify-between gap-4">
-                <h2 className="text-[1.08rem] leading-snug">{f.name}</h2>
-                <StatusTag tone={f.licenceStatus === 'Active' ? 'positive' : 'warning'}>
-                  {f.licenceStatus}
-                </StatusTag>
-              </div>
-              <p className="mt-1.5 text-[0.85rem] text-accent-foreground">{f.principal}</p>
-              <dl className="mt-4 space-y-2 text-[0.86rem]">
-                <div className="flex gap-2">
-                  <dt className="text-muted-foreground">Licence</dt>
-                  <dd className="tnum">{f.licenceNumber}</dd>
+        {isLoading ? (
+          <div className="mt-8 grid gap-px bg-border md:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-40" />
+            ))}
+          </div>
+        ) : (
+          <ul className="mt-8 grid gap-px bg-border md:grid-cols-2">
+            {visible.map((f) => (
+              <li key={f.id} className="bg-card p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-[1.08rem] leading-snug">{f.name}</h2>
+                  <StatusTag tone={f.licenceStatus === 'Active' ? 'positive' : 'warning'}>
+                    {f.licenceStatus}
+                  </StatusTag>
                 </div>
-                <div className="flex gap-2">
-                  <dt className="text-muted-foreground">Area</dt>
-                  <dd>{f.area}</dd>
-                </div>
-                <div className="flex gap-2">
-                  <dt className="text-muted-foreground">Services</dt>
-                  <dd>{f.services.join(', ')}</dd>
-                </div>
-              </dl>
-            </li>
-          ))}
-        </ul>
+                <p className="mt-1.5 text-[0.85rem] text-accent-foreground">{f.principal}</p>
+                <dl className="mt-4 space-y-2 text-[0.86rem]">
+                  <div className="flex gap-2">
+                    <dt className="text-muted-foreground">Licence</dt>
+                    <dd className="tnum">{f.licenceNumber}</dd>
+                  </div>
+                  <div className="flex gap-2">
+                    <dt className="text-muted-foreground">Area</dt>
+                    <dd>{f.area}</dd>
+                  </div>
+                  <div className="flex gap-2">
+                    <dt className="text-muted-foreground">Services</dt>
+                    <dd>{f.services.join(', ')}</dd>
+                  </div>
+                </dl>
+              </li>
+            ))}
+          </ul>
+        )}
 
-        {visible.length === 0 && (
+        {!isLoading && visible.length === 0 && (
           <p className="mt-6 border border-dashed border-rule px-6 py-10 text-center text-[0.9rem] text-muted-foreground">
             No firms match that search. Try a service line such as “audit” or “tax”.
           </p>

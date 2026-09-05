@@ -1,10 +1,17 @@
 import { Link } from 'react-router-dom'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
-import { memberBenefits, registrationSteps, site } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useSettings } from '@/context/SettingsContext'
 import { formatNaira } from '@/lib/format'
 
 export default function Membership() {
+  const { settings, isLoading } = useSettings()
+  const subscriptionFee = settings?.subscriptionFee ?? 0
+  const welfareFee = settings?.welfareFee ?? 0
+  const registrationSteps = settings?.registrationSteps ?? []
+  const memberBenefits = settings?.memberBenefits ?? []
+
   return (
     <>
       <PageHeader
@@ -15,10 +22,10 @@ export default function Membership() {
           <div className="border border-gold-500/40 bg-plum-800/60 p-5 text-plum-200">
             <p className="text-[0.8rem]">Annual dues</p>
             <p className="tnum mt-1 font-heading text-3xl text-gold-300">
-              {formatNaira(site.subscriptionFee + site.welfareFee)}
+              {formatNaira(subscriptionFee + welfareFee)}
             </p>
             <p className="mt-1 text-[0.78rem]">
-              {formatNaira(site.subscriptionFee)} subscription · {formatNaira(site.welfareFee)} welfare
+              {formatNaira(subscriptionFee)} subscription · {formatNaira(welfareFee)} welfare
             </p>
           </div>
         }
@@ -71,19 +78,27 @@ export default function Membership() {
           lede="Three steps. Most members complete the whole thing inside a fortnight."
           className="mb-10"
         />
-        <ol className="grid gap-px bg-border md:grid-cols-3">
-          {registrationSteps.map((s) => (
-            <li key={s.step} className="bg-card p-6">
-              <span className="tnum font-heading text-3xl leading-none text-plum-200 dark:text-plum-500">
-                {String(s.step).padStart(2, '0')}
-              </span>
-              <h3 className="mt-4 text-[1.1rem]">{s.title}</h3>
-              <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
-                {s.description}
-              </p>
-            </li>
-          ))}
-        </ol>
+        {isLoading ? (
+          <div className="grid gap-px bg-border md:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-40" />
+            ))}
+          </div>
+        ) : (
+          <ol className="grid gap-px bg-border md:grid-cols-3">
+            {registrationSteps.map((s) => (
+              <li key={s.step} className="bg-card p-6">
+                <span className="tnum font-heading text-3xl leading-none text-plum-200 dark:text-plum-500">
+                  {String(s.step).padStart(2, '0')}
+                </span>
+                <h3 className="mt-4 text-[1.1rem]">{s.title}</h3>
+                <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
+                  {s.description}
+                </p>
+              </li>
+            ))}
+          </ol>
+        )}
         <Button size="lg" asChild className="mt-8">
           <Link to="/membership/register">Start your registration</Link>
         </Button>
@@ -95,16 +110,24 @@ export default function Membership() {
           title="What active membership gets you"
           className="mb-8"
         />
-        <dl className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
-          {memberBenefits.map((b) => (
-            <div key={b.title} className="bg-card p-6">
-              <dt className="text-[1.05rem] font-semibold">{b.title}</dt>
-              <dd className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
-                {b.description}
-              </dd>
-            </div>
-          ))}
-        </dl>
+        {isLoading ? (
+          <div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-28" />
+            ))}
+          </div>
+        ) : (
+          <dl className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+            {memberBenefits.map((b) => (
+              <div key={b.title} className="bg-card p-6">
+                <dt className="text-[1.05rem] font-semibold">{b.title}</dt>
+                <dd className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
+                  {b.description}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </Section>
     </>
   )

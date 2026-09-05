@@ -28,8 +28,14 @@ export default function Login() {
 
     setError(null)
     setSubmitting(true)
-    await signIn(email, password)
-    navigate(from, { replace: true })
+    try {
+      await signIn(email, password)
+      navigate(from, { replace: true })
+    } catch {
+      setError('Those details did not match an active account. Check your email and password.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -45,11 +51,11 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email">Email address</Label>
-              <Input id="email" name="email" type="email" autoComplete="email" defaultValue="member@swanabujachapter.com" />
+              <Input id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" autoComplete="current-password" defaultValue="demo-password" />
+              <Input id="password" name="password" type="password" autoComplete="current-password" />
             </div>
 
             {error && (
@@ -72,14 +78,10 @@ export default function Login() {
         </div>
 
         <aside className="border border-border bg-card p-6">
-          <h2 className="text-[1.05rem]">About this build</h2>
+          <h2 className="text-[1.05rem]">What signing in unlocks</h2>
           <p className="mt-3 text-[0.9rem] leading-relaxed text-muted-foreground">
-            There is no backend connected. Any credentials sign you into a demonstration member
-            record so the whole members area can be reviewed — CPD tracker, dues history, tickets
-            and profile.
-          </p>
-          <p className="mt-3 text-[0.9rem] leading-relaxed text-muted-foreground">
-            The session is kept in browser storage and cleared when you sign out.
+            Your CPD tracker, subscription and welfare dues history, event tickets and profile —
+            all matched to your chapter membership record.
           </p>
         </aside>
       </div>

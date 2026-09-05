@@ -1,5 +1,5 @@
 import { api, ensureCsrfCookie } from '@/api/client'
-import type { AuthUser, EventRegistration } from '@/types'
+import type { AuthUser, CpdRecord, SubscriptionRecord, TicketRecord } from '@/types'
 
 export async function register(payload: {
   name: string
@@ -32,7 +32,17 @@ export async function updateMe(payload: { name?: string; phone?: string }): Prom
   return data
 }
 
-export async function fetchMyRegistrations(): Promise<EventRegistration[]> {
-  const { data } = await api.get<EventRegistration[]>('/me/registrations')
+export async function fetchMyRegistrations(): Promise<TicketRecord[]> {
+  const { data } = await api.get<TicketRecord[]>('/me/registrations')
+  return data
+}
+
+export async function fetchMyCpdRecords(): Promise<CpdRecord[]> {
+  const { data } = await api.get<CpdRecord[]>('/me/cpd-records')
+  return data
+}
+
+export async function fetchMySubscriptions(): Promise<SubscriptionRecord[]> {
+  const { data } = await api.get<SubscriptionRecord[]>('/me/subscriptions')
   return data
 }

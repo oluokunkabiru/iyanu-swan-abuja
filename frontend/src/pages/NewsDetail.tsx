@@ -1,12 +1,33 @@
 import { Link, useParams } from 'react-router-dom'
+import { getNews, getNewsPost } from '@/api/content'
 import { EmptyState, PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
-import { findNews, news } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
 import { formatDate } from '@/lib/format'
+import type { NewsPost } from '@/types'
 
 export default function NewsDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const post = slug ? findNews(slug) : undefined
+
+  const { data: post, isLoading } = useApiData(
+    () => (slug ? getNewsPost(slug) : Promise.resolve(null)),
+    null as NewsPost | null,
+    [slug],
+  )
+  const { data: news } = useApiData(getNews, [] as NewsPost[])
+
+  if (isLoading) {
+    return (
+      <Section>
+        <Skeleton className="h-10 w-2/3" />
+        <div className="mt-8 grid gap-12 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+          <Skeleton className="h-96" />
+          <Skeleton className="h-64" />
+        </div>
+      </Section>
+    )
+  }
 
   if (!post) {
     return (

@@ -6,19 +6,23 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context/AuthContext'
-import { registrationSteps, site } from '@/data'
+import { useSettings } from '@/context/SettingsContext'
 import { formatNaira } from '@/lib/format'
 
 const paymentMethods = ['Debit card', 'Bank transfer', 'USSD'] as const
 
 export default function MembershipRegister() {
   const { signUp } = useAuth()
+  const { settings } = useSettings()
   const navigate = useNavigate()
   const [method, setMethod] = useState<(typeof paymentMethods)[number]>('Debit card')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  const total = site.subscriptionFee + site.welfareFee
+  const subscriptionFee = settings?.subscriptionFee ?? 0
+  const welfareFee = settings?.welfareFee ?? 0
+  const total = subscriptionFee + welfareFee
+  const registrationSteps = settings?.registrationSteps ?? []
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -26,16 +30,23 @@ export default function MembershipRegister() {
     const form = new FormData(e.currentTarget)
     const name = String(form.get('name') ?? '').trim()
     const email = String(form.get('email') ?? '').trim()
-    const membershipNumber = String(form.get('membershipNumber') ?? '').trim()
+    const password = String(form.get('password') ?? '')
+    const phone = String(form.get('phone') ?? '').trim()
 
-    if (!name || !email || !membershipNumber) {
-      setError('Enter your name, email and ICAN membership number to continue.')
+    if (!name || !email || password.length < 8) {
+      setError('Enter your name and email, and choose a password of at least 8 characters.')
       return
     }
 
     setSubmitting(true)
-    await signUp({ name, email, membershipNumber })
-    navigate('/members')
+    try {
+      await signUp({ name, email, password, phone: phone || undefined })
+      navigate('/members')
+    } catch {
+      setError('We could not complete that registration. Check your details and try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -61,16 +72,16 @@ export default function MembershipRegister() {
                   <Input id="name" name="name" autoComplete="name" placeholder="As it appears on your ICAN record" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="membershipNumber">ICAN membership number</Label>
-                  <Input id="membershipNumber" name="membershipNumber" placeholder="ICAN/000000" />
-                </div>
-                <div className="space-y-2">
                   <Label htmlFor="email">Email address</Label>
                   <Input id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone number</Label>
                   <Input id="phone" name="phone" type="tel" autoComplete="tel" placeholder="0800 000 0000" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Choose a password</Label>
+                  <Input id="password" name="password" type="password" autoComplete="new-password" placeholder="At least 8 characters" />
                 </div>
               </div>
 
@@ -106,8 +117,8 @@ export default function MembershipRegister() {
               </Button>
 
               <p className="text-[0.82rem] leading-relaxed text-muted-foreground">
-                This build has no payment gateway connected. Submitting opens the members area with
-                a demonstration record so you can see what a member sees.
+                Payment is confirmed by the Financial Secretary after submission. Your account opens
+                immediately as pending, and moves to active once your dues are matched.
               </p>
             </form>
           </div>
@@ -118,11 +129,11 @@ export default function MembershipRegister() {
               <dl className="mt-4 space-y-3 text-[0.9rem]">
                 <div className="flex items-baseline justify-between gap-4">
                   <dt className="text-muted-foreground">Annual subscription</dt>
-                  <dd className="tnum font-medium">{formatNaira(site.subscriptionFee)}</dd>
+                  <dd className="tnum font-medium">{formatNaira(subscriptionFee)}</dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-4">
                   <dt className="text-muted-foreground">Welfare levy</dt>
-                  <dd className="tnum font-medium">{formatNaira(site.welfareFee)}</dd>
+                  <dd className="tnum font-medium">{formatNaira(welfareFee)}</dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-4 border-t border-border pt-3">
                   <dt className="font-medium">Total</dt>

@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { getResources } from '@/api/content'
 import { DocumentRow } from '@/components/common/Cards'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
-import { resources } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
 import { cn } from '@/lib/utils'
 import type { ResourceItem } from '@/types'
 
@@ -16,6 +18,7 @@ const categories: (ResourceItem['category'] | 'All')[] = [
 
 export default function Resources() {
   const [category, setCategory] = useState<(typeof categories)[number]>('All')
+  const { data: resources, isLoading } = useApiData(getResources, [] as ResourceItem[])
   const visible = category === 'All' ? resources : resources.filter((r) => r.category === category)
 
   return (
@@ -27,7 +30,11 @@ export default function Resources() {
       />
 
       <Section>
-        <SectionHeading title="Downloads" lede={`${visible.length} files.`} className="mb-6" />
+        <SectionHeading
+          title="Downloads"
+          lede={isLoading ? 'Loading…' : `${visible.length} files.`}
+          className="mb-6"
+        />
         <div className="flex flex-wrap gap-2">
           {categories.map((c) => (
             <button
@@ -47,11 +54,19 @@ export default function Resources() {
           ))}
         </div>
 
-        <ul className="mt-8 divide-y divide-border border-y border-border">
-          {visible.map((r) => (
-            <DocumentRow key={r.id} item={r} />
-          ))}
-        </ul>
+        {isLoading ? (
+          <div className="mt-8 space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-14" />
+            ))}
+          </div>
+        ) : (
+          <ul className="mt-8 divide-y divide-border border-y border-border">
+            {visible.map((r) => (
+              <DocumentRow key={r.id} item={r} />
+            ))}
+          </ul>
+        )}
       </Section>
     </>
   )

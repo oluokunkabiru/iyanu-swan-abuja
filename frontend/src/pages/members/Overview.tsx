@@ -1,14 +1,27 @@
 import { Link } from 'react-router-dom'
+import { fetchMyCpdRecords, fetchMyRegistrations, fetchMySubscriptions } from '@/api/auth'
+import { getEvents } from '@/api/content'
 import { SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
-import { cpdRecords, subscriptions, tickets, upcomingEvents } from '@/data'
+import { useApiData } from '@/hooks/useApiData'
 import { formatDate, formatNaira, formatShortDate } from '@/lib/format'
+import type { ChapterEvent, CpdRecord, SubscriptionRecord, TicketRecord } from '@/types'
 
 export default function MembersOverview() {
   const { user } = useAuth()
+  const { data: cpdRecords, isLoading: loadingCpd } = useApiData(fetchMyCpdRecords, [] as CpdRecord[])
+  const { data: subscriptions, isLoading: loadingSubscriptions } = useApiData(
+    fetchMySubscriptions,
+    [] as SubscriptionRecord[],
+  )
+  const { data: tickets, isLoading: loadingTickets } = useApiData(fetchMyRegistrations, [] as TicketRecord[])
+  const { data: upcomingEvents } = useApiData(() => getEvents('upcoming'), [] as ChapterEvent[])
+
   if (!user) return null
 
+  const isLoading = loadingCpd || loadingSubscriptions || loadingTickets
   const cycleStart = new Date().getFullYear() - 2
   const cycleHours = cpdRecords
     .filter((r) => new Date(r.date).getFullYear() >= cycleStart)
@@ -23,6 +36,13 @@ export default function MembersOverview() {
     <div className="space-y-12">
       <div>
         <SectionHeading title="Where you stand" className="mb-6" />
+        {isLoading ? (
+          <div className="grid gap-px bg-border sm:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-32" />
+            ))}
+          </div>
+        ) : (
         <div className="grid gap-px bg-border sm:grid-cols-3">
           <div className="bg-card p-5">
             <p className="text-[0.82rem] text-muted-foreground">CPD this cycle</p>
@@ -69,6 +89,7 @@ export default function MembersOverview() {
             </p>
           </div>
         </div>
+        )}
       </div>
 
       {outstanding && (
@@ -95,6 +116,14 @@ export default function MembersOverview() {
           }
           className="mb-6"
         />
+        {loadingCpd && (
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-12" />
+            ))}
+          </div>
+        )}
+        {!loadingCpd && (
         <ul className="divide-y divide-border border-y border-border">
           {cpdRecords.slice(0, 4).map((r) => (
             <li key={r.id} className="flex flex-wrap items-baseline justify-between gap-3 py-3.5">
@@ -108,6 +137,7 @@ export default function MembersOverview() {
             </li>
           ))}
         </ul>
+        )}
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">

@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
 import { Mail, MapPin, Phone } from 'lucide-react'
 import { BrandLogo } from '@/components/common/BrandLogo'
-import { footerLinks, site } from '@/data'
+import { footerLinks } from '@/data'
+import { useSettings } from '@/context/SettingsContext'
 
 export function Footer() {
+  const { settings } = useSettings()
   const year = new Date().getFullYear()
 
   return (
@@ -13,34 +15,34 @@ export function Footer() {
           <div>
             <Link
               to="/"
-              aria-label={`${site.shortName} home`}
+              aria-label={`${settings?.shortName ?? 'SWAN Abuja'} home`}
               className="inline-flex bg-white p-2"
             >
               <BrandLogo className="h-10" />
             </Link>
-            <p className="mt-4 max-w-xs text-[0.86rem] leading-relaxed">{site.tagline}</p>
+            <p className="mt-4 max-w-xs text-[0.86rem] leading-relaxed">{settings?.tagline}</p>
 
             <ul className="mt-6 space-y-2.5 text-[0.86rem]">
               <li className="flex items-start gap-2.5">
                 <MapPin aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
-                <span>{site.address}</span>
+                <span>{settings?.address}</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Mail aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
-                <a href={`mailto:${site.email}`} className="hover:text-white">
-                  {site.email}
+                <a href={`mailto:${settings?.email}`} className="hover:text-white">
+                  {settings?.email}
                 </a>
               </li>
               <li className="flex items-start gap-2.5">
                 <Phone aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
-                <a href={`tel:${site.phone.replace(/\s/g, '')}`} className="hover:text-white">
-                  {site.phone}
+                <a href={`tel:${settings?.phone?.replace(/\s/g, '') ?? ''}`} className="hover:text-white">
+                  {settings?.phone}
                 </a>
               </li>
             </ul>
 
             <ul className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-[0.82rem]">
-              {site.socials.map((s) => (
+              {(settings?.socials ?? []).map((s) => (
                 <li key={s.label}>
                   <a
                     href={s.url}
@@ -77,7 +79,7 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col gap-3 border-t border-plum-800 pt-6 text-[0.8rem] sm:flex-row sm:items-center sm:justify-between">
           <p>
-            {site.chapterName} — {year}. All rights reserved.
+            {settings?.chapterName} — {year}. All rights reserved.
           </p>
           <p>
             A society of the{' '}

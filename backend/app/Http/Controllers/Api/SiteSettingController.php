@@ -27,6 +27,7 @@ class SiteSettingController extends Controller
             'subscriptionFee' => $settings->membership_subscription_fee,
             'welfareFee' => $settings->membership_welfare_fee,
             'logoUrl' => $settings->logo_url,
+            'heroVideoUrl' => $settings->hero_video_url,
             'chairpersonWelcome' => [
                 'heading' => $settings->chairperson_heading ?? '',
                 'paragraphs' => $settings->chairperson_message ?? [],

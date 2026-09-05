@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronDown } from 'lucide-react'
+import { getFaqs } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
-import { faqs } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
 import { cn } from '@/lib/utils'
 import type { Faq } from '@/types'
 
@@ -11,9 +13,11 @@ const topics: (Faq['topic'] | 'All')[] = ['All', 'Membership', 'Events', 'Paymen
 
 export default function Faqs() {
   const [topic, setTopic] = useState<(typeof topics)[number]>('All')
-  const [openId, setOpenId] = useState<string | null>(faqs[0].id)
+  const [openId, setOpenId] = useState<string | null>(null)
+  const { data: faqs, isLoading } = useApiData(getFaqs, [] as Faq[])
 
   const visible = topic === 'All' ? faqs : faqs.filter((f) => f.topic === topic)
+  const effectiveOpenId = openId ?? visible[0]?.id ?? null
 
   return (
     <>
@@ -45,9 +49,17 @@ export default function Faqs() {
           ))}
         </div>
 
+        {isLoading && (
+          <div className="mt-8 space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-12" />
+            ))}
+          </div>
+        )}
+        {!isLoading && (
         <ul className="mt-8 divide-y divide-border border-y border-border">
           {visible.map((faq) => {
-            const isOpen = openId === faq.id
+            const isOpen = effectiveOpenId === faq.id
             return (
               <li key={faq.id}>
                 <h3>
@@ -76,6 +88,7 @@ export default function Faqs() {
             )
           })}
         </ul>
+        )}
       </Section>
 
       <Section tone="tinted">

@@ -1,5 +1,6 @@
 import { BrowserRouter, HashRouter } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
+import { SettingsProvider } from '@/context/SettingsContext'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { AppRouter } from '@/routes/AppRouter'
 
@@ -13,11 +14,13 @@ const Router = import.meta.env.VITE_ROUTER === 'hash' ? HashRouter : BrowserRout
 function App() {
   return (
     <ThemeProvider>
-      <Router>
-        <AuthProvider>
-          <AppRouter />
-        </AuthProvider>
-      </Router>
+      <SettingsProvider>
+        <Router>
+          <AuthProvider>
+            <AppRouter />
+          </AuthProvider>
+        </Router>
+      </SettingsProvider>
     </ThemeProvider>
   )
 }

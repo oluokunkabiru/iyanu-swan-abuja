@@ -1,7 +1,11 @@
+import { getExecutives } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
-import { executives } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
+import type { ExecutiveMember } from '@/types'
 
 export default function Governance() {
+  const { data: executives, isLoading } = useApiData(getExecutives, [] as ExecutiveMember[])
   const principals = executives.filter((e) => e.isPrincipal)
   const others = executives.filter((e) => !e.isPrincipal)
 
@@ -52,7 +56,9 @@ export default function Governance() {
           className="mb-8"
         />
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {principals.map((exec) => (
+          {isLoading
+            ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32" />)
+            : principals.map((exec) => (
             <li key={exec.id} className="flex gap-4 border border-border bg-card p-5">
               {exec.photoUrl && (
                 <img
@@ -79,7 +85,7 @@ export default function Governance() {
       <Section>
         <SectionHeading title="Other members of council" className="mb-8" />
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {others.map((exec) => (
+          {!isLoading && others.map((exec) => (
             <li key={exec.id} className="flex gap-4 border border-border bg-card p-5">
               {exec.photoUrl && (
                 <img

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { updateMe } from '@/api/auth'
 import { SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,6 +16,9 @@ const preferences = [
 
 export default function MembersProfile() {
   const { user, signOut } = useAuth()
+  const [phone, setPhone] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
   const [checked, setChecked] = useState<Record<string, boolean>>({
     'pref-directory': true,
     'pref-mentor': false,
@@ -23,6 +27,17 @@ export default function MembersProfile() {
   })
 
   if (!user) return null
+
+  async function handleSave() {
+    setSaving(true)
+    setSaved(false)
+    try {
+      await updateMe({ phone })
+      setSaved(true)
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <div className="space-y-12">
@@ -64,21 +79,32 @@ export default function MembersProfile() {
 
       <div>
         <SectionHeading title="Contact details" className="mb-6" />
-        <form className="grid max-w-lg gap-5 sm:grid-cols-2">
+        <form
+          className="grid max-w-lg gap-5 sm:grid-cols-2"
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSave()
+          }}
+        >
           <div className="space-y-2">
             <Label htmlFor="profile-email">Email address</Label>
-            <Input id="profile-email" type="email" defaultValue={user.email} />
+            <Input id="profile-email" type="email" defaultValue={user.email} disabled />
           </div>
           <div className="space-y-2">
             <Label htmlFor="profile-phone">Phone number</Label>
-            <Input id="profile-phone" type="tel" placeholder="0800 000 0000" />
+            <Input
+              id="profile-phone"
+              type="tel"
+              placeholder="0800 000 0000"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
           </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="profile-employer">Employer or firm</Label>
-            <Input id="profile-employer" placeholder="Where you work now" />
-          </div>
-          <div className="sm:col-span-2">
-            <Button type="button">Save changes</Button>
+          <div className="sm:col-span-2 flex items-center gap-3">
+            <Button type="submit" disabled={saving}>
+              {saving ? 'Saving…' : 'Save changes'}
+            </Button>
+            {saved && <span className="text-[0.85rem] text-muted-foreground">Saved.</span>}
           </div>
         </form>
       </div>

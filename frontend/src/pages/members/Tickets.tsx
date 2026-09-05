@@ -1,10 +1,15 @@
 import { Link } from 'react-router-dom'
+import { fetchMyRegistrations } from '@/api/auth'
 import { SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
-import { tickets } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
 import { formatNaira, formatShortDate } from '@/lib/format'
+import type { TicketRecord } from '@/types'
 
 export default function MembersTickets() {
+  const { data: tickets, isLoading } = useApiData(fetchMyRegistrations, [] as TicketRecord[])
+
   return (
     <div className="space-y-12">
       <div>
@@ -19,6 +24,19 @@ export default function MembersTickets() {
           className="mb-6"
         />
 
+        {isLoading && (
+          <div className="grid gap-px bg-border md:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-40" />
+            ))}
+          </div>
+        )}
+        {!isLoading && tickets.length === 0 && (
+          <p className="border border-dashed border-rule px-6 py-10 text-center text-[0.9rem] text-muted-foreground">
+            No tickets yet. Register for an event to see it here.
+          </p>
+        )}
+        {!isLoading && tickets.length > 0 && (
         <ul className="grid gap-px bg-border md:grid-cols-2">
           {tickets.map((t) => (
             <li key={t.id} className="bg-card p-5">
@@ -57,6 +75,7 @@ export default function MembersTickets() {
             </li>
           ))}
         </ul>
+        )}
       </div>
     </div>
   )

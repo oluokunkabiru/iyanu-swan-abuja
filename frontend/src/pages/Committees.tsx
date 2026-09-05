@@ -1,9 +1,14 @@
 import { Link, useParams } from 'react-router-dom'
+import { getCommittee, getCommittees } from '@/api/content'
 import { EmptyState, PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
-import { committees, findCommittee } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
+import type { Committee } from '@/types'
 
 export default function Committees() {
+  const { data: committees, isLoading } = useApiData(getCommittees, [] as Committee[])
+
   return (
     <>
       <PageHeader
@@ -18,20 +23,28 @@ export default function Committees() {
           lede="Each committee sets its own work plan within the remit council gives it."
           className="mb-8"
         />
-        <ul className="grid gap-px bg-border md:grid-cols-2">
-          {committees.map((c) => (
-            <li key={c.id} className="bg-card p-6">
-              <h2 className="text-[1.1rem]">
-                <Link to={`/committees/${c.slug}`} className="hover:text-plum-700 dark:hover:text-primary">
-                  {c.name}
-                </Link>
-              </h2>
-              <p className="mt-1 text-[0.8rem] font-semibold text-accent-foreground">Chair: {c.chair}</p>
-              <p className="mt-3 text-[0.9rem] leading-relaxed text-muted-foreground">{c.remit}</p>
-              <p className="mt-4 text-[0.8rem] text-muted-foreground">Meets {c.meetingCadence.toLowerCase()}</p>
-            </li>
-          ))}
-        </ul>
+        {isLoading ? (
+          <div className="grid gap-px bg-border md:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-40" />
+            ))}
+          </div>
+        ) : (
+          <ul className="grid gap-px bg-border md:grid-cols-2">
+            {committees.map((c) => (
+              <li key={c.id} className="bg-card p-6">
+                <h2 className="text-[1.1rem]">
+                  <Link to={`/committees/${c.slug}`} className="hover:text-plum-700 dark:hover:text-primary">
+                    {c.name}
+                  </Link>
+                </h2>
+                <p className="mt-1 text-[0.8rem] font-semibold text-accent-foreground">Chair: {c.chair}</p>
+                <p className="mt-3 text-[0.9rem] leading-relaxed text-muted-foreground">{c.remit}</p>
+                <p className="mt-4 text-[0.8rem] text-muted-foreground">Meets {c.meetingCadence.toLowerCase()}</p>
+              </li>
+            ))}
+          </ul>
+        )}
       </Section>
 
       <Section tone="tinted">
@@ -55,7 +68,20 @@ export default function Committees() {
 
 export function CommitteeDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const committee = slug ? findCommittee(slug) : undefined
+  const { data: committee, isLoading } = useApiData(
+    () => (slug ? getCommittee(slug) : Promise.resolve(null)),
+    null as Committee | null,
+    [slug],
+  )
+
+  if (isLoading) {
+    return (
+      <Section>
+        <Skeleton className="h-10 w-2/3" />
+        <Skeleton className="mt-8 h-64" />
+      </Section>
+    )
+  }
 
   if (!committee) {
     return (

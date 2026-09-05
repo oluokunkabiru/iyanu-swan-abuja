@@ -128,7 +128,7 @@ export const navigation: NavSection[] = [
       {
         heading: 'Pricing',
         items: [
-          { label: 'Event pricing tiers', to: '/events#pricing', description: 'Member and non-member rates' },
+          { label: 'Event pricing', to: '/events', description: 'Member and non-member rates, shown per event' },
           { label: 'How tiered pricing works', to: '/faqs' },
         ],
       },

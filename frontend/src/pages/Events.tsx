@@ -1,8 +1,10 @@
 import { useSearchParams } from 'react-router-dom'
+import { getEvents } from '@/api/content'
 import { EventCard } from '@/components/common/Cards'
-import { EmptyState, PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
-import { events, standardTiers } from '@/data'
-import { formatNaira } from '@/lib/format'
+import { EmptyState, PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
+import type { ChapterEvent } from '@/types'
 import { cn } from '@/lib/utils'
 
 const filters = [
@@ -15,7 +17,16 @@ export default function Events() {
   const [params, setParams] = useSearchParams()
   const when = params.get('when') ?? 'all'
 
-  const visible = events.filter((e) => (when === 'all' ? true : e.status === when))
+  const { data: events, isLoading } = useApiData(
+    () =>
+      when === 'past'
+        ? getEvents('past')
+        : when === 'upcoming'
+          ? getEvents('upcoming')
+          : Promise.all([getEvents('upcoming'), getEvents('past')]).then(([a, b]) => [...a, ...b]),
+    [] as ChapterEvent[],
+    [when],
+  )
 
   return (
     <>
@@ -28,7 +39,7 @@ export default function Events() {
       <Section>
         <SectionHeading
           title={when === 'past' ? 'Past events' : when === 'upcoming' ? 'Open for registration' : 'The events diary'}
-          lede={`${visible.length} ${visible.length === 1 ? 'event' : 'events'}.`}
+          lede={isLoading ? 'Loading…' : `${events.length} ${events.length === 1 ? 'event' : 'events'}.`}
           className="mb-6"
         />
 
@@ -51,7 +62,13 @@ export default function Events() {
           ))}
         </div>
 
-        {visible.length === 0 ? (
+        {isLoading ? (
+          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-64" />
+            ))}
+          </div>
+        ) : events.length === 0 ? (
           <div className="mt-8">
             <EmptyState
               title="Nothing in this view yet"
@@ -60,41 +77,11 @@ export default function Events() {
           </div>
         ) : (
           <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {visible.map((e) => (
+            {events.map((e) => (
               <EventCard key={e.id} event={e} />
             ))}
           </div>
         )}
-      </Section>
-
-      <Section tone="tinted">
-        <SectionHeading
-          id="pricing"
-          title="Event pricing"
-          lede="The chapter runs four tiers on paid technical events. Members save roughly forty per cent on the in-person rate."
-          className="mb-8"
-        />
-        <div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-4">
-          {standardTiers.map((tier) => (
-            <div key={tier.id} className="flex flex-col bg-card p-6">
-              <StatusTag tone={tier.audience === 'member' ? 'gold' : 'neutral'}>
-                {tier.audience === 'member' ? 'Member' : 'Non-member'}
-              </StatusTag>
-              <h3 className="mt-3 text-[1.02rem] capitalize">{tier.mode} attendance</h3>
-              <p className="tnum mt-3 font-heading text-3xl text-plum-700 dark:text-primary">
-                {formatNaira(tier.price)}
-              </p>
-              <p className="mt-1 text-[0.78rem] text-muted-foreground">per delegate</p>
-              <ul className="mt-5 space-y-2 text-[0.84rem] text-muted-foreground">
-                {tier.includes.map((inc) => (
-                  <li key={inc} className="border-l border-gold-500/60 pl-3 leading-snug">
-                    {inc}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
       </Section>
     </>
   )

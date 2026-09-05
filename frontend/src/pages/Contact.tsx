@@ -1,11 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { Mail, MapPin, Phone } from 'lucide-react'
+import { submitContact } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { site } from '@/data'
+import { useSettings } from '@/context/SettingsContext'
 
 const routes = [
   { office: 'General Secretary', handles: 'Correspondence, meetings, committee service and anything not listed below.' },
@@ -15,18 +16,39 @@ const routes = [
 ]
 
 export default function Contact() {
+  const { settings } = useSettings()
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = new FormData(e.currentTarget)
-    if (!String(form.get('name')).trim() || !String(form.get('message')).trim()) {
-      setError('Enter your name and a message so the chapter knows who to reply to.')
+    const name = String(form.get('name') ?? '').trim()
+    const email = String(form.get('email') ?? '').trim()
+    const message = String(form.get('message') ?? '').trim()
+
+    if (!name || !email || !message) {
+      setError('Enter your name, email and a message so the chapter knows who to reply to.')
       return
     }
+
     setError(null)
-    setSent(true)
+    setSubmitting(true)
+    try {
+      await submitContact({
+        name,
+        email,
+        phone: String(form.get('phone') ?? '').trim() || undefined,
+        subject: String(form.get('subject') ?? '').trim() || undefined,
+        message,
+      })
+      setSent(true)
+    } catch {
+      setError('Something went wrong sending your message. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -44,11 +66,10 @@ export default function Contact() {
 
             {sent ? (
               <div className="border-l-2 border-success bg-success/8 px-5 py-6">
-                <h3 className="text-[1.05rem]">Message ready to send</h3>
+                <h3 className="text-[1.05rem]">Message sent</h3>
                 <p className="mt-2 max-w-[60ch] text-[0.92rem] leading-relaxed text-muted-foreground">
-                  This build has no mail service connected, so nothing has actually been
-                  transmitted. Wire the form to your backend or a form service and this is where the
-                  confirmation will appear.
+                  Thank you — your message has been received and routed to the chapter office. You
+                  can expect a reply by email.
                 </p>
                 <Button variant="outline" className="mt-5" onClick={() => setSent(false)}>
                   Write another message
@@ -81,8 +102,8 @@ export default function Contact() {
                   </p>
                 )}
 
-                <Button type="submit" size="lg">
-                  Send message
+                <Button type="submit" size="lg" disabled={submitting}>
+                  {submitting ? 'Sending…' : 'Send message'}
                 </Button>
               </form>
             )}
@@ -94,18 +115,21 @@ export default function Contact() {
               <ul className="mt-4 space-y-3 text-[0.9rem]">
                 <li className="flex gap-3">
                   <MapPin aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <span>{site.address}</span>
+                  <span>{settings?.address}</span>
                 </li>
                 <li className="flex gap-3">
                   <Mail aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <a href={`mailto:${site.email}`} className="underline-offset-4 hover:underline">
-                    {site.email}
+                  <a href={`mailto:${settings?.email}`} className="underline-offset-4 hover:underline">
+                    {settings?.email}
                   </a>
                 </li>
                 <li className="flex gap-3">
                   <Phone aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <a href={`tel:${site.phone.replace(/\s/g, '')}`} className="underline-offset-4 hover:underline">
-                    {site.phone}
+                  <a
+                    href={`tel:${settings?.phone?.replace(/\s/g, '') ?? ''}`}
+                    className="underline-offset-4 hover:underline"
+                  >
+                    {settings?.phone}
                   </a>
                 </li>
               </ul>

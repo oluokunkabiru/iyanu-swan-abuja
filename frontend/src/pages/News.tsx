@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { getNews } from '@/api/content'
 import { NewsCard } from '@/components/common/Cards'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
-import { news } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
 import { cn } from '@/lib/utils'
 import type { NewsPost } from '@/types'
 
@@ -9,6 +11,7 @@ const categories: (NewsPost['category'] | 'All')[] = ['All', 'Chapter', 'ICAN', 
 
 export default function News() {
   const [category, setCategory] = useState<(typeof categories)[number]>('All')
+  const { data: news, isLoading } = useApiData(getNews, [] as NewsPost[])
   const visible = category === 'All' ? news : news.filter((n) => n.category === category)
   const [lead, ...rest] = visible
 
@@ -41,24 +44,34 @@ export default function News() {
           ))}
         </div>
 
-        {lead && (
-          <div className="mt-8">
-            <NewsCard post={lead} featured />
-          </div>
-        )}
-
-        {rest.length > 0 && (
-          <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {rest.map((post) => (
-              <NewsCard key={post.id} post={post} />
+        {isLoading ? (
+          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-64" />
             ))}
           </div>
-        )}
+        ) : (
+          <>
+            {lead && (
+              <div className="mt-8">
+                <NewsCard post={lead} featured />
+              </div>
+            )}
 
-        {visible.length === 0 && (
-          <p className="mt-8 border border-dashed border-rule px-6 py-10 text-center text-[0.9rem] text-muted-foreground">
-            Nothing filed under that category yet.
-          </p>
+            {rest.length > 0 && (
+              <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {rest.map((post) => (
+                  <NewsCard key={post.id} post={post} />
+                ))}
+              </div>
+            )}
+
+            {visible.length === 0 && (
+              <p className="mt-8 border border-dashed border-rule px-6 py-10 text-center text-[0.9rem] text-muted-foreground">
+                Nothing filed under that category yet.
+              </p>
+            )}
+          </>
         )}
       </Section>
     </>

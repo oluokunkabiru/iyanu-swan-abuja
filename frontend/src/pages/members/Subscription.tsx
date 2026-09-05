@@ -1,9 +1,13 @@
+import { fetchMySubscriptions } from '@/api/auth'
 import { SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
-import { subscriptions } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
 import { formatNaira, formatShortDate } from '@/lib/format'
+import type { SubscriptionRecord } from '@/types'
 
 export default function MembersSubscription() {
+  const { data: subscriptions, isLoading } = useApiData(fetchMySubscriptions, [] as SubscriptionRecord[])
   const outstanding = subscriptions.filter((s) => s.status === 'Outstanding')
   const paid = subscriptions.filter((s) => s.status === 'Paid')
 
@@ -16,7 +20,9 @@ export default function MembersSubscription() {
           className="mb-6"
         />
 
-        {outstanding.length > 0 ? (
+        {isLoading ? (
+          <Skeleton className="h-32" />
+        ) : outstanding.length > 0 ? (
           <div className="space-y-4">
             {outstanding.map((s) => (
               <div key={s.id} className="border border-gold-500/50 bg-accent p-6">
@@ -56,6 +62,13 @@ export default function MembersSubscription() {
 
       <div>
         <SectionHeading title="Payment history" className="mb-6" />
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-10" />
+            ))}
+          </div>
+        ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[40rem] text-left">
             <caption className="sr-only">Subscription payment history</caption>
@@ -98,6 +111,7 @@ export default function MembersSubscription() {
             </tbody>
           </table>
         </div>
+        )}
       </div>
 
       <div className="border border-border bg-card p-5">

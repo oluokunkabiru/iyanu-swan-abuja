@@ -1,4 +1,4 @@
-import { api } from '@/api/client'
+import { api, ensureCsrfCookie } from '@/api/client'
 import type {
   Announcement,
   ChapterEvent,
@@ -31,7 +31,7 @@ export const getEvents = (when: 'upcoming' | 'past' = 'upcoming') =>
 
 export const getEvent = (slug: string) => api.get<ChapterEvent>(`/events/${slug}`).then((r) => r.data)
 
-export const registerForEvent = (
+export const registerForEvent = async (
   slug: string,
   payload: {
     event_ticket_type_id: number
@@ -40,7 +40,10 @@ export const registerForEvent = (
     phone?: string
     notes?: string
   },
-) => api.post(`/events/${slug}/register`, payload).then((r) => r.data)
+) => {
+  await ensureCsrfCookie()
+  return api.post(`/events/${slug}/register`, payload).then((r) => r.data)
+}
 
 export const getNews = () => api.get<NewsPost[]>('/news').then((r) => r.data)
 
@@ -76,10 +79,13 @@ export const getJobs = () => api.get<JobListing[]>('/jobs').then((r) => r.data)
 
 export const getResources = () => api.get<ResourceItem[]>('/resources').then((r) => r.data)
 
-export const submitContact = (payload: {
+export const submitContact = async (payload: {
   name: string
   email: string
   phone?: string
   subject?: string
   message: string
-}) => api.post('/contact', payload).then((r) => r.data)
+}) => {
+  await ensureCsrfCookie()
+  return api.post('/contact', payload).then((r) => r.data)
+}

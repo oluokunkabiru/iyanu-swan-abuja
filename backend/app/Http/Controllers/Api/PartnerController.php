@@ -11,12 +11,13 @@ class PartnerController extends Controller
     public function index(): JsonResponse
     {
         return response()->json(
-            Partner::query()->orderBy('sort_order')->get()
+            Partner::query()->with('media')->orderBy('sort_order')->get()
                 ->map(fn (Partner $partner): array => [
                     'id' => (string) $partner->id,
                     'name' => $partner->name,
                     'url' => $partner->url ?? '',
                     'scope' => $partner->scope ?? 'Affiliate',
+                    'logoUrl' => $partner->logo_url,
                 ])
         );
     }

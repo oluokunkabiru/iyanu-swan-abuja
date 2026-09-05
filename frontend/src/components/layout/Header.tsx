@@ -5,12 +5,14 @@ import { BrandLogo } from '@/components/common/BrandLogo'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { useAuth } from '@/context/AuthContext'
-import { navigation, site } from '@/data'
+import { useSettings } from '@/context/SettingsContext'
+import { navigation } from '@/data'
 import { cn } from '@/lib/utils'
 import type { NavSection } from '@/types'
 
 export function Header() {
   const { user, signOut } = useAuth()
+  const { settings } = useSettings()
   const location = useLocation()
   const [openSection, setOpenSection] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -55,12 +57,12 @@ export function Header() {
               rel="noreferrer"
               className="text-gold-300 underline-offset-4 hover:underline"
             >
-              {site.parentBody}
+              {settings?.parentBody}
             </a>
           </p>
           <div className="flex items-center gap-5">
-            <a href={`mailto:${site.email}`} className="hover:text-white">
-              {site.email}
+            <a href={`mailto:${settings?.email}`} className="hover:text-white">
+              {settings?.email}
             </a>
             <Link to="/members" className="hover:text-white">
               Members portal
@@ -71,11 +73,11 @@ export function Header() {
 
       <div className="border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex h-[4.75rem] max-w-7xl items-center gap-4 px-4">
-          <Link to="/" aria-label={`${site.shortName} home`} className="shrink-0">
+          <Link to="/" aria-label={`${settings?.shortName ?? 'SWAN Abuja'} home`} className="shrink-0">
             <BrandLogo className="h-7 sm:h-10" />
           </Link>
 
-          <nav className="ml-auto hidden items-center lg:flex" aria-label="Main">
+          <nav className="ml-auto hidden min-w-0 items-center xl:flex" aria-label="Main">
             {navigation.map((section) => (
               <MegaItem
                 key={section.label}
@@ -91,7 +93,7 @@ export function Header() {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-2 lg:ml-2">
+          <div className="ml-auto flex items-center gap-2 xl:ml-2">
             <Link
               to="/directory"
               aria-label="Search the directories"
@@ -129,7 +131,7 @@ export function Header() {
               onClick={() => setDrawerOpen((v) => !v)}
               aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={drawerOpen}
-              className="flex h-9 w-9 items-center justify-center rounded-sm text-foreground lg:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-sm text-foreground xl:hidden"
             >
               {drawerOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -138,7 +140,7 @@ export function Header() {
       </div>
 
       {drawerOpen && (
-        <div className="max-h-[calc(100dvh-4.25rem)] overflow-y-auto border-b border-border bg-background lg:hidden">
+        <div className="max-h-[calc(100dvh-4.25rem)] overflow-y-auto border-b border-border bg-background xl:hidden">
           <nav className="mx-auto max-w-6xl px-4 py-3" aria-label="Mobile">
             {navigation.map((section) =>
               section.columns ? (

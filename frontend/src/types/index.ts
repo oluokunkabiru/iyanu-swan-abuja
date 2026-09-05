@@ -21,6 +21,7 @@ export interface SiteSettings {
   subscriptionFee: number
   welfareFee: number
   logoUrl?: string | null
+  heroVideoUrl?: string | null
   chairpersonWelcome?: { heading: string; paragraphs: string[] }
   chapterStats?: ChapterStat[]
   registrationSteps?: RegistrationStep[]
@@ -139,6 +140,7 @@ export interface Partner {
   name: string
   url: string
   scope: 'Parent body' | 'Affiliate' | 'Sponsor'
+  logoUrl: string | null
 }
 
 export interface Publication {

@@ -1,10 +1,20 @@
 import { Link } from 'react-router-dom'
+import { getCommittees, getEvents, getTrainings } from '@/api/content'
 import { PageHeader, Section, SectionHeading, Stat } from '@/components/common/Primitives'
 import { TrainingRow } from '@/components/common/Cards'
 import { Button } from '@/components/ui/button'
-import { committees, trainings, upcomingEvents } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
+import type { ChapterEvent, Committee, Training } from '@/types'
 
 export default function Cpd() {
+  const { data: trainings, isLoading: loadingTrainings } = useApiData(getTrainings, [] as Training[])
+  const { data: committees, isLoading: loadingCommittees } = useApiData(getCommittees, [] as Committee[])
+  const { data: upcomingEvents, isLoading: loadingEvents } = useApiData(
+    () => getEvents('upcoming'),
+    [] as ChapterEvent[],
+  )
+
   return (
     <>
       <PageHeader
@@ -96,11 +106,18 @@ export default function Cpd() {
               </tr>
             </thead>
             <tbody>
-              {trainings.slice(0, 4).map((t) => (
-                <TrainingRow key={t.id} training={t} />
-              ))}
+              {loadingTrainings
+                ? null
+                : trainings.slice(0, 4).map((t) => <TrainingRow key={t.id} training={t} />)}
             </tbody>
           </table>
+          {loadingTrainings && (
+            <div className="space-y-3 py-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-10" />
+              ))}
+            </div>
+          )}
         </div>
       </Section>
 
@@ -110,20 +127,28 @@ export default function Cpd() {
           lede="Committees that shape the CPD programme and the chapter's technical positions."
           className="mb-8"
         />
-        <ul className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
-          {committees.slice(0, 3).map((c) => (
-            <li key={c.id} className="bg-card p-6">
-              <h3 className="text-[1.05rem]">
-                <Link to={`/committees/${c.slug}`} className="hover:text-plum-700 dark:hover:text-primary">
-                  {c.name}
-                </Link>
-              </h3>
-              <p className="mt-2 text-[0.88rem] leading-relaxed text-muted-foreground">{c.remit}</p>
-            </li>
-          ))}
-        </ul>
+        {loadingCommittees ? (
+          <div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-32" />
+            ))}
+          </div>
+        ) : (
+          <ul className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+            {committees.slice(0, 3).map((c) => (
+              <li key={c.id} className="bg-card p-6">
+                <h3 className="text-[1.05rem]">
+                  <Link to={`/committees/${c.slug}`} className="hover:text-plum-700 dark:hover:text-primary">
+                    {c.name}
+                  </Link>
+                </h3>
+                <p className="mt-2 text-[0.88rem] leading-relaxed text-muted-foreground">{c.remit}</p>
+              </li>
+            ))}
+          </ul>
+        )}
         <p className="mt-6 text-[0.9rem] text-muted-foreground">
-          {upcomingEvents.length} chapter events are open for registration.{' '}
+          {loadingEvents ? '…' : upcomingEvents.length} chapter events are open for registration.{' '}
           <Link to="/events" className="font-semibold text-plum-700 underline-offset-4 hover:underline dark:text-primary">
             See the events diary
           </Link>

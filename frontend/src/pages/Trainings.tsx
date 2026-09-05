@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
+import { getTrainings } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { TrainingRow } from '@/components/common/Cards'
-import { trainings } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
 import { cn } from '@/lib/utils'
 import type { Training } from '@/types'
 
@@ -9,6 +11,7 @@ const modes: (Training['deliveryMode'] | 'All')[] = ['All', 'Physical', 'Virtual
 const providers: (Training['provider'] | 'All')[] = ['All', 'SWAN Abuja', 'ICAN MPD', 'Faculty']
 
 export default function Trainings() {
+  const { data: trainings, isLoading } = useApiData(getTrainings, [] as Training[])
   const [mode, setMode] = useState<(typeof modes)[number]>('All')
   const [provider, setProvider] = useState<(typeof providers)[number]>('All')
 
@@ -19,7 +22,7 @@ export default function Trainings() {
           (mode === 'All' || t.deliveryMode === mode) &&
           (provider === 'All' || t.provider === provider),
       ),
-    [mode, provider],
+    [trainings, mode, provider],
   )
 
   const totalHours = visible.reduce((sum, t) => sum + t.cpdHours, 0)
@@ -35,7 +38,7 @@ export default function Trainings() {
       <Section>
         <SectionHeading
           title="Sessions open for registration"
-          lede={`${visible.length} sessions, ${totalHours} CPD hours in total.`}
+          lede={isLoading ? 'Loading…' : `${visible.length} sessions, ${totalHours} CPD hours in total.`}
           className="mb-6"
         />
 
@@ -85,27 +88,35 @@ export default function Trainings() {
           </fieldset>
         </div>
 
-        <div className="mt-8 overflow-x-auto">
-          <table className="w-full min-w-[44rem] text-left">
-            <caption className="sr-only">Training sessions</caption>
-            <thead>
-              <tr className="border-b border-border text-[0.75rem] font-semibold text-muted-foreground">
-                <th scope="col" className="py-2.5 pr-4">Session</th>
-                <th scope="col" className="py-2.5 pr-4">Date</th>
-                <th scope="col" className="py-2.5 pr-4">CPD</th>
-                <th scope="col" className="py-2.5 pr-4">Member / standard fee</th>
-                <th scope="col" className="py-2.5">Availability</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visible.map((t) => (
-                <TrainingRow key={t.id} training={t} />
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {isLoading ? (
+          <div className="mt-8 space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-12" />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-8 overflow-x-auto">
+            <table className="w-full min-w-[44rem] text-left">
+              <caption className="sr-only">Training sessions</caption>
+              <thead>
+                <tr className="border-b border-border text-[0.75rem] font-semibold text-muted-foreground">
+                  <th scope="col" className="py-2.5 pr-4">Session</th>
+                  <th scope="col" className="py-2.5 pr-4">Date</th>
+                  <th scope="col" className="py-2.5 pr-4">CPD</th>
+                  <th scope="col" className="py-2.5 pr-4">Member / standard fee</th>
+                  <th scope="col" className="py-2.5">Availability</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visible.map((t) => (
+                  <TrainingRow key={t.id} training={t} />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-        {visible.length === 0 && (
+        {!isLoading && visible.length === 0 && (
           <p className="mt-6 border border-dashed border-rule px-6 py-10 text-center text-[0.9rem] text-muted-foreground">
             No sessions match those filters. Widen the delivery mode or provider to see more.
           </p>

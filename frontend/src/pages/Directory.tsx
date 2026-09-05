@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
+import { getDirectoryMembers, getFirms } from '@/api/content'
 import { PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { directoryMembers, firms } from '@/data'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useApiData } from '@/hooks/useApiData'
 import { cn } from '@/lib/utils'
-import type { Sector } from '@/types'
+import type { DirectoryMember, Firm, Sector } from '@/types'
 
 const sectors: (Sector | 'All')[] = [
   'All',
@@ -22,6 +24,8 @@ const sectors: (Sector | 'All')[] = [
 export default function Directory() {
   const [query, setQuery] = useState('')
   const [sector, setSector] = useState<(typeof sectors)[number]>('All')
+  const { data: directoryMembers, isLoading } = useApiData(getDirectoryMembers, [] as DirectoryMember[])
+  const { data: firms } = useApiData(getFirms, [] as Firm[])
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -34,7 +38,7 @@ export default function Directory() {
         m.membershipNumber.toLowerCase().includes(q)
       return matchesSector && matchesQuery
     })
-  }, [query, sector])
+  }, [directoryMembers, query, sector])
 
   return (
     <>
@@ -52,7 +56,7 @@ export default function Directory() {
       <Section>
         <SectionHeading
           title="Search the roll"
-          lede={`${visible.length} of ${directoryMembers.length} members shown.`}
+          lede={isLoading ? 'Loading…' : `${visible.length} of ${directoryMembers.length} members shown.`}
           className="mb-6"
         />
 
@@ -97,48 +101,56 @@ export default function Directory() {
           </fieldset>
         </div>
 
-        <div className="mt-8 overflow-x-auto">
-          <table className="w-full min-w-[48rem] text-left">
-            <caption className="sr-only">Chapter members</caption>
-            <thead>
-              <tr className="border-b border-border text-[0.75rem] font-semibold text-muted-foreground">
-                <th scope="col" className="py-2.5 pr-4">Member</th>
-                <th scope="col" className="py-2.5 pr-4">Membership number</th>
-                <th scope="col" className="py-2.5 pr-4">Sector</th>
-                <th scope="col" className="py-2.5 pr-4">Specialisation</th>
-                <th scope="col" className="py-2.5">Admitted</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visible.map((m) => (
-                <tr key={m.id} className="border-b border-border last:border-0">
-                  <td className="py-3.5 pr-4 align-top">
-                    <span className="block font-medium leading-snug">
-                      {m.name}, {m.credential}
-                    </span>
-                    {m.chapterRole && (
-                      <span className="mt-1 inline-block">
-                        <StatusTag tone="gold">{m.chapterRole}</StatusTag>
-                      </span>
-                    )}
-                  </td>
-                  <td className="tnum py-3.5 pr-4 align-top text-[0.86rem] text-muted-foreground">
-                    {m.membershipNumber}
-                  </td>
-                  <td className="py-3.5 pr-4 align-top text-[0.86rem]">{m.sector}</td>
-                  <td className="py-3.5 pr-4 align-top text-[0.86rem] text-muted-foreground">
-                    {m.specialisation}
-                  </td>
-                  <td className="tnum py-3.5 align-top text-[0.86rem] text-muted-foreground">
-                    {m.yearAdmitted}
-                  </td>
+        {isLoading ? (
+          <div className="mt-8 space-y-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-10" />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-8 overflow-x-auto">
+            <table className="w-full min-w-[48rem] text-left">
+              <caption className="sr-only">Chapter members</caption>
+              <thead>
+                <tr className="border-b border-border text-[0.75rem] font-semibold text-muted-foreground">
+                  <th scope="col" className="py-2.5 pr-4">Member</th>
+                  <th scope="col" className="py-2.5 pr-4">Membership number</th>
+                  <th scope="col" className="py-2.5 pr-4">Sector</th>
+                  <th scope="col" className="py-2.5 pr-4">Specialisation</th>
+                  <th scope="col" className="py-2.5">Admitted</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {visible.map((m) => (
+                  <tr key={m.id} className="border-b border-border last:border-0">
+                    <td className="py-3.5 pr-4 align-top">
+                      <span className="block font-medium leading-snug">
+                        {m.name}, {m.credential}
+                      </span>
+                      {m.chapterRole && (
+                        <span className="mt-1 inline-block">
+                          <StatusTag tone="gold">{m.chapterRole}</StatusTag>
+                        </span>
+                      )}
+                    </td>
+                    <td className="tnum py-3.5 pr-4 align-top text-[0.86rem] text-muted-foreground">
+                      {m.membershipNumber}
+                    </td>
+                    <td className="py-3.5 pr-4 align-top text-[0.86rem]">{m.sector}</td>
+                    <td className="py-3.5 pr-4 align-top text-[0.86rem] text-muted-foreground">
+                      {m.specialisation}
+                    </td>
+                    <td className="tnum py-3.5 align-top text-[0.86rem] text-muted-foreground">
+                      {m.yearAdmitted}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-        {visible.length === 0 && (
+        {!isLoading && visible.length === 0 && (
           <p className="mt-6 border border-dashed border-rule px-6 py-10 text-center text-[0.9rem] text-muted-foreground">
             No members match that search. Try a shorter term, or clear the sector filter.
           </p>
