@@ -5,35 +5,14 @@ namespace Tests\Feature;
 use App\Filament\Pages\ManageSiteSettings;
 use App\Models\SiteSetting;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\Concerns\UsesMysqlInTransaction;
 use Tests\TestCase;
 
 class AdminPanelSmokeTest extends TestCase
 {
-    /**
-     * This box has no pdo_sqlite driver, so the default in-memory sqlite
-     * test connection is unavailable. Run these read-only smoke checks
-     * against the real mysql dev database instead, wrapped in a
-     * transaction that is always rolled back so nothing persists.
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        DB::purge('mysql');
-        config(['database.connections.mysql.database' => 'iyanu_swan']);
-        DB::setDefaultConnection('mysql');
-        DB::beginTransaction();
-    }
-
-    protected function tearDown(): void
-    {
-        DB::rollBack();
-
-        parent::tearDown();
-    }
+    use UsesMysqlInTransaction;
 
     /**
      * @return array<string, array{0: string}>

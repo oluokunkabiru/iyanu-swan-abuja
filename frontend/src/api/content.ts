@@ -42,7 +42,12 @@ export const registerForEvent = async (
   },
 ) => {
   await ensureCsrfCookie()
-  return api.post(`/events/${slug}/register`, payload).then((r) => r.data)
+  return api
+    .post<{ payment_status: 'paid' | 'pending'; reference: string; authorizationUrl?: string }>(
+      `/events/${slug}/register`,
+      payload,
+    )
+    .then((r) => r.data)
 }
 
 export const getNews = () => api.get<NewsPost[]>('/news').then((r) => r.data)
@@ -78,6 +83,11 @@ export const getFirms = () => api.get<Firm[]>('/directory/firms').then((r) => r.
 export const getJobs = () => api.get<JobListing[]>('/jobs').then((r) => r.data)
 
 export const getResources = () => api.get<ResourceItem[]>('/resources').then((r) => r.data)
+
+export const verifyPayment = (reference: string) =>
+  api
+    .get<{ type: 'subscription' | 'event_registration'; status: string }>(`/payments/verify/${reference}`)
+    .then((r) => r.data)
 
 export const submitContact = async (payload: {
   name: string

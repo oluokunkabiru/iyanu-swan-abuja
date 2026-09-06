@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Check } from 'lucide-react'
+import { paySubscriptionDues } from '@/api/auth'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,13 +10,9 @@ import { useAuth } from '@/context/AuthContext'
 import { useSettings } from '@/context/SettingsContext'
 import { formatNaira } from '@/lib/format'
 
-const paymentMethods = ['Debit card', 'Bank transfer', 'USSD'] as const
-
 export default function MembershipRegister() {
   const { signUp } = useAuth()
   const { settings } = useSettings()
-  const navigate = useNavigate()
-  const [method, setMethod] = useState<(typeof paymentMethods)[number]>('Debit card')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -41,10 +38,10 @@ export default function MembershipRegister() {
     setSubmitting(true)
     try {
       await signUp({ name, email, password, phone: phone || undefined })
-      navigate('/members')
+      const { authorizationUrl } = await paySubscriptionDues(new Date().getFullYear())
+      window.location.href = authorizationUrl
     } catch {
       setError('We could not complete that registration. Check your details and try again.')
-    } finally {
       setSubmitting(false)
     }
   }
@@ -85,26 +82,6 @@ export default function MembershipRegister() {
                 </div>
               </div>
 
-              <fieldset className="space-y-2">
-                <legend className="mb-2 text-sm font-medium">How would you like to pay?</legend>
-                <div className="flex flex-wrap gap-2">
-                  {paymentMethods.map((m) => (
-                    <button
-                      key={m}
-                      type="button"
-                      onClick={() => setMethod(m)}
-                      aria-pressed={method === m}
-                      className={
-                        method === m
-                          ? 'rounded-sm border border-plum-700 bg-plum-700 px-4 py-2 text-[0.86rem] font-medium text-white dark:border-primary dark:bg-primary dark:text-primary-foreground'
-                          : 'rounded-sm border border-border bg-card px-4 py-2 text-[0.86rem] font-medium text-muted-foreground hover:text-foreground'
-                      }
-                    >
-                      {m}
-                    </button>
-                  ))}
-                </div>
-              </fieldset>
 
               {error && (
                 <p role="alert" className="border-l-2 border-destructive bg-destructive/8 px-4 py-3 text-[0.88rem] text-destructive">
@@ -113,12 +90,13 @@ export default function MembershipRegister() {
               )}
 
               <Button type="submit" size="lg" disabled={submitting}>
-                {submitting ? 'Opening your record…' : `Pay ${formatNaira(total)} and register`}
+                {submitting ? 'Taking you to payment…' : `Pay ${formatNaira(total)} and register`}
               </Button>
 
               <p className="text-[0.82rem] leading-relaxed text-muted-foreground">
-                Payment is confirmed by the Financial Secretary after submission. Your account opens
-                immediately as pending, and moves to active once your dues are matched.
+                You&rsquo;ll be taken to a secure payment page to complete your dues by card, bank
+                transfer or USSD. Your account opens immediately as pending, and moves to active once
+                payment is confirmed.
               </p>
             </form>
           </div>

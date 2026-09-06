@@ -1,4 +1,5 @@
-import { fetchMySubscriptions } from '@/api/auth'
+import { useState } from 'react'
+import { fetchMySubscriptions, paySubscriptionDues } from '@/api/auth'
 import { SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -10,6 +11,20 @@ export default function MembersSubscription() {
   const { data: subscriptions, isLoading } = useApiData(fetchMySubscriptions, [] as SubscriptionRecord[])
   const outstanding = subscriptions.filter((s) => s.status === 'Outstanding')
   const paid = subscriptions.filter((s) => s.status === 'Paid')
+  const [payingYear, setPayingYear] = useState<number | null>(null)
+  const [payError, setPayError] = useState<string | null>(null)
+
+  async function handlePay(year: number) {
+    setPayingYear(year)
+    setPayError(null)
+    try {
+      const { authorizationUrl } = await paySubscriptionDues(year)
+      window.location.href = authorizationUrl
+    } catch {
+      setPayError('We could not start this payment. Please try again shortly.')
+      setPayingYear(null)
+    }
+  }
 
   return (
     <div className="space-y-12">
@@ -19,6 +34,12 @@ export default function MembersSubscription() {
           lede="Dues run on a calendar year. Paying keeps you on the active roll, which is what applies member rates and makes you eligible for office."
           className="mb-6"
         />
+
+        {payError && (
+          <p role="alert" className="mb-4 border-l-2 border-destructive bg-destructive/8 px-4 py-3 text-[0.88rem] text-destructive">
+            {payError}
+          </p>
+        )}
 
         {isLoading ? (
           <Skeleton className="h-32" />
@@ -44,7 +65,9 @@ export default function MembersSubscription() {
                     <p className="tnum font-heading text-3xl text-plum-700 dark:text-primary">
                       {formatNaira(s.subscription + s.welfare)}
                     </p>
-                    <Button className="mt-3">Pay {s.year} dues</Button>
+                    <Button className="mt-3" disabled={payingYear === s.year} onClick={() => handlePay(s.year)}>
+                      {payingYear === s.year ? 'Taking you to payment…' : `Pay ${s.year} dues`}
+                    </Button>
                   </div>
                 </div>
               </div>

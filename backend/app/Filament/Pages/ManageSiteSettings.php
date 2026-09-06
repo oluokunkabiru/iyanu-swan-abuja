@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
+use App\Services\Payments\PaymentGatewayFactory;
 use BackedEnum;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -129,6 +130,19 @@ class ManageSiteSettings extends Page
                         TextInput::make('membership_welfare_fee')->numeric()->required(),
                     ])
                     ->columns(2),
+                Section::make('Payments')
+                    ->description('Both gateways can hold API keys in .env at once — this is only which one is actually used to take payment.')
+                    ->schema([
+                        Select::make('active_payment_gateway')
+                            ->label('Active payment gateway')
+                            ->options([
+                                'paystack' => 'Paystack',
+                                'flutterwave' => 'Flutterwave',
+                            ])
+                            ->native(false)
+                            ->required()
+                            ->default(PaymentGatewayFactory::options()[0] ?? 'paystack'),
+                    ]),
             ])
             ->statePath('data')
             ->model(SiteSetting::current());

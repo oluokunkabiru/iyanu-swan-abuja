@@ -24,6 +24,7 @@ import Mentorship from '@/pages/Mentorship'
 import News from '@/pages/News'
 import NewsDetail from '@/pages/NewsDetail'
 import NotFound from '@/pages/NotFound'
+import PaymentCallback from '@/pages/PaymentCallback'
 import Practice from '@/pages/Practice'
 import Publications from '@/pages/Publications'
 import Resources from '@/pages/Resources'
@@ -78,6 +79,7 @@ export function AppRouter() {
 
         {/* Account */}
         <Route path="login" element={<Login />} />
+        <Route path="payments/callback" element={<PaymentCallback />} />
         <Route path="register" element={<Navigate to="/membership/register" replace />} />
         <Route path="dashboard" element={<Navigate to="/members" replace />} />
 

@@ -73,11 +73,15 @@ export default function EventDetail() {
     setRegistering(true)
     setError(null)
     try {
-      await registerForEvent(event.slug, {
+      const result = await registerForEvent(event.slug, {
         event_ticket_type_id: Number(selectedTier),
         name: user.name,
         email: user.email,
       })
+      if (result.authorizationUrl) {
+        window.location.href = result.authorizationUrl
+        return
+      }
       setRegistered(true)
     } catch {
       setError('Something went wrong submitting your registration. Please try again.')

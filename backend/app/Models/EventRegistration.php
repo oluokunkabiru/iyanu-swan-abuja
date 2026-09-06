@@ -17,6 +17,7 @@ class EventRegistration extends Model
         'payment_status',
         'amount',
         'reference',
+        'payment_gateway',
         'issued_at',
         'notes',
     ];

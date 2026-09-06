@@ -46,3 +46,9 @@ export async function fetchMySubscriptions(): Promise<SubscriptionRecord[]> {
   const { data } = await api.get<SubscriptionRecord[]>('/me/subscriptions')
   return data
 }
+
+export async function paySubscriptionDues(year: number): Promise<{ authorizationUrl: string }> {
+  await ensureCsrfCookie()
+  const { data } = await api.post<{ authorizationUrl: string }>(`/me/subscriptions/${year}/pay`)
+  return data
+}

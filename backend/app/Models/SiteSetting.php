@@ -38,6 +38,7 @@ class SiteSetting extends Model implements HasMedia
         'aims_objectives',
         'membership_subscription_fee',
         'membership_welfare_fee',
+        'active_payment_gateway',
     ];
 
     protected function casts(): array

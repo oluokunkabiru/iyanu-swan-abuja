@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CommitteeController;
 use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\CoreValueController;
@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\MemberSpotlightController;
 use App\Http\Controllers\Api\MemberSubscriptionController;
 use App\Http\Controllers\Api\NewsPostController;
 use App\Http\Controllers\Api\PartnerController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProgrammeEntryController;
 use App\Http\Controllers\Api\PublicationController;
 use App\Http\Controllers\Api\ResourceItemController;
@@ -58,6 +59,10 @@ Route::post('/contact', [ContactMessageController::class, 'store']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/payments/verify/{reference}', [PaymentController::class, 'verify']);
+Route::post('/payments/webhooks/paystack', [PaymentController::class, 'webhookPaystack']);
+Route::post('/payments/webhooks/flutterwave', [PaymentController::class, 'webhookFlutterwave']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
@@ -65,4 +70,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me/registrations', [AuthController::class, 'registrations']);
     Route::get('/me/cpd-records', [MemberCpdRecordController::class, 'index']);
     Route::get('/me/subscriptions', [MemberSubscriptionController::class, 'index']);
+    Route::post('/me/subscriptions/{year}/pay', [PaymentController::class, 'paySubscriptionDues']);
 });
