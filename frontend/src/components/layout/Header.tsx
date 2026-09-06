@@ -50,7 +50,7 @@ export function Header() {
       <div className="hidden border-b border-plum-800/60 bg-plum-900 text-plum-200 md:block">
         <div className="mx-auto flex h-9 max-w-7xl items-center justify-between px-4 text-[0.78rem]">
           <p>
-            A society of the{' '}
+          The Society{' '}
             <a
               href="https://icanig.org/ican/"
               target="_blank"
