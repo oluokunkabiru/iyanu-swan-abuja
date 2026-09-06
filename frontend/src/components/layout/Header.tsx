@@ -72,12 +72,12 @@ export function Header() {
       </div>
 
       <div className="border-b border-border bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-[4.75rem] max-w-7xl items-center gap-4 px-4">
+        <div className="mx-auto flex h-[4.75rem] max-w-[96rem] items-center gap-3 px-4">
           <Link to="/" aria-label={`${settings?.shortName ?? 'SWAN Abuja'} home`} className="shrink-0">
             <BrandLogo className="h-7 sm:h-10" />
           </Link>
 
-          <nav className="ml-auto hidden min-w-0 items-center xl:flex" aria-label="Main">
+          <nav className="ml-auto hidden min-w-0 items-center min-[1200px]:flex" aria-label="Main">
             {navigation.map((section) => (
               <MegaItem
                 key={section.label}
@@ -93,7 +93,7 @@ export function Header() {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-2 xl:ml-2">
+          <div className="ml-auto flex items-center gap-1.5 min-[1200px]:ml-2">
             <Link
               to="/directory"
               aria-label="Search the directories"
@@ -131,7 +131,7 @@ export function Header() {
               onClick={() => setDrawerOpen((v) => !v)}
               aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={drawerOpen}
-              className="flex h-9 w-9 items-center justify-center rounded-sm text-foreground xl:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-sm text-foreground min-[1200px]:hidden"
             >
               {drawerOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -140,7 +140,7 @@ export function Header() {
       </div>
 
       {drawerOpen && (
-        <div className="max-h-[calc(100dvh-4.25rem)] overflow-y-auto border-b border-border bg-background xl:hidden">
+        <div className="max-h-[calc(100dvh-4.25rem)] overflow-y-auto border-b border-border bg-background min-[1200px]:hidden">
           <nav className="mx-auto max-w-6xl px-4 py-3" aria-label="Mobile">
             {navigation.map((section) =>
               section.columns ? (
@@ -244,7 +244,7 @@ function MegaItem({
         end={section.to === '/'}
         className={({ isActive }) =>
           cn(
-            'px-3 py-2 text-[0.9rem] font-medium transition-colors',
+            'px-2 py-2 text-[0.85rem] font-medium whitespace-nowrap transition-colors',
             isActive
               ? 'text-plum-700 dark:text-primary'
               : 'text-muted-foreground hover:text-foreground',
@@ -264,7 +264,7 @@ function MegaItem({
         onFocus={onOpen}
         aria-expanded={isOpen}
         className={cn(
-          'flex items-center gap-1 px-3 py-2 text-[0.9rem] font-medium transition-colors',
+          'flex items-center gap-1 px-2 py-2 text-[0.85rem] font-medium whitespace-nowrap transition-colors',
           isOpen ? 'text-plum-700 dark:text-primary' : 'text-muted-foreground hover:text-foreground',
         )}
       >

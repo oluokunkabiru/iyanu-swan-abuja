@@ -169,8 +169,6 @@ export const navigation: NavSection[] = [
       },
     ],
   },
-  { label: 'News', to: '/news' },
-  { label: 'Contact', to: '/contact' },
 ]
 
 /** Compact list used by the mobile drawer and the footer. */
