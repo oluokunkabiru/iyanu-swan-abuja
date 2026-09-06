@@ -48,7 +48,6 @@ class AnnouncementResource extends Resource
                     ->default('notice')
                     ->required(),
                 TextInput::make('href')->maxLength(255),
-                TextInput::make('sort_order')->numeric()->minValue(0)->default(0)->required(),
                 Toggle::make('is_active')->default(true),
             ]);
     }

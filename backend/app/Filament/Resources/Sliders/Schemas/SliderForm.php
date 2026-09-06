@@ -55,11 +55,6 @@ class SliderForm
                     ])
                     ->default('center')
                     ->required(),
-                TextInput::make('sort_order')
-                    ->numeric()
-                    ->minValue(0)
-                    ->default(0)
-                    ->required(),
                 Toggle::make('is_active')
                     ->default(true),
             ]);

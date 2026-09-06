@@ -11,7 +11,7 @@ class PartnerController extends Controller
     public function index(): JsonResponse
     {
         return response()->json(
-            Partner::query()->with('media')->orderBy('sort_order')->get()
+            Partner::query()->with('media')->orderBy('created_at')->get()
                 ->map(fn (Partner $partner): array => [
                     'id' => (string) $partner->id,
                     'name' => $partner->name,

@@ -5,18 +5,18 @@ namespace App\Filament\Resources\CoreValues;
 use App\Filament\Resources\CoreValues\Pages\ManageCoreValues;
 use App\Models\CoreValue;
 use BackedEnum;
-use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class CoreValueResource extends Resource
 {
@@ -36,19 +36,14 @@ class CoreValueResource extends Resource
                 Textarea::make('description')
                     ->rows(3)
                     ->columnSpanFull(),
-                TextInput::make('sort_order')
-                    ->numeric()
-                    ->default(0)
-                    ->required(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('created_at')
             ->columns([
-                TextColumn::make('sort_order')->label('#')->sortable(),
                 TextColumn::make('title')->searchable(),
                 TextColumn::make('description')->limit(60),
             ])

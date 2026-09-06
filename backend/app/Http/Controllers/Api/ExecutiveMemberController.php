@@ -14,7 +14,7 @@ class ExecutiveMemberController extends Controller
             ExecutiveMember::query()
                 ->with('media')
                 ->where('is_active', true)
-                ->orderBy('sort_order')
+                ->orderBy('created_at')
                 ->orderBy('id')
                 ->get()
                 ->map(fn (ExecutiveMember $member): array => [

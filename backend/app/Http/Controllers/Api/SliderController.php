@@ -15,7 +15,7 @@ class SliderController extends Controller
             ->with('media')
             ->where('is_active', true)
             ->whereHas('media', fn (Builder $query): Builder => $query->where('collection_name', 'image'))
-            ->orderBy('sort_order')
+            ->orderBy('created_at')
             ->orderBy('id')
             ->get()
             ->map(fn (Slider $slider): array => [

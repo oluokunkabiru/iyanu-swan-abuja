@@ -13,7 +13,7 @@ class FaqController extends Controller
         return response()->json(
             Faq::query()
                 ->where('is_active', true)
-                ->orderBy('sort_order')
+                ->orderBy('created_at')
                 ->orderBy('id')
                 ->get()
                 ->map(fn (Faq $faq): array => [

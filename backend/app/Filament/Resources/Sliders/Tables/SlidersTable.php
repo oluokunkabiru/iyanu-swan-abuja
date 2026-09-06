@@ -16,7 +16,7 @@ class SlidersTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('created_at')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('image')
                     ->collection('image'),
@@ -25,9 +25,6 @@ class SlidersTable
                     ->wrap(),
                 TextColumn::make('badge')
                     ->toggleable(),
-                TextColumn::make('sort_order')
-                    ->label('Order')
-                    ->sortable(),
                 IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean(),

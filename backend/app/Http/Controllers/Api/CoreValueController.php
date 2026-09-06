@@ -12,7 +12,7 @@ class CoreValueController extends Controller
     {
         return response()->json(
             CoreValue::query()
-                ->orderBy('sort_order')
+                ->orderBy('created_at')
                 ->orderBy('id')
                 ->get()
                 ->map(fn (CoreValue $value): array => [

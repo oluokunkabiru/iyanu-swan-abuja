@@ -50,17 +50,13 @@ class PartnerResource extends Resource
                         'Sponsor' => 'Sponsor',
                     ])
                     ->required(),
-                TextInput::make('sort_order')
-                    ->numeric()
-                    ->default(0)
-                    ->required(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('created_at')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('logo')->collection('logo'),
                 TextColumn::make('name')->searchable(),

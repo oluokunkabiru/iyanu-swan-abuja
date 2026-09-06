@@ -10,6 +10,8 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -45,7 +47,26 @@ class ProgrammeEntryResource extends Resource
                 DateTimePicker::make('ends_at'),
                 TextInput::make('venue')->maxLength(255),
                 TextInput::make('href')->maxLength(255),
-                TextInput::make('sort_order')->numeric()->minValue(0)->default(0)->required(),
+                RichEditor::make('description')
+                    ->helperText('Optional details about the event, shown when a visitor opens it.')
+                    ->columnSpanFull(),
+                SpatieMediaLibraryFileUpload::make('image')
+                    ->collection('image')
+                    ->disk('public')
+                    ->image()
+                    ->columnSpanFull(),
+                SpatieMediaLibraryFileUpload::make('document')
+                    ->collection('document')
+                    ->disk('public')
+                    ->acceptedFileTypes([
+                        'application/pdf',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    ])
+                    ->maxSize(10_240)
+                    ->openable()
+                    ->downloadable()
+                    ->columnSpanFull(),
                 Toggle::make('is_active')->default(true),
             ]);
     }
@@ -53,7 +74,7 @@ class ProgrammeEntryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('created_at')
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')

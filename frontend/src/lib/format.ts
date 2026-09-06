@@ -34,6 +34,11 @@ export function formatTimeRange(startsAt: string, endsAt: string | null): string
   return `${start} – ${new Date(endsAt).toLocaleTimeString('en-NG', opts)}`
 }
 
+/** Strips HTML tags for a plain-text preview of rich editor content. */
+export function stripHtml(value: string): string {
+  return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
 /** Splits a date into parts for the calendar chip used on event cards. */
 export function dateParts(value: string): { day: string; month: string; year: string } {
   const d = new Date(value)

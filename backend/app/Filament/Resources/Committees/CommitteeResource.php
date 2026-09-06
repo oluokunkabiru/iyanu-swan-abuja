@@ -46,7 +46,6 @@ class CommitteeResource extends Resource
                 TextInput::make('chair')->required()->maxLength(255),
                 TextInput::make('meeting_cadence')->required()->maxLength(100),
                 TagsInput::make('focus_areas')->required()->columnSpanFull(),
-                TextInput::make('sort_order')->numeric()->minValue(0)->default(0)->required(),
                 Toggle::make('is_active')->default(true),
             ]);
     }
@@ -54,14 +53,13 @@ class CommitteeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('created_at')
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('chair')->searchable(),
                 TextColumn::make('meeting_cadence')->label('Meetings'),
-                TextColumn::make('sort_order')->label('Order')->sortable(),
                 IconColumn::make('is_active')->boolean(),
             ])
             ->filters([

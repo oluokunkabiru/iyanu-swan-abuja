@@ -52,10 +52,6 @@ class ExecutiveMemberResource extends Resource
                 Textarea::make('bio')
                     ->rows(3)
                     ->columnSpanFull(),
-                TextInput::make('sort_order')
-                    ->numeric()
-                    ->default(0)
-                    ->required(),
                 Toggle::make('is_active')
                     ->default(true),
                 Toggle::make('is_principal')
@@ -67,7 +63,7 @@ class ExecutiveMemberResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('created_at')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('photo')->collection('photo')->circular(),
                 TextColumn::make('name')->searchable(),

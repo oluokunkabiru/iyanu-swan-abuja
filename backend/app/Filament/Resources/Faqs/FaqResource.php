@@ -50,7 +50,6 @@ class FaqResource extends Resource
                     ->required()
                     ->rows(4)
                     ->columnSpanFull(),
-                TextInput::make('sort_order')->numeric()->minValue(0)->default(0)->required(),
                 Toggle::make('is_active')->default(true),
             ]);
     }
@@ -58,14 +57,13 @@ class FaqResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('created_at')
             ->recordTitleAttribute('question')
             ->columns([
                 TextColumn::make('question')
                     ->searchable()
                     ->wrap(),
                 TextColumn::make('topic')->badge(),
-                TextColumn::make('sort_order')->label('Order')->sortable(),
             ])
             ->filters([
                 //

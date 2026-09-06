@@ -44,17 +44,13 @@ class MemberSpotlightResource extends Resource
                 Textarea::make('quote')
                     ->rows(3)
                     ->columnSpanFull(),
-                TextInput::make('sort_order')
-                    ->numeric()
-                    ->default(0)
-                    ->required(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('created_at')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('photo')->collection('photo')->circular(),
                 TextColumn::make('name')->searchable(),

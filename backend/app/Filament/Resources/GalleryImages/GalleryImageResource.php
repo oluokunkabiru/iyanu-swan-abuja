@@ -53,17 +53,13 @@ class GalleryImageResource extends Resource
                     ->label('Related event')
                     ->options(fn () => Event::query()->pluck('title', 'id'))
                     ->searchable(),
-                TextInput::make('sort_order')
-                    ->numeric()
-                    ->default(0)
-                    ->required(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('created_at')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('image')->collection('image'),
                 TextColumn::make('caption'),

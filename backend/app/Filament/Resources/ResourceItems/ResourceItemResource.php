@@ -69,7 +69,6 @@ class ResourceItemResource extends Resource
                     ->openable()
                     ->downloadable()
                     ->columnSpanFull(),
-                TextInput::make('sort_order')->numeric()->minValue(0)->default(0)->required(),
                 Toggle::make('is_active')->default(true),
             ]);
     }
@@ -77,7 +76,7 @@ class ResourceItemResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('created_at')
             ->recordTitleAttribute('title')
             ->columns([
                 TextColumn::make('title')
@@ -85,7 +84,6 @@ class ResourceItemResource extends Resource
                     ->wrap(),
                 TextColumn::make('category')->badge(),
                 TextColumn::make('format'),
-                TextColumn::make('sort_order')->label('Order')->sortable(),
                 IconColumn::make('is_active')->boolean(),
             ])
             ->filters([

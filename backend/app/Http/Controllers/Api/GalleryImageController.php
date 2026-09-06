@@ -13,7 +13,7 @@ class GalleryImageController extends Controller
         return response()->json(
             GalleryImage::query()
                 ->with('media')
-                ->orderBy('sort_order')
+                ->orderBy('created_at')
                 ->orderBy('id')
                 ->get()
                 ->map(fn (GalleryImage $image): array => [

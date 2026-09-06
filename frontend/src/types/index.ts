@@ -115,9 +115,12 @@ export interface Announcement {
 export interface ProgrammeEntry {
   id: string
   name: string
+  description: string | null
   date: string
   venue: string
   href: string
+  imageUrl: string | null
+  documentUrl: string | null
 }
 
 export interface Faq {

@@ -12,16 +12,20 @@ class ProgrammeEntryController extends Controller
     {
         return response()->json(
             ProgrammeEntry::query()
+                ->with('media')
                 ->where('is_active', true)
-                ->orderBy('sort_order')
+                ->orderBy('created_at')
                 ->orderBy('id')
                 ->get()
                 ->map(fn (ProgrammeEntry $entry): array => [
                     'id' => (string) $entry->id,
                     'name' => $entry->name,
+                    'description' => $entry->description,
                     'date' => $entry->date_label,
                     'venue' => $entry->venue ?? '',
                     'href' => $entry->href ?? '/events',
+                    'imageUrl' => $entry->image_url,
+                    'documentUrl' => $entry->document_url,
                 ])
         );
     }

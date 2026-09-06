@@ -16,7 +16,7 @@ class ResourceItemController extends Controller
                 ->with('media')
                 ->where('is_active', true)
                 ->whereHas('media', fn (Builder $query): Builder => $query->where('collection_name', 'file'))
-                ->orderBy('sort_order')
+                ->orderBy('created_at')
                 ->orderBy('id')
                 ->get()
                 ->map(fn (ResourceItem $resource): array => [

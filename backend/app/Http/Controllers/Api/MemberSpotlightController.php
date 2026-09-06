@@ -11,7 +11,7 @@ class MemberSpotlightController extends Controller
     public function index(): JsonResponse
     {
         return response()->json(
-            MemberSpotlight::query()->orderBy('sort_order')->get()
+            MemberSpotlight::query()->orderBy('created_at')->get()
         );
     }
 }
