@@ -407,24 +407,35 @@ export default function Home() {
           className="mb-8"
         />
         {loadingPartners ? (
-          <div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-16" />
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-28" />
             ))}
           </div>
         ) : (
-          <ul className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
-            {partners.map((p) => (
-              <li key={p.id} className="bg-card p-5">
-                <a href={p.url} target="_blank" rel="noreferrer" className="group block">
-                  <span className="text-[0.78rem] font-semibold text-accent-foreground">{p.scope}</span>
-                  <span className="mt-1.5 block text-[0.95rem] leading-snug group-hover:text-plum-700 dark:group-hover:text-primary">
-                    {p.name}
-                  </span>
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+            {partners.map((p) => {
+              const content = p.logoUrl ? (
+                <img
+                  src={p.logoUrl}
+                  alt={p.name}
+                  className="h-10 object-contain grayscale transition-all duration-300 hover:grayscale-0"
+                />
+              ) : (
+                <span className="font-heading text-lg font-semibold text-muted-foreground transition-colors hover:text-foreground">
+                  {p.name}
+                </span>
+              )
+
+              return p.url ? (
+                <a key={p.id} href={p.url} target="_blank" rel="noreferrer">
+                  {content}
                 </a>
-              </li>
-            ))}
-          </ul>
+              ) : (
+                <span key={p.id}>{content}</span>
+              )
+            })}
+          </div>
         )}
       </Section>
 
