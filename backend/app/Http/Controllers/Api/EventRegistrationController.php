@@ -45,7 +45,11 @@ class EventRegistrationController extends Controller
             return response()->json($registration, 201);
         }
 
-        $callbackUrl = rtrim(config('app.frontend_url'), '/').'/payments/callback?reference='.$registration->reference;
+        // Deliberately no query string of our own here: both gateways
+        // append their own tracking params (Paystack: trxref/reference,
+        // Flutterwave: tx_ref/transaction_id) to whatever we give them,
+        // so adding our own "reference" would just collide with theirs.
+        $callbackUrl = rtrim(config('app.frontend_url'), '/').'/payments/callback';
 
         try {
             $authorizationUrl = $this->payments->initializeForEventRegistration($registration, $callbackUrl);

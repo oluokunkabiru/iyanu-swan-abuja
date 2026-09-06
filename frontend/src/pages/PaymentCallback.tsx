@@ -9,7 +9,9 @@ type Outcome = { type: 'subscription' | 'event_registration'; status: string } |
 
 export default function PaymentCallback() {
   const [params] = useSearchParams()
-  const reference = params.get('reference')
+  // Paystack appends ?reference=&trxref=; Flutterwave appends ?tx_ref=.
+  // Read whichever the active gateway actually sent.
+  const reference = params.get('reference') ?? params.get('tx_ref') ?? params.get('trxref')
 
   const { data: outcome, isLoading } = useApiData(
     () => (reference ? verifyPayment(reference) : Promise.resolve(null)),

@@ -36,7 +36,11 @@ class PaymentController extends Controller
             return response()->json(['message' => "Dues for {$year} are already paid."], 422);
         }
 
-        $callbackUrl = rtrim(config('app.frontend_url'), '/').'/payments/callback?reference='.($subscription->reference ?: 'pending');
+        // Deliberately no query string of our own here: both gateways
+        // append their own tracking params (Paystack: trxref/reference,
+        // Flutterwave: tx_ref/transaction_id) to whatever we give them,
+        // so adding our own "reference" would just collide with theirs.
+        $callbackUrl = rtrim(config('app.frontend_url'), '/').'/payments/callback';
 
         try {
             $url = $this->payments->initializeForSubscription($subscription, $callbackUrl);
@@ -45,11 +49,6 @@ class PaymentController extends Controller
 
             return response()->json(['message' => 'We could not start this payment. Please try again shortly.'], 502);
         }
-
-        // The callback URL above was built before the reference existed
-        // on first-ever creation; rebuild it now that initialize() has
-        // guaranteed one is saved.
-        $url = str_replace('reference=pending', 'reference='.$subscription->fresh()->reference, $url);
 
         return response()->json(['authorizationUrl' => $url]);
     }
