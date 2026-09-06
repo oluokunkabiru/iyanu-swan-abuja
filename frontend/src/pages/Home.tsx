@@ -188,7 +188,7 @@ export default function Home() {
       <Section tone="tinted">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <div>
-            <SectionHeading title="What the chapter is for" lede={settings?.aims} />
+            <SectionHeading title="What we stand for" lede={settings?.aims} />
             <div className="mt-8 space-y-6">
               <div>
                 <h3 className="text-[1.05rem] text-plum-700 dark:text-primary">Our vision</h3>
