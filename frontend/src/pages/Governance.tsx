@@ -52,7 +52,7 @@ export default function Governance() {
         <SectionHeading
           id="executives"
           title="Principal officers"
-          lede="The five offices with day-to-day responsibility for the chapter."
+          lede="The offices with day-to-day responsibility for the chapter."
           className="mb-8"
         />
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
