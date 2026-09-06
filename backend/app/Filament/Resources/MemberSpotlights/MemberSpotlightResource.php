@@ -5,20 +5,20 @@ namespace App\Filament\Resources\MemberSpotlights;
 use App\Filament\Resources\MemberSpotlights\Pages\ManageMemberSpotlights;
 use App\Models\MemberSpotlight;
 use BackedEnum;
-use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class MemberSpotlightResource extends Resource
 {
@@ -34,6 +34,7 @@ class MemberSpotlightResource extends Resource
             ->components([
                 SpatieMediaLibraryFileUpload::make('photo')
                     ->collection('photo')
+                    ->disk('public')
                     ->image()
                     ->avatar()
                     ->columnSpanFull(),

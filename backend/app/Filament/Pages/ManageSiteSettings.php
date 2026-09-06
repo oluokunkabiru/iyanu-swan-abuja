@@ -44,6 +44,7 @@ class ManageSiteSettings extends Page
                     ->schema([
                         SpatieMediaLibraryFileUpload::make('logo')
                             ->collection('logo')
+                            ->disk('public')
                             ->image()
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                             ->maxSize(5120)

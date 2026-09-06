@@ -58,6 +58,7 @@ class ResourceItemResource extends Resource
                     ->required(),
                 SpatieMediaLibraryFileUpload::make('file')
                     ->collection('file')
+                    ->disk('public')
                     ->acceptedFileTypes([
                         'application/pdf',
                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',

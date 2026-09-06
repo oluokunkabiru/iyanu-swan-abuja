@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Publications;
 use App\Filament\Resources\Publications\Pages\ManagePublications;
 use App\Models\Publication;
 use BackedEnum;
-use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -18,6 +17,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class PublicationResource extends Resource
 {
@@ -40,6 +40,7 @@ class PublicationResource extends Resource
                     ->default(now()),
                 SpatieMediaLibraryFileUpload::make('file')
                     ->collection('file')
+                    ->disk('public')
                     ->required()
                     ->openable()
                     ->downloadable()

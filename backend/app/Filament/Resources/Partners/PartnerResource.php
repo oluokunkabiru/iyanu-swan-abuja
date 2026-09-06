@@ -34,6 +34,7 @@ class PartnerResource extends Resource
             ->components([
                 SpatieMediaLibraryFileUpload::make('logo')
                     ->collection('logo')
+                    ->disk('public')
                     ->image()
                     ->columnSpanFull(),
                 TextInput::make('name')

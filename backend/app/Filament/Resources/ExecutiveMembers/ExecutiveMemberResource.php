@@ -36,6 +36,7 @@ class ExecutiveMemberResource extends Resource
             ->components([
                 SpatieMediaLibraryFileUpload::make('photo')
                     ->collection('photo')
+                    ->disk('public')
                     ->image()
                     ->avatar()
                     ->columnSpanFull(),

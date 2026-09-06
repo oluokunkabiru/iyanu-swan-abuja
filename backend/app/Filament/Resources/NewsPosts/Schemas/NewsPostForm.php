@@ -44,6 +44,7 @@ class NewsPostForm
                     ->columnSpanFull(),
                 SpatieMediaLibraryFileUpload::make('cover')
                     ->collection('cover')
+                    ->disk('public')
                     ->image()
                     ->columnSpanFull(),
                 DateTimePicker::make('published_at')

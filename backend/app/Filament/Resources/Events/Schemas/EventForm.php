@@ -46,6 +46,7 @@ class EventForm
                     ->required(),
                 SpatieMediaLibraryFileUpload::make('cover')
                     ->collection('cover')
+                    ->disk('public')
                     ->image()
                     ->columnSpanFull(),
                 TextInput::make('location')

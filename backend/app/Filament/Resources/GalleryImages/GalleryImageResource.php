@@ -35,6 +35,7 @@ class GalleryImageResource extends Resource
             ->components([
                 SpatieMediaLibraryFileUpload::make('image')
                     ->collection('image')
+                    ->disk('public')
                     ->image()
                     ->required()
                     ->columnSpanFull(),
