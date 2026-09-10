@@ -47,4 +47,15 @@ return [
         'secret_hash' => env('FLUTTERWAVE_SECRET_HASH'),
     ],
 
+    'termii' => [
+        'api_key' => env('TERMII_API_KEY'),
+        'sender_id' => env('TERMII_SENDER_ID'),
+    ],
+
+    'africas_talking' => [
+        'username' => env('AFRICAS_TALKING_USERNAME'),
+        'api_key' => env('AFRICAS_TALKING_API_KEY'),
+        'sender_id' => env('AFRICAS_TALKING_SENDER_ID'),
+    ],
+
 ];
