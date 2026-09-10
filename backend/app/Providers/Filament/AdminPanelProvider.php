@@ -27,6 +27,9 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName('SWAN Abuja Chapter')
+            ->brandLogo(asset('images/logo.png'))
+            ->brandLogoHeight('2rem')
+            ->favicon(asset('favicon.ico'))
             ->colors([
                 'primary' => Color::Indigo,
             ])

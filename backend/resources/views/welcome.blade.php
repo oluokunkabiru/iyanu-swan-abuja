@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{{ config('app.name') }} — API &amp; Admin</title>
         <meta name="robots" content="noindex, nofollow">
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -156,21 +157,23 @@
             }
 
             .meta {
-                margin-top: 3rem;
+                margin-top: 2.5rem;
+                padding-top: 2rem;
+                border-top: 1px solid var(--border);
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
-                gap: 0.5rem 1.5rem;
-                font-size: 0.8rem;
-                color: var(--muted);
+                gap: 0.5rem;
             }
 
-            .meta code {
+            .meta span {
                 background: var(--surface);
                 border: 1px solid var(--border);
-                border-radius: 0.3rem;
-                padding: 0.1rem 0.4rem;
-                font-size: 0.78rem;
+                border-radius: 999px;
+                padding: 0.3rem 0.8rem;
+                font-size: 0.76rem;
+                font-weight: 600;
+                color: var(--muted);
             }
 
             footer {
@@ -212,9 +215,10 @@
                     </div>
 
                     <div class="meta">
-                        <span>Laravel <code>{{ app()->version() }}</code></span>
-                        <span>PHP <code>{{ phpversion() }}</code></span>
-                        <span>Environment <code>{{ app()->environment() }}</code></span>
+                        <span>Membership</span>
+                        <span>Events &amp; CPD</span>
+                        <span>Publications</span>
+                        <span>Directories</span>
                     </div>
                 </div>
             </main>
