@@ -141,49 +141,6 @@ export default function Home() {
         )}
       </Section>
 
-      {/* Quick desks */}
-      <section className="border-b border-border bg-card">
-        <div className="mx-auto grid max-w-6xl gap-px bg-border px-4 md:grid-cols-2 lg:grid-cols-4">
-          {desks.map((desk) => (
-            <Link
-              key={desk.title}
-              to={desk.to}
-              className="group bg-card p-6 transition-colors hover:bg-secondary"
-            >
-              <desk.icon aria-hidden="true" className="h-6 w-6 text-primary" />
-              <h2 className="mt-4 text-[1.05rem]">{desk.title}</h2>
-              <p className="mt-1.5 text-[0.85rem] leading-relaxed text-muted-foreground">
-                {desk.body}
-              </p>
-              <span className="mt-3 inline-flex items-center gap-1.5 text-[0.82rem] font-semibold text-plum-700 dark:text-primary">
-                Open
-                <ArrowRight
-                  aria-hidden="true"
-                  className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
-                />
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Chapter figures */}
-      <Section>
-        {loadingSettings ? (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-16" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {(settings?.chapterStats ?? []).map((s) => (
-              <Stat key={s.label} value={s.value} label={s.label} note={s.note} />
-            ))}
-          </div>
-        )}
-      </Section>
-
       {/* Vision, mission, values */}
       <Section tone="tinted">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -232,6 +189,48 @@ export default function Home() {
             )}
           </div>
         </div>
+      </Section>
+
+      {/* Quick desks */}
+      <section className="border-b border-border bg-card">
+        <div className="mx-auto grid max-w-6xl gap-px bg-border px-4 md:grid-cols-2 lg:grid-cols-4">
+          {desks.map((desk) => (
+            <Link
+              key={desk.title}
+              to={desk.to}
+              className="group bg-card p-6 transition-colors hover:bg-secondary"
+            >
+              <desk.icon aria-hidden="true" className="h-6 w-6 text-primary" />
+              <h2 className="mt-4 text-[1.05rem]">{desk.title}</h2>
+              <p className="mt-1.5 text-[0.85rem] leading-relaxed text-muted-foreground">
+                {desk.body}
+              </p>
+              <span className="mt-3 inline-flex items-center gap-1.5 text-[0.82rem] font-semibold text-plum-700 dark:text-primary">
+                Open
+                <ArrowRight
+                  aria-hidden="true"
+                  className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+      {/* Chapter figures */}
+      <Section>
+        {loadingSettings ? (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-16" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {(settings?.chapterStats ?? []).map((s) => (
+              <Stat key={s.label} value={s.value} label={s.label} note={s.note} />
+            ))}
+          </div>
+        )}
       </Section>
 
       {/* Noticeboard + publications */}

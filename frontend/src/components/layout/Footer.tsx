@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
 import { Mail, MapPin, Phone } from 'lucide-react'
 import { BrandLogo } from '@/components/common/BrandLogo'
+import { Skeleton } from '@/components/ui/skeleton'
 import { footerLinks } from '@/data'
 import { useSettings } from '@/context/SettingsContext'
 
 export function Footer() {
-  const { settings } = useSettings()
+  const { settings, isLoading: loadingSettings } = useSettings()
   const year = new Date().getFullYear()
 
   return (
@@ -20,23 +21,43 @@ export function Footer() {
             >
               <BrandLogo className="h-10" />
             </Link>
-            <p className="mt-4 max-w-xs text-[0.86rem] leading-relaxed">{settings?.tagline}</p>
+            <p className="mt-4 max-w-xs text-[0.86rem] leading-relaxed">
+              {loadingSettings ? (
+                <Skeleton className="h-4 w-48 bg-plum-800" />
+              ) : (
+                settings?.tagline
+              )}
+            </p>
 
             <ul className="mt-6 space-y-2.5 text-[0.86rem]">
               <li className="flex items-start gap-2.5">
                 <MapPin aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
-                <span>{settings?.address}</span>
+                <span>
+                  {loadingSettings ? (
+                    <Skeleton className="inline-block h-3 w-40 align-middle bg-plum-800" />
+                  ) : (
+                    settings?.address
+                  )}
+                </span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Mail aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
                 <a href={`mailto:${settings?.email}`} className="hover:text-white">
-                  {settings?.email}
+                  {loadingSettings ? (
+                    <Skeleton className="inline-block h-3 w-32 align-middle bg-plum-800" />
+                  ) : (
+                    settings?.email
+                  )}
                 </a>
               </li>
               <li className="flex items-start gap-2.5">
                 <Phone aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
                 <a href={`tel:${settings?.phone?.replace(/\s/g, '') ?? ''}`} className="hover:text-white">
-                  {settings?.phone}
+                  {loadingSettings ? (
+                    <Skeleton className="inline-block h-3 w-24 align-middle bg-plum-800" />
+                  ) : (
+                    settings?.phone
+                  )}
                 </a>
               </li>
             </ul>
@@ -79,17 +100,26 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col gap-3 border-t border-plum-800 pt-6 text-[0.8rem] sm:flex-row sm:items-center sm:justify-between">
           <p>
-            {settings?.chapterName} — {year}. All rights reserved.
+            {loadingSettings ? (
+              <Skeleton className="inline-block h-3 w-28 align-middle bg-plum-800" />
+            ) : (
+              settings?.chapterName
+            )}{' '}
+            — {year}. All rights reserved.
           </p>
           <p>
-            A society of the{' '}
+            The Society{' '}
             <a
               href="https://icanig.org/ican/"
               target="_blank"
               rel="noreferrer"
               className="text-gold-300 underline-offset-4 hover:underline"
             >
-              Institute of Chartered Accountants of Nigeria
+              {loadingSettings ? (
+                <Skeleton className="inline-block h-3 w-56 align-middle bg-plum-800" />
+              ) : (
+                settings?.parentBody
+              )}
             </a>
           </p>
         </div>

@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { ChevronDown, LogOut, Menu, Search, X } from 'lucide-react'
 import { BrandLogo } from '@/components/common/BrandLogo'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { useAuth } from '@/context/AuthContext'
 import { useSettings } from '@/context/SettingsContext'
@@ -12,7 +13,7 @@ import type { NavSection } from '@/types'
 
 export function Header() {
   const { user, signOut } = useAuth()
-  const { settings } = useSettings()
+  const { settings, isLoading: loadingSettings } = useSettings()
   const location = useLocation()
   const [openSection, setOpenSection] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -57,12 +58,20 @@ export function Header() {
               rel="noreferrer"
               className="text-gold-300 underline-offset-4 hover:underline"
             >
-              {settings?.parentBody}
+              {loadingSettings ? (
+                <Skeleton className="inline-block h-3 w-40 align-middle bg-plum-700" />
+              ) : (
+                settings?.parentBody
+              )}
             </a>
           </p>
           <div className="flex items-center gap-5">
             <a href={`mailto:${settings?.email}`} className="hover:text-white">
-              {settings?.email}
+              {loadingSettings ? (
+                <Skeleton className="inline-block h-3 w-32 align-middle bg-plum-700" />
+              ) : (
+                settings?.email
+              )}
             </a>
             <Link to="/members" className="hover:text-white">
               Members portal
