@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { fetchMe, login, logout, register } from '@/api/auth'
+import { fetchMe, login, logout, register, updateMe } from '@/api/auth'
 import type { AuthUser } from '@/types'
 
 interface AuthContextValue {
@@ -16,6 +16,7 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<AuthUser>
   signUp: (input: { name: string; email: string; password: string; phone?: string }) => Promise<AuthUser>
   signOut: () => void
+  updateProfile: (payload: Parameters<typeof updateMe>[0]) => Promise<AuthUser>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -50,9 +51,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     logout().finally(() => setUser(null))
   }, [])
 
+  const updateProfile = useCallback(async (payload: Parameters<typeof updateMe>[0]) => {
+    const next = await updateMe(payload)
+    setUser(next)
+    return next
+  }, [])
+
   const value = useMemo(
-    () => ({ user, isLoading, signIn, signUp, signOut }),
-    [user, isLoading, signIn, signUp, signOut],
+    () => ({ user, isLoading, signIn, signUp, signOut, updateProfile }),
+    [user, isLoading, signIn, signUp, signOut, updateProfile],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/settings', [SiteSettingController::class, 'show']);
 Route::get('/core-values', [CoreValueController::class, 'index']);
 Route::get('/executives', [ExecutiveMemberController::class, 'index']);
+Route::get('/past-chairpersons', [ExecutiveMemberController::class, 'pastChairpersons']);
 Route::get('/sliders', [SliderController::class, 'index']);
 Route::get('/faqs', [FaqController::class, 'index']);
 Route::get('/announcements', [AnnouncementController::class, 'index']);

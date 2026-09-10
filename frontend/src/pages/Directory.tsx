@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { getDirectoryMembers, getFirms } from '@/api/content'
 import { PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useAuth } from '@/context/AuthContext'
 import { useApiData } from '@/hooks/useApiData'
 import { cn } from '@/lib/utils'
 import type { DirectoryMember, Firm, Sector } from '@/types'
@@ -21,7 +23,17 @@ const sectors: (Sector | 'All')[] = [
   'Consulting',
 ]
 
+function initials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
+}
+
 export default function Directory() {
+  const { user } = useAuth()
   const [query, setQuery] = useState('')
   const [sector, setSector] = useState<(typeof sectors)[number]>('All')
   const { data: directoryMembers, isLoading } = useApiData(getDirectoryMembers, [] as DirectoryMember[])
@@ -34,8 +46,8 @@ export default function Directory() {
       const matchesQuery =
         q === '' ||
         m.name.toLowerCase().includes(q) ||
-        m.specialisation.toLowerCase().includes(q) ||
-        m.membershipNumber.toLowerCase().includes(q)
+        (m.specialisation ?? '').toLowerCase().includes(q) ||
+        (m.membershipNumber ?? '').toLowerCase().includes(q)
       return matchesSector && matchesQuery
     })
   }, [directoryMembers, query, sector])
@@ -72,7 +84,7 @@ export default function Directory() {
                 id="member-search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Try “forensic” or “ICAN/021760”"
+                placeholder="Try “forensic” or a name"
                 className="pl-9"
               />
             </div>
@@ -101,53 +113,73 @@ export default function Directory() {
           </fieldset>
         </div>
 
+        {!user && !isLoading && directoryMembers.length > 0 && (
+          <p className="mt-6 border-l-2 border-gold-500 bg-accent/50 px-4 py-3 text-[0.85rem] text-accent-foreground">
+            <Link to="/login" className="font-semibold underline underline-offset-2">
+              Sign in
+            </Link>{' '}
+            to see specialisation, year admitted and membership number for each result.
+          </p>
+        )}
+
         {isLoading ? (
-          <div className="mt-8 space-y-3">
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-10" />
+              <Skeleton key={i} className="h-40 rounded-xl" />
             ))}
           </div>
         ) : (
-          <div className="mt-8 overflow-x-auto">
-            <table className="w-full min-w-[48rem] text-left">
-              <caption className="sr-only">Chapter members</caption>
-              <thead>
-                <tr className="border-b border-border text-[0.75rem] font-semibold text-muted-foreground">
-                  <th scope="col" className="py-2.5 pr-4">Member</th>
-                  <th scope="col" className="py-2.5 pr-4">Membership number</th>
-                  <th scope="col" className="py-2.5 pr-4">Sector</th>
-                  <th scope="col" className="py-2.5 pr-4">Specialisation</th>
-                  <th scope="col" className="py-2.5">Admitted</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visible.map((m) => (
-                  <tr key={m.id} className="border-b border-border last:border-0">
-                    <td className="py-3.5 pr-4 align-top">
-                      <span className="block font-medium leading-snug">
-                        {m.name}, {m.credential}
+          <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {visible.map((m) => (
+              <li
+                key={m.id}
+                className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+              >
+                <div className="flex items-start gap-3">
+                  <Avatar className="h-12 w-12 shrink-0">
+                    <AvatarImage src={m.photoUrl ?? undefined} alt="" />
+                    <AvatarFallback className="bg-secondary text-secondary-foreground">
+                      {initials(m.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="font-medium leading-snug">
+                      {m.name}, {m.credential}
+                    </p>
+                    <p className="mt-0.5 text-[0.82rem] text-muted-foreground">{m.sector}</p>
+                    {m.chapterRole && (
+                      <span className="mt-1.5 inline-block">
+                        <StatusTag tone="gold">{m.chapterRole}</StatusTag>
                       </span>
-                      {m.chapterRole && (
-                        <span className="mt-1 inline-block">
-                          <StatusTag tone="gold">{m.chapterRole}</StatusTag>
-                        </span>
-                      )}
-                    </td>
-                    <td className="tnum py-3.5 pr-4 align-top text-[0.86rem] text-muted-foreground">
-                      {m.membershipNumber}
-                    </td>
-                    <td className="py-3.5 pr-4 align-top text-[0.86rem]">{m.sector}</td>
-                    <td className="py-3.5 pr-4 align-top text-[0.86rem] text-muted-foreground">
-                      {m.specialisation}
-                    </td>
-                    <td className="tnum py-3.5 align-top text-[0.86rem] text-muted-foreground">
-                      {m.yearAdmitted}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    )}
+                  </div>
+                </div>
+
+                {(m.specialisation || m.yearAdmitted || m.membershipNumber) && (
+                  <dl className="mt-4 space-y-1.5 border-t border-border pt-4 text-[0.82rem]">
+                    {m.specialisation && (
+                      <div className="flex justify-between gap-3">
+                        <dt className="text-muted-foreground">Specialisation</dt>
+                        <dd className="text-right">{m.specialisation}</dd>
+                      </div>
+                    )}
+                    {m.yearAdmitted && (
+                      <div className="flex justify-between gap-3">
+                        <dt className="text-muted-foreground">Admitted</dt>
+                        <dd className="tnum">{m.yearAdmitted}</dd>
+                      </div>
+                    )}
+                    {m.membershipNumber && (
+                      <div className="flex justify-between gap-3">
+                        <dt className="text-muted-foreground">Member #</dt>
+                        <dd className="tnum">{m.membershipNumber}</dd>
+                      </div>
+                    )}
+                  </dl>
+                )}
+              </li>
+            ))}
+          </ul>
         )}
 
         {!isLoading && visible.length === 0 && (

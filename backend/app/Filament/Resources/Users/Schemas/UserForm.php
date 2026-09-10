@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Users\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
@@ -39,6 +40,12 @@ class UserForm
                 Fieldset::make('Member profile')
                     ->relationship('memberProfile')
                     ->schema([
+                        SpatieMediaLibraryFileUpload::make('photo')
+                            ->collection('photo')
+                            ->disk('public')
+                            ->image()
+                            ->avatar()
+                            ->columnSpanFull(),
                         TextInput::make('membership_number')
                             ->maxLength(50),
                         Select::make('credential')
@@ -56,6 +63,9 @@ class UserForm
                             ->required(),
                         TextInput::make('phone')
                             ->maxLength(50),
+                        DatePicker::make('date_of_birth')
+                            ->native(false)
+                            ->displayFormat('d M'),
                         Select::make('sector')
                             ->options([
                                 'Public practice' => 'Public practice',

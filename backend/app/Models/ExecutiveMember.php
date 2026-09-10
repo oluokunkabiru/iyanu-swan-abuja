@@ -20,6 +20,8 @@ class ExecutiveMember extends Model implements HasMedia
         'sort_order',
         'is_active',
         'is_principal',
+        'term_start_year',
+        'term_end_year',
     ];
 
     protected function casts(): array
@@ -27,6 +29,8 @@ class ExecutiveMember extends Model implements HasMedia
         return [
             'is_active' => 'boolean',
             'is_principal' => 'boolean',
+            'term_start_year' => 'integer',
+            'term_end_year' => 'integer',
         ];
     }
 

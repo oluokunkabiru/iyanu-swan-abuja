@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@/routes/ProtectedRoute'
 import About from '@/pages/About'
 import Announcements from '@/pages/Announcements'
 import Committees, { CommitteeDetail } from '@/pages/Committees'
+import Constitution from '@/pages/Constitution'
 import Contact from '@/pages/Contact'
 import Cpd from '@/pages/Cpd'
 import Directory from '@/pages/Directory'
@@ -46,6 +47,7 @@ export function AppRouter() {
         {/* The chapter */}
         <Route path="about" element={<About />} />
         <Route path="governance" element={<Governance />} />
+        <Route path="constitution" element={<Constitution />} />
         <Route path="committees" element={<Committees />} />
         <Route path="committees/:slug" element={<CommitteeDetail />} />
         <Route path="faqs" element={<Faqs />} />

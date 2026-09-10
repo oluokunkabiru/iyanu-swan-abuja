@@ -27,8 +27,24 @@ export async function fetchMe(): Promise<AuthUser> {
   return data
 }
 
-export async function updateMe(payload: { name?: string; phone?: string }): Promise<AuthUser> {
-  const { data } = await api.put<AuthUser>('/me', payload)
+export async function updateMe(payload: {
+  name?: string
+  phone?: string
+  dateOfBirth?: string
+  isDirectoryListed?: boolean
+  photo?: File
+}): Promise<AuthUser> {
+  const form = new FormData()
+  form.append('_method', 'PUT')
+  if (payload.name !== undefined) form.append('name', payload.name)
+  if (payload.phone !== undefined) form.append('phone', payload.phone)
+  if (payload.dateOfBirth !== undefined) form.append('date_of_birth', payload.dateOfBirth)
+  if (payload.isDirectoryListed !== undefined) {
+    form.append('is_directory_listed', payload.isDirectoryListed ? '1' : '0')
+  }
+  if (payload.photo) form.append('photo', payload.photo)
+
+  const { data } = await api.post<AuthUser>('/me', form)
   return data
 }
 

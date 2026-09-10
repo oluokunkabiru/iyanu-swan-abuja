@@ -26,6 +26,9 @@ export const getCoreValues = () => api.get<CoreValue[]>('/core-values').then((r)
 
 export const getExecutives = () => api.get<ExecutiveMember[]>('/executives').then((r) => r.data)
 
+export const getPastChairpersons = () =>
+  api.get<ExecutiveMember[]>('/past-chairpersons').then((r) => r.data)
+
 export const getEvents = (when: 'upcoming' | 'past' = 'upcoming') =>
   api.get<ChapterEvent[]>('/events', { params: { when } }).then((r) => r.data)
 

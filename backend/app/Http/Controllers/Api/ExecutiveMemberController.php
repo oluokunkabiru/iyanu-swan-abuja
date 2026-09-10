@@ -17,15 +17,37 @@ class ExecutiveMemberController extends Controller
                 ->orderBy('created_at')
                 ->orderBy('id')
                 ->get()
-                ->map(fn (ExecutiveMember $member): array => [
-                    'id' => (string) $member->id,
-                    'name' => $member->name,
-                    'credential' => $member->credential,
-                    'position' => $member->position,
-                    'bio' => $member->bio ?? '',
-                    'photoUrl' => $member->photo_url,
-                    'isPrincipal' => $member->is_principal,
-                ])
+                ->map(fn (ExecutiveMember $member): array => $this->present($member))
         );
+    }
+
+    public function pastChairpersons(): JsonResponse
+    {
+        return response()->json(
+            ExecutiveMember::query()
+                ->with('media')
+                ->where('position', 'Chairperson')
+                ->where('is_active', false)
+                ->orderByDesc('term_start_year')
+                ->orderByDesc('id')
+                ->get()
+                ->map(fn (ExecutiveMember $member): array => $this->present($member))
+        );
+    }
+
+    /** @return array<string, mixed> */
+    private function present(ExecutiveMember $member): array
+    {
+        return [
+            'id' => (string) $member->id,
+            'name' => $member->name,
+            'credential' => $member->credential,
+            'position' => $member->position,
+            'bio' => $member->bio ?? '',
+            'photoUrl' => $member->photo_url,
+            'isPrincipal' => $member->is_principal,
+            'termStartYear' => $member->term_start_year,
+            'termEndYear' => $member->term_end_year,
+        ];
     }
 }

@@ -16,6 +16,7 @@ export const navigation: NavSection[] = [
           { label: 'Vision, mission and values', to: '/about#vision' },
           { label: 'Governance', to: '/governance', description: 'Council, elections and standing rules' },
           { label: 'Executive committee', to: '/governance#executives' },
+          { label: 'Constitution', to: '/constitution', description: 'Download the governing document' },
         ],
       },
       {

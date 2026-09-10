@@ -53,10 +53,24 @@ class ExecutiveMemberResource extends Resource
                     ->rows(3)
                     ->columnSpanFull(),
                 Toggle::make('is_active')
-                    ->default(true),
+                    ->label('Currently serving')
+                    ->default(true)
+                    ->live(),
                 Toggle::make('is_principal')
                     ->label('Principal officer')
                     ->default(false),
+                TextInput::make('term_start_year')
+                    ->label('Term start year')
+                    ->numeric()
+                    ->minValue(1950)
+                    ->maxValue(2100)
+                    ->visible(fn ($get) => ! $get('is_active')),
+                TextInput::make('term_end_year')
+                    ->label('Term end year')
+                    ->numeric()
+                    ->minValue(1950)
+                    ->maxValue(2100)
+                    ->visible(fn ($get) => ! $get('is_active')),
             ]);
     }
 

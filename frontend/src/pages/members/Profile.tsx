@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { updateMe } from '@/api/auth'
+import { useMemo, useState } from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,23 +8,35 @@ import { useAuth } from '@/context/AuthContext'
 import { formatDate } from '@/lib/format'
 
 const preferences = [
-  { id: 'pref-directory', label: 'List me in the members directory', detail: 'Name, sector and specialisation only. Contact details are never published.' },
   { id: 'pref-mentor', label: 'Available as a mentor', detail: 'The Membership Secretary may match you with a newly inducted member.' },
   { id: 'pref-attachment', label: 'Willing to host a practice attachment', detail: 'For members with a licensed firm.' },
   { id: 'pref-notices', label: 'Email me chapter notices', detail: 'Deadlines, circulars and the meeting agenda.' },
 ]
 
+function initials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
+}
+
 export default function MembersProfile() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, updateProfile } = useAuth()
   const [phone, setPhone] = useState('')
+  const [dateOfBirth, setDateOfBirth] = useState(user?.dateOfBirth ?? '')
+  const [isDirectoryListed, setIsDirectoryListed] = useState(user?.isDirectoryListed ?? true)
+  const [photo, setPhoto] = useState<File | null>(null)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [checked, setChecked] = useState<Record<string, boolean>>({
-    'pref-directory': true,
     'pref-mentor': false,
     'pref-attachment': false,
     'pref-notices': true,
   })
+
+  const photoPreviewUrl = useMemo(() => (photo ? URL.createObjectURL(photo) : null), [photo])
 
   if (!user) return null
 
@@ -32,7 +44,13 @@ export default function MembersProfile() {
     setSaving(true)
     setSaved(false)
     try {
-      await updateMe({ phone })
+      await updateProfile({
+        phone,
+        dateOfBirth: dateOfBirth || undefined,
+        isDirectoryListed,
+        photo: photo ?? undefined,
+      })
+      setPhoto(null)
       setSaved(true)
     } finally {
       setSaving(false)
@@ -86,6 +104,24 @@ export default function MembersProfile() {
             handleSave()
           }}
         >
+          <div className="sm:col-span-2 flex items-center gap-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={photoPreviewUrl ?? (user.photoUrl ?? undefined)} alt="" />
+              <AvatarFallback className="bg-secondary text-secondary-foreground">
+                {initials(user.name)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="space-y-1.5">
+              <Label htmlFor="profile-photo">Profile photo</Label>
+              <Input
+                id="profile-photo"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
+                className="max-w-xs"
+              />
+            </div>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="profile-email">Email address</Label>
             <Input id="profile-email" type="email" defaultValue={user.email} disabled />
@@ -99,6 +135,36 @@ export default function MembersProfile() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="profile-dob">Date of birth</Label>
+            <Input
+              id="profile-dob"
+              type="date"
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+            />
+            <p className="text-[0.78rem] text-muted-foreground">
+              Used only to send you a birthday greeting.
+            </p>
+          </div>
+          <div className="sm:col-span-2">
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={isDirectoryListed}
+                onChange={(e) => setIsDirectoryListed(e.target.checked)}
+                className="mt-1 h-4 w-4 shrink-0 accent-[var(--primary)]"
+              />
+              <span>
+                <span className="block text-[0.93rem] font-medium">
+                  List me in the members directory
+                </span>
+                <span className="mt-0.5 block text-[0.84rem] leading-relaxed text-muted-foreground">
+                  Name, photo, sector and role only. Contact details are never published.
+                </span>
+              </span>
+            </label>
           </div>
           <div className="sm:col-span-2 flex items-center gap-3">
             <Button type="submit" disabled={saving}>

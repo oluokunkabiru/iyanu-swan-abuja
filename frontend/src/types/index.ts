@@ -21,6 +21,8 @@ export interface SiteSettings {
   subscriptionFee: number
   welfareFee: number
   logoUrl?: string | null
+  constitutionUrl?: string | null
+  constitutionLabel?: string | null
   heroVideoUrl?: string | null
   chairpersonWelcome?: { heading: string; paragraphs: string[] }
   chapterStats?: ChapterStat[]
@@ -56,6 +58,8 @@ export interface ExecutiveMember {
   bio: string
   photoUrl: string | null
   isPrincipal: boolean
+  termStartYear?: number | null
+  termEndYear?: number | null
 }
 
 export interface MemberSpotlight {
@@ -189,11 +193,13 @@ export interface DirectoryMember {
   id: string
   name: string
   credential: 'ACA' | 'FCA'
-  membershipNumber: string
   sector: Sector
-  specialisation: string
-  yearAdmitted: number
   chapterRole: string | null
+  photoUrl: string | null
+  /** Only present when the viewer is a signed-in member. */
+  membershipNumber?: string
+  specialisation?: string
+  yearAdmitted?: number
 }
 
 export interface Firm {
@@ -287,6 +293,9 @@ export interface AuthUser {
   role: 'member' | 'admin'
   joinedAt: string
   cpdTarget: number
+  photoUrl: string | null
+  isDirectoryListed: boolean
+  dateOfBirth: string | null
 }
 
 /* ── Navigation ──────────────────────────────────────────────────────────── */

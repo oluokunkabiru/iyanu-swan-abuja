@@ -1,4 +1,4 @@
-import { getExecutives } from '@/api/content'
+import { getExecutives, getPastChairpersons } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
@@ -6,6 +6,10 @@ import type { ExecutiveMember } from '@/types'
 
 export default function Governance() {
   const { data: executives, isLoading } = useApiData(getExecutives, [] as ExecutiveMember[])
+  const { data: pastChairpersons, isLoading: loadingPastChairpersons } = useApiData(
+    getPastChairpersons,
+    [] as ExecutiveMember[],
+  )
   const principals = executives.filter((e) => e.isPrincipal)
   const others = executives.filter((e) => !e.isPrincipal)
 
@@ -108,6 +112,42 @@ export default function Governance() {
           ))}
         </ul>
       </Section>
+
+      {(loadingPastChairpersons || pastChairpersons.length > 0) && (
+        <Section tone="tinted">
+          <SectionHeading
+            title="Past chairpersons"
+            lede="Women who have led the chapter before."
+            className="mb-8"
+          />
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {loadingPastChairpersons
+              ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-24" />)
+              : pastChairpersons.map((exec) => (
+                  <li key={exec.id} className="flex gap-4 border border-border bg-card p-5">
+                    {exec.photoUrl && (
+                      <img
+                        src={exec.photoUrl}
+                        alt=""
+                        loading="lazy"
+                        className="h-16 w-16 shrink-0 rounded-sm object-cover object-top"
+                      />
+                    )}
+                    <div className="min-w-0">
+                      <h3 className="text-[0.98rem] leading-snug">
+                        {exec.name}, {exec.credential}
+                      </h3>
+                      <p className="mt-1 text-[0.78rem] font-semibold text-accent-foreground">
+                        {exec.termStartYear && exec.termEndYear
+                          ? `Chairperson, ${exec.termStartYear}–${exec.termEndYear}`
+                          : 'Chairperson'}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+          </ul>
+        </Section>
+      )}
     </>
   )
 }

@@ -123,6 +123,18 @@ class SwanContentSeeder extends Seeder
             }
         }
 
+        $pastChairpersons = [
+            ['name' => 'Funmilayo Adeyemi', 'credential' => 'FCA', 'position' => 'Chairperson', 'term_start_year' => 2022, 'term_end_year' => 2024, 'sort_order' => 1],
+            ['name' => 'Halima Bello-Osagie', 'credential' => 'ACA', 'position' => 'Chairperson', 'term_start_year' => 2020, 'term_end_year' => 2022, 'sort_order' => 2],
+        ];
+
+        foreach ($pastChairpersons as $chairperson) {
+            ExecutiveMember::query()->updateOrCreate(
+                ['name' => $chairperson['name']],
+                $chairperson + ['is_active' => false, 'is_principal' => false]
+            );
+        }
+
         $partners = [
             ['name' => 'ICAN', 'url' => 'https://icanig.org', 'scope' => 'Parent body', 'sort_order' => 1],
             ['name' => 'SWAN National', 'url' => 'https://icanig.org/ican/', 'scope' => 'Parent body', 'sort_order' => 2],

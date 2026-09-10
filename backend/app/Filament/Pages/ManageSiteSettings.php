@@ -131,6 +131,20 @@ class ManageSiteSettings extends Page
                         TextInput::make('membership_welfare_fee')->numeric()->required(),
                     ])
                     ->columns(2),
+                Section::make('Constitution')
+                    ->description('The document members download from the public site.')
+                    ->schema([
+                        SpatieMediaLibraryFileUpload::make('constitution')
+                            ->collection('constitution')
+                            ->disk('public')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(20480)
+                            ->columnSpanFull(),
+                        TextInput::make('constitution_label')
+                            ->label('Version label')
+                            ->placeholder('e.g. Revised 2024')
+                            ->maxLength(100),
+                    ]),
                 Section::make('Payments')
                     ->description('Both gateways can hold API keys in .env at once — this is only which one is actually used to take payment.')
                     ->schema([

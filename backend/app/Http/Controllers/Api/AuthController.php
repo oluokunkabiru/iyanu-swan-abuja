@@ -99,12 +99,23 @@ class AuthController extends Controller
         $data = $request->validate([
             'name' => ['sometimes', 'string', 'max:255'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:50'],
+            'date_of_birth' => ['sometimes', 'nullable', 'date'],
+            'is_directory_listed' => ['sometimes', 'boolean'],
+            'photo' => ['sometimes', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
         ]);
 
         $user->fill(['name' => $data['name'] ?? $user->name])->save();
 
-        if (array_key_exists('phone', $data)) {
-            $user->memberProfile()->updateOrCreate([], ['phone' => $data['phone']]);
+        $profileData = array_intersect_key($data, array_flip(['phone', 'date_of_birth', 'is_directory_listed']));
+
+        if ($profileData !== []) {
+            $user->memberProfile()->updateOrCreate([], $profileData);
+        }
+
+        if ($request->hasFile('photo')) {
+            $user->memberProfile()->firstOrCreate([])
+                ->addMediaFromRequest('photo')
+                ->toMediaCollection('photo');
         }
 
         return response()->json($this->userPayload($user->fresh('memberProfile')));
@@ -149,6 +160,9 @@ class AuthController extends Controller
             'role' => $user->role,
             'joinedAt' => $profile?->joined_at?->toDateString(),
             'cpdTarget' => $profile?->cpd_target ?? 120,
+            'photoUrl' => $profile?->photo_url,
+            'isDirectoryListed' => $profile?->is_directory_listed ?? false,
+            'dateOfBirth' => $profile?->date_of_birth?->toDateString(),
         ];
     }
 }
