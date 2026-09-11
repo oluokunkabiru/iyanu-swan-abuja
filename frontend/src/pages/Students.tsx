@@ -54,9 +54,7 @@ export default function Students() {
               ))}
             </ol>
             <Button variant="outline" asChild className="mt-6">
-              <a href="https://icanig.org/ican/students/" target="_blank" rel="noreferrer">
-                ICAN student registration
-              </a>
+              <Link to="/about#ican">About the chapter and ICAN</Link>
             </Button>
           </div>
 

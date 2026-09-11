@@ -127,9 +127,7 @@ export default function About() {
               </p>
             </div>
             <Button variant="outline" asChild className="mt-6">
-              <a href="https://icanig.org/ican/" target="_blank" rel="noreferrer">
-                Visit the ICAN website
-              </a>
+              <Link to="/membership">Become a SWAN member</Link>
             </Button>
           </div>
 

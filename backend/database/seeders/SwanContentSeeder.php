@@ -137,7 +137,7 @@ class SwanContentSeeder extends Seeder
 
         $partners = [
             ['name' => 'ICAN', 'url' => 'https://icanig.org', 'scope' => 'Parent body', 'sort_order' => 1],
-            ['name' => 'SWAN National', 'url' => 'https://icanig.org/ican/', 'scope' => 'Parent body', 'sort_order' => 2],
+            ['name' => 'SWAN National', 'url' => '/about', 'scope' => 'Parent body', 'sort_order' => 2],
             ['name' => 'Association of Accountancy Bodies in West Africa', 'url' => 'https://abwa.org.ng/', 'scope' => 'Affiliate', 'sort_order' => 3],
             ['name' => 'Pan African Federation of Accountants', 'url' => 'https://www.pafa.org.za/', 'scope' => 'Affiliate', 'sort_order' => 4],
             ['name' => 'International Federation of Accountants', 'url' => 'https://www.ifac.org/', 'scope' => 'Affiliate', 'sort_order' => 5],

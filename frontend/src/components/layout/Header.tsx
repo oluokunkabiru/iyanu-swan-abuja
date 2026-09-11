@@ -51,19 +51,14 @@ export function Header() {
       <div className="hidden border-b border-plum-800/60 bg-plum-900 text-plum-200 md:block">
         <div className="mx-auto flex h-9 max-w-7xl items-center justify-between px-4 text-[0.78rem]">
           <p>
-          The Society{' '}
-            <a
-              href="https://icanig.org/ican/"
-              target="_blank"
-              rel="noreferrer"
-              className="text-gold-300 underline-offset-4 hover:underline"
-            >
+            The Society{' '}
+            <Link to="/about#ican" className="text-gold-300 underline-offset-4 hover:underline">
               {loadingSettings ? (
                 <Skeleton className="inline-block h-3 w-40 align-middle bg-plum-700" />
               ) : (
                 settings?.parentBody
               )}
-            </a>
+            </Link>
           </p>
           <div className="flex items-center gap-5">
             <a href={`mailto:${settings?.email}`} className="hover:text-white">

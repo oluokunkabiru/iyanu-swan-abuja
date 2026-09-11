@@ -109,18 +109,13 @@ export function Footer() {
           </p>
           <p>
             The Society{' '}
-            <a
-              href="https://icanig.org/ican/"
-              target="_blank"
-              rel="noreferrer"
-              className="text-gold-300 underline-offset-4 hover:underline"
-            >
+            <Link to="/about#ican" className="text-gold-300 underline-offset-4 hover:underline">
               {loadingSettings ? (
                 <Skeleton className="inline-block h-3 w-56 align-middle bg-plum-800" />
               ) : (
                 settings?.parentBody
               )}
-            </a>
+            </Link>
           </p>
         </div>
       </div>

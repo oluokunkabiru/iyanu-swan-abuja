@@ -363,7 +363,7 @@ class DemoContentSeeder extends Seeder
 
         foreach ([
             ['Institute of Chartered Accountants of Nigeria', 'https://icanig.org/ican/', 'Parent body'],
-            ['SWAN National', 'https://icanig.org/ican/', 'Parent body'],
+            ['SWAN National', '/about', 'Parent body'],
             ['Association of Accountancy Bodies in West Africa', 'https://abwa.org.ng/', 'Affiliate'],
             ['Pan African Federation of Accountants', 'https://www.pafa.org.za/', 'Affiliate'],
             ['International Federation of Accountants', 'https://www.ifac.org/', 'Affiliate'],
