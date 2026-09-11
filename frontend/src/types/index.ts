@@ -296,6 +296,11 @@ export interface AuthUser {
   photoUrl: string | null
   isDirectoryListed: boolean
   dateOfBirth: string | null
+  phone: string | null
+  sector: Sector | null
+  specialisation: string | null
+  yearAdmitted: number | null
+  chapterRole: string | null
 }
 
 /* ── Navigation ──────────────────────────────────────────────────────────── */

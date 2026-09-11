@@ -165,6 +165,11 @@ class AuthController extends Controller
             'photoUrl' => $profile?->photo_url,
             'isDirectoryListed' => $profile?->is_directory_listed ?? false,
             'dateOfBirth' => $profile?->date_of_birth?->toDateString(),
+            'phone' => $profile?->phone,
+            'sector' => $profile?->sector,
+            'specialisation' => $profile?->specialisation,
+            'yearAdmitted' => $profile?->year_admitted,
+            'chapterRole' => $profile?->chapter_role,
         ];
     }
 }

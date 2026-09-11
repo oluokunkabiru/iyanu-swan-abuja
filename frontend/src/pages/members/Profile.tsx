@@ -24,7 +24,7 @@ function initials(name: string): string {
 
 export default function MembersProfile() {
   const { user, signOut, updateProfile } = useAuth()
-  const [phone, setPhone] = useState('')
+  const [phone, setPhone] = useState(user?.phone ?? '')
   const [dateOfBirth, setDateOfBirth] = useState(user?.dateOfBirth ?? '')
   const [isDirectoryListed, setIsDirectoryListed] = useState(user?.isDirectoryListed ?? true)
   const [photo, setPhoto] = useState<File | null>(null)
@@ -88,6 +88,24 @@ export default function MembersProfile() {
               </StatusTag>
             </dd>
           </div>
+          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
+            <dt className="text-[0.88rem] text-muted-foreground">Sector</dt>
+            <dd className="text-[0.92rem]">{user.sector ?? '—'}</dd>
+          </div>
+          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
+            <dt className="text-[0.88rem] text-muted-foreground">Specialisation</dt>
+            <dd className="text-[0.92rem]">{user.specialisation ?? '—'}</dd>
+          </div>
+          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
+            <dt className="text-[0.88rem] text-muted-foreground">Year admitted</dt>
+            <dd className="tnum text-[0.92rem]">{user.yearAdmitted ?? '—'}</dd>
+          </div>
+          {user.chapterRole && (
+            <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
+              <dt className="text-[0.88rem] text-muted-foreground">Chapter role</dt>
+              <dd className="text-[0.92rem]">{user.chapterRole}</dd>
+            </div>
+          )}
         </dl>
         <p className="mt-4 text-[0.85rem] text-muted-foreground">
           Your name and membership number come from the ICAN roll. To correct either, update your
