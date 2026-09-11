@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useAuth } from '@/context/AuthContext'
 import { useApiData } from '@/hooks/useApiData'
 import { formatNaira, formatShortDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -15,14 +16,18 @@ function DuesPaymentCard({
   year,
   levels,
   existing,
+  preferredLevelId,
   onSubmitted,
 }: {
   year: number
   levels: MembershipLevel[]
   existing?: SubscriptionRecord
+  preferredLevelId?: string
   onSubmitted: () => void
 }) {
-  const [selectedLevelId, setSelectedLevelId] = useState(existing?.membershipLevelId ?? levels[0]?.id ?? '')
+  const [selectedLevelId, setSelectedLevelId] = useState(
+    existing?.membershipLevelId ?? preferredLevelId ?? levels[0]?.id ?? '',
+  )
   const [method, setMethod] = useState<'online' | 'bank_transfer'>('online')
   const [payingOnline, setPayingOnline] = useState(false)
   const [reference, setReference] = useState('')
@@ -185,13 +190,20 @@ function DuesPaymentCard({
 }
 
 export default function MembersSubscription() {
+  const { user } = useAuth()
   const [refreshKey, setRefreshKey] = useState(0)
   const { data: subscriptions, isLoading } = useApiData(
     fetchMySubscriptions,
     [] as SubscriptionRecord[],
     [refreshKey],
   )
-  const { data: levels } = useApiData(getMembershipLevels, [] as MembershipLevel[])
+  const { data: levels, isLoading: loadingLevels } = useApiData(getMembershipLevels, [] as MembershipLevel[])
+
+  // The level chosen at registration (stored as the member's "ICAN
+  // level") doubles as their default dues level until they pick a
+  // different one — matches an existing subscription's own level first.
+  const preferredLevelId = levels.find((l) => l.name === user?.credential)?.id
+  const cardsReady = !isLoading && !loadingLevels
 
   const currentYear = new Date().getFullYear()
   const currentYearRecord = subscriptions.find((s) => s.year === currentYear)
@@ -214,7 +226,7 @@ export default function MembersSubscription() {
           className="mb-6"
         />
 
-        {isLoading ? (
+        {!cardsReady ? (
           <Skeleton className="h-32" />
         ) : yearsNeedingAction.length > 0 ? (
           <div className="space-y-4">
@@ -224,6 +236,7 @@ export default function MembersSubscription() {
                 year={year}
                 levels={levels}
                 existing={existing}
+                preferredLevelId={preferredLevelId}
                 onSubmitted={() => setRefreshKey((k) => k + 1)}
               />
             ))}
