@@ -158,6 +158,7 @@ export const navigation: NavSection[] = [
         items: [
           { label: 'Publications', to: '/publications', description: 'Communiqués, bulletins and reports' },
           { label: 'Forms and downloads', to: '/resources' },
+          { label: 'Constitution', to: '/constitution', description: 'Download the governing document' },
           { label: 'Announcements', to: '/announcements' },
         ],
       },
