@@ -1,24 +1,25 @@
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Check } from 'lucide-react'
-import { paySubscriptionDues } from '@/api/auth'
+import { getMembershipLevels } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context/AuthContext'
 import { useSettings } from '@/context/SettingsContext'
+import { useApiData } from '@/hooks/useApiData'
 import { formatNaira } from '@/lib/format'
+import type { MembershipLevel } from '@/types'
 
 export default function MembershipRegister() {
   const { signUp } = useAuth()
   const { settings } = useSettings()
+  const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  const subscriptionFee = settings?.subscriptionFee ?? 0
-  const welfareFee = settings?.welfareFee ?? 0
-  const total = subscriptionFee + welfareFee
+  const { data: levels } = useApiData(getMembershipLevels, [] as MembershipLevel[])
   const registrationSteps = settings?.registrationSteps ?? []
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -45,8 +46,7 @@ export default function MembershipRegister() {
         phone: phone || undefined,
         dateOfBirth: dateOfBirth || undefined,
       })
-      const { authorizationUrl } = await paySubscriptionDues(new Date().getFullYear())
-      window.location.href = authorizationUrl
+      navigate('/members')
     } catch {
       setError('We could not complete that registration. Check your details and try again.')
       setSubmitting(false)
@@ -61,8 +61,8 @@ export default function MembershipRegister() {
           { label: 'Membership', to: '/membership' },
           { label: 'Register' },
         ]}
-        title="Register and pay your dues"
-        intro="Your details are matched against the ICAN roll, so use the name and membership number exactly as they appear on your record."
+        title="Create your account"
+        intro="Registration itself is free. Your details are matched against the ICAN roll, so use the name and membership number exactly as they appear on your record — you'll choose a membership level and pay your dues from your dashboard afterwards."
       />
 
       <Section>
@@ -104,36 +104,36 @@ export default function MembershipRegister() {
               )}
 
               <Button type="submit" size="lg" disabled={submitting}>
-                {submitting ? 'Taking you to payment…' : `Pay ${formatNaira(total)} and register`}
+                {submitting ? 'Creating your account…' : 'Create my account'}
               </Button>
 
               <p className="text-[0.82rem] leading-relaxed text-muted-foreground">
-                You&rsquo;ll be taken to a secure payment page to complete your dues by card, bank
-                transfer or USSD. Your account opens immediately as pending, and moves to active once
-                payment is confirmed.
+                We&rsquo;ll send a link to confirm your email. Your account opens as pending, and
+                moves to active once you&rsquo;ve verified your email and paid your dues — by card,
+                bank transfer or USSD online, or by bank transfer with evidence you upload for review.
               </p>
             </form>
           </div>
 
           <aside className="space-y-6">
             <div className="border border-border bg-card p-6">
-              <h2 className="text-[1.05rem]">What you are paying</h2>
-              <dl className="mt-4 space-y-3 text-[0.9rem]">
-                <div className="flex items-baseline justify-between gap-4">
-                  <dt className="text-muted-foreground">Annual subscription</dt>
-                  <dd className="tnum font-medium">{formatNaira(subscriptionFee)}</dd>
-                </div>
-                <div className="flex items-baseline justify-between gap-4">
-                  <dt className="text-muted-foreground">Welfare levy</dt>
-                  <dd className="tnum font-medium">{formatNaira(welfareFee)}</dd>
-                </div>
-                <div className="flex items-baseline justify-between gap-4 border-t border-border pt-3">
-                  <dt className="font-medium">Total</dt>
-                  <dd className="tnum font-heading text-xl text-plum-700 dark:text-primary">
-                    {formatNaira(total)}
-                  </dd>
-                </div>
-              </dl>
+              <h2 className="text-[1.05rem]">Membership levels</h2>
+              <p className="mt-2 text-[0.85rem] text-muted-foreground">
+                Pick the level that fits once you&rsquo;re signed in — each has its own subscription
+                and welfare levy.
+              </p>
+              {levels.length > 0 && (
+                <dl className="mt-4 space-y-3 text-[0.9rem]">
+                  {levels.map((level) => (
+                    <div key={level.id} className="flex items-baseline justify-between gap-4 border-t border-border pt-3 first:border-0 first:pt-0">
+                      <dt className="font-medium">{level.name}</dt>
+                      <dd className="tnum font-medium">
+                        {formatNaira(level.subscriptionAmount + level.welfareAmount)}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
             </div>
 
             <div className="border border-border bg-card p-6">

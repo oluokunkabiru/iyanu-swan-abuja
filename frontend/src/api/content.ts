@@ -11,6 +11,7 @@ import type {
   GalleryImage,
   JobListing,
   MemberSpotlight,
+  MembershipLevel,
   NewsPost,
   Partner,
   ProgrammeEntry,
@@ -21,6 +22,9 @@ import type {
 } from '@/types'
 
 export const getSettings = () => api.get<SiteSettings>('/settings').then((r) => r.data)
+
+export const getMembershipLevels = () =>
+  api.get<MembershipLevel[]>('/membership-levels').then((r) => r.data)
 
 export const getCoreValues = () => api.get<CoreValue[]>('/core-values').then((r) => r.data)
 

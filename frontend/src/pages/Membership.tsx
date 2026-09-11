@@ -1,16 +1,22 @@
 import { Link } from 'react-router-dom'
+import { getMembershipLevels } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSettings } from '@/context/SettingsContext'
+import { useApiData } from '@/hooks/useApiData'
 import { formatNaira } from '@/lib/format'
+import type { MembershipLevel } from '@/types'
 
 export default function Membership() {
   const { settings, isLoading } = useSettings()
-  const subscriptionFee = settings?.subscriptionFee ?? 0
-  const welfareFee = settings?.welfareFee ?? 0
+  const { data: levels } = useApiData(getMembershipLevels, [] as MembershipLevel[])
   const registrationSteps = settings?.registrationSteps ?? []
   const memberBenefits = settings?.memberBenefits ?? []
+
+  const cheapestTotal = levels.length
+    ? Math.min(...levels.map((l) => l.subscriptionAmount + l.welfareAmount))
+    : null
 
   return (
     <>
@@ -19,15 +25,17 @@ export default function Membership() {
         title="Membership"
         intro="Every female member of ICAN is already a member of SWAN. Becoming active in the Abuja Chapter means paying your dues, getting confirmed, and turning up."
         aside={
-          <div className="border border-gold-500/40 bg-plum-800/60 p-5 text-plum-200">
-            <p className="text-[0.8rem]">Annual dues</p>
-            <p className="tnum mt-1 font-heading text-3xl text-gold-300">
-              {formatNaira(subscriptionFee + welfareFee)}
-            </p>
-            <p className="mt-1 text-[0.78rem]">
-              {formatNaira(subscriptionFee)} subscription · {formatNaira(welfareFee)} welfare
-            </p>
-          </div>
+          cheapestTotal !== null && (
+            <div className="border border-gold-500/40 bg-plum-800/60 p-5 text-plum-200">
+              <p className="text-[0.8rem]">Annual dues from</p>
+              <p className="tnum mt-1 font-heading text-3xl text-gold-300">
+                {formatNaira(cheapestTotal)}
+              </p>
+              <p className="mt-1 text-[0.78rem]">
+                Subscription and welfare levy — the amount depends on the membership level you choose
+              </p>
+            </div>
+          )
         }
       />
 
@@ -57,9 +65,10 @@ export default function Membership() {
           <aside id="welfare" className="scroll-mt-24 border border-border bg-card p-6">
             <h2 className="text-[1.05rem]">The welfare fund</h2>
             <p className="mt-3 text-[0.9rem] leading-relaxed text-muted-foreground">
-              The ₦12,000 welfare levy is not an administrative charge. It funds the chapter
-              response when a member faces bereavement, illness or another major life event, and it
-              pays for the community outreach the chapter commits to each year.
+              The welfare levy included in every membership level is not an administrative charge.
+              It funds the chapter response when a member faces bereavement, illness or another
+              major life event, and it pays for the community outreach the chapter commits to each
+              year.
             </p>
             <p className="mt-3 text-[0.9rem] leading-relaxed text-muted-foreground">
               The Welfare Officer administers claims and the fund is accounted for in the annual

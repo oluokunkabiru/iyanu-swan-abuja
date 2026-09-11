@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -36,15 +35,6 @@ class AuthController extends Controller
             'phone' => $data['phone'] ?? null,
             'date_of_birth' => $data['date_of_birth'] ?? null,
             'membership_status' => 'pending',
-        ]);
-
-        $settings = SiteSetting::current();
-
-        $user->subscriptions()->create([
-            'year' => now()->year,
-            'subscription_amount' => $settings->membership_subscription_fee ?? 0,
-            'welfare_amount' => $settings->membership_welfare_fee ?? 0,
-            'status' => 'outstanding',
         ]);
 
         $user->sendEmailVerificationNotification();

@@ -83,8 +83,27 @@ export async function fetchMySubscriptions(): Promise<SubscriptionRecord[]> {
   return data
 }
 
-export async function paySubscriptionDues(year: number): Promise<{ authorizationUrl: string }> {
+export async function paySubscriptionDues(
+  year: number,
+  membershipLevelId: string,
+): Promise<{ authorizationUrl: string }> {
   await ensureCsrfCookie()
-  const { data } = await api.post<{ authorizationUrl: string }>(`/me/subscriptions/${year}/pay`)
+  const { data } = await api.post<{ authorizationUrl: string }>(`/me/subscriptions/${year}/pay`, {
+    membership_level_id: membershipLevelId,
+  })
+  return data
+}
+
+export async function submitBankTransfer(
+  year: number,
+  payload: { membershipLevelId: string; reference: string; evidence: File },
+): Promise<{ message: string }> {
+  await ensureCsrfCookie()
+  const form = new FormData()
+  form.append('membership_level_id', payload.membershipLevelId)
+  form.append('reference', payload.reference)
+  form.append('evidence', payload.evidence)
+
+  const { data } = await api.post<{ message: string }>(`/me/subscriptions/${year}/bank-transfer`, form)
   return data
 }

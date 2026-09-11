@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\FirmController;
 use App\Http\Controllers\Api\GalleryImageController;
 use App\Http\Controllers\Api\JobListingController;
 use App\Http\Controllers\Api\MemberCpdRecordController;
+use App\Http\Controllers\Api\MembershipLevelController;
 use App\Http\Controllers\Api\MemberSpotlightController;
 use App\Http\Controllers\Api\MemberSubscriptionController;
 use App\Http\Controllers\Api\NewsPostController;
@@ -42,6 +43,7 @@ Route::get('/directory/members', [DirectoryMemberController::class, 'index']);
 Route::get('/directory/firms', [FirmController::class, 'index']);
 Route::get('/jobs', [JobListingController::class, 'index']);
 Route::get('/resources', [ResourceItemController::class, 'index']);
+Route::get('/membership-levels', [MembershipLevelController::class, 'index']);
 
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{event}', [EventController::class, 'show']);
@@ -78,4 +80,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me/cpd-records', [MemberCpdRecordController::class, 'index']);
     Route::get('/me/subscriptions', [MemberSubscriptionController::class, 'index']);
     Route::post('/me/subscriptions/{year}/pay', [PaymentController::class, 'paySubscriptionDues']);
+    Route::post('/me/subscriptions/{year}/bank-transfer', [PaymentController::class, 'submitBankTransfer']);
 });

@@ -33,7 +33,10 @@ export default function MembersOverview() {
     .reduce((sum, r) => sum + r.hours, 0)
   const progress = Math.min(100, Math.round((cycleHours / user.cpdTarget) * 100))
 
-  const outstanding = subscriptions.find((s) => s.status === 'Outstanding')
+  const currentYear = new Date().getFullYear()
+  const currentYearRecord = subscriptions.find((s) => s.year === currentYear)
+  const duesNeedAction = !currentYearRecord || currentYearRecord.status !== 'Paid'
+  const duesPendingReview = currentYearRecord?.status === 'Pending review'
   const nextTicket = tickets.find((t) => t.status === 'Confirmed')
   const nextEvent = upcomingEvents[0]
 
@@ -112,23 +115,35 @@ export default function MembersOverview() {
                 <span
                   className={cn(
                     'flex h-10 w-10 items-center justify-center rounded-full',
-                    outstanding ? 'bg-destructive/10 text-destructive' : 'bg-success/12 text-success',
+                    duesPendingReview
+                      ? 'bg-accent text-accent-foreground'
+                      : duesNeedAction
+                        ? 'bg-destructive/10 text-destructive'
+                        : 'bg-success/12 text-success',
                   )}
                 >
                   <Wallet className="h-5 w-5" />
                 </span>
-                <StatusTag tone={outstanding ? 'warning' : 'positive'}>
-                  {outstanding ? 'Outstanding' : 'Active roll'}
+                <StatusTag tone={duesPendingReview ? 'warning' : duesNeedAction ? 'warning' : 'positive'}>
+                  {duesPendingReview ? 'Pending review' : duesNeedAction ? 'Outstanding' : 'Active roll'}
                 </StatusTag>
               </div>
               <p className="mt-4 text-[0.82rem] text-muted-foreground">Dues</p>
               <p className="mt-1 font-heading text-2xl">
-                {outstanding ? `${outstanding.year} outstanding` : 'Up to date'}
+                {duesPendingReview
+                  ? `${currentYear} under review`
+                  : duesNeedAction
+                    ? `${currentYear} outstanding`
+                    : 'Up to date'}
               </p>
               <p className="tnum mt-2 text-[0.85rem] text-muted-foreground">
-                {outstanding
-                  ? `${formatNaira(outstanding.subscription + outstanding.welfare)} due`
-                  : 'No balance on your record'}
+                {duesPendingReview
+                  ? 'Awaiting admin approval'
+                  : currentYearRecord
+                    ? `${formatNaira(currentYearRecord.subscription + currentYearRecord.welfare)} due`
+                    : duesNeedAction
+                      ? 'Choose a membership level to see the amount'
+                      : 'No balance on your record'}
               </p>
             </div>
 
@@ -150,26 +165,43 @@ export default function MembersOverview() {
         )}
       </div>
 
-      {outstanding && (
+      {duesPendingReview ? (
         <div className="flex flex-col gap-4 rounded-xl border border-gold-500/40 bg-accent/60 p-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="flex items-center gap-2 text-[1.05rem] font-semibold">
               <Wallet className="h-4 w-4 text-accent-foreground" aria-hidden="true" />
-              Your {outstanding.year} dues are open
+              Your {currentYear} payment is under review
             </h2>
             <p className="mt-1.5 max-w-[60ch] text-[0.9rem] leading-relaxed text-muted-foreground">
-              {formatNaira(outstanding.subscription)} subscription and{' '}
-              {formatNaira(outstanding.welfare)} welfare. Paying keeps your member rate on events and
-              your eligibility for committee service.
+              We received your bank transfer evidence and an admin will confirm it shortly. No
+              action needed from you right now.
             </p>
           </div>
-          <Button asChild className="shrink-0">
-            <Link to="/members/subscription">
-              Pay {outstanding.year} dues
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </Button>
         </div>
+      ) : (
+        duesNeedAction && (
+          <div className="flex flex-col gap-4 rounded-xl border border-gold-500/40 bg-accent/60 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="flex items-center gap-2 text-[1.05rem] font-semibold">
+                <Wallet className="h-4 w-4 text-accent-foreground" aria-hidden="true" />
+                Your {currentYear} dues are open
+              </h2>
+              <p className="mt-1.5 max-w-[60ch] text-[0.9rem] leading-relaxed text-muted-foreground">
+                {currentYearRecord
+                  ? `${formatNaira(currentYearRecord.subscription)} subscription and ${formatNaira(currentYearRecord.welfare)} welfare. `
+                  : ''}
+                Choose your membership level and pay online or by bank transfer to keep your member
+                rate on events and your eligibility for committee service.
+              </p>
+            </div>
+            <Button asChild className="shrink-0">
+              <Link to="/members/subscription">
+                Pay {currentYear} dues
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </Button>
+          </div>
+        )
       )}
 
       <div>

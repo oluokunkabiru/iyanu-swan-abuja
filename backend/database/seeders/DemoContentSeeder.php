@@ -11,6 +11,7 @@ use App\Models\Faq;
 use App\Models\Firm;
 use App\Models\GalleryImage;
 use App\Models\JobListing;
+use App\Models\MembershipLevel;
 use App\Models\NewsPost;
 use App\Models\Partner;
 use App\Models\ProgrammeEntry;
@@ -91,8 +92,6 @@ class DemoContentSeeder extends Seeder
                 'Deliver financial literacy and community service across the FCT.',
                 'Build a dependable welfare structure for members.',
             ],
-            'membership_subscription_fee' => 5000,
-            'membership_welfare_fee' => 12000,
         ]);
 
         $logo = base_path('../frontend/src/assets/logo.png');
@@ -393,6 +392,8 @@ class DemoContentSeeder extends Seeder
             ]);
         }
 
+        $standardLevelId = MembershipLevel::query()->where('name', 'Standard Membership')->value('id');
+
         foreach ([
             [2027, 5000, 12000, 'outstanding', null, null],
             [2026, 5000, 12000, 'paid', '2026-01-18', 'SWN-2026-004182'],
@@ -400,6 +401,7 @@ class DemoContentSeeder extends Seeder
             [2024, 5000, 10000, 'paid', '2024-01-27', 'SWN-2024-003501'],
         ] as [$year, $subscription, $welfare, $status, $paidAt, $reference]) {
             Subscription::query()->updateOrCreate(['user_id' => $user->id, 'year' => $year], [
+                'membership_level_id' => $standardLevelId,
                 'subscription_amount' => $subscription, 'welfare_amount' => $welfare, 'status' => $status,
                 'paid_at' => $paidAt, 'reference' => $reference,
             ]);

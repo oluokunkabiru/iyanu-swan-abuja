@@ -125,12 +125,6 @@ class ManageSiteSettings extends Page
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
-                Section::make('Membership fees (₦)')
-                    ->schema([
-                        TextInput::make('membership_subscription_fee')->numeric()->required(),
-                        TextInput::make('membership_welfare_fee')->numeric()->required(),
-                    ])
-                    ->columns(2),
                 Section::make('Constitution')
                     ->description('The document members download from the public site.')
                     ->schema([
@@ -146,7 +140,7 @@ class ManageSiteSettings extends Page
                             ->maxLength(100),
                     ]),
                 Section::make('Payments')
-                    ->description('Both gateways can hold API keys in .env at once — this is only which one is actually used to take payment.')
+                    ->description('Both gateways can hold API keys in .env at once — this is only which one is actually used to take payment. Membership fees are configured per level under Member Records → Membership Levels.')
                     ->schema([
                         Select::make('active_payment_gateway')
                             ->label('Active payment gateway')

@@ -18,8 +18,6 @@ export interface SiteSettings {
   phone: string
   email: string
   socials: SocialLink[]
-  subscriptionFee: number
-  welfareFee: number
   logoUrl?: string | null
   constitutionUrl?: string | null
   constitutionLabel?: string | null
@@ -262,14 +260,28 @@ export interface CpdRecord {
   verified: boolean
 }
 
+export interface MembershipLevel {
+  id: string
+  name: string
+  description: string | null
+  subscriptionAmount: number
+  welfareAmount: number
+}
+
 export interface SubscriptionRecord {
   id: string
   year: number
   subscription: number
   welfare: number
-  status: 'Paid' | 'Outstanding'
+  status: 'Paid' | 'Outstanding' | 'Pending review'
   paidOn: string | null
   reference: string | null
+  membershipLevelId: string | null
+  membershipLevelName: string | null
+  paymentMethod: string | null
+  bankTransferReference: string | null
+  reviewNote: string | null
+  evidenceUrl: string | null
 }
 
 export interface TicketRecord {

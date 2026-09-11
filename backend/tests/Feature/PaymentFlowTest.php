@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Event;
 use App\Models\EventTicketType;
+use App\Models\MembershipLevel;
 use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
@@ -14,7 +15,7 @@ class PaymentFlowTest extends TestCase
 {
     use UsesMysqlInTransaction;
 
-    public function test_registering_creates_an_outstanding_subscription_for_the_current_year(): void
+    public function test_registering_is_free_and_creates_no_subscription(): void
     {
         $response = $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
             'name' => 'Jane Member',
@@ -26,11 +27,7 @@ class PaymentFlowTest extends TestCase
 
         $user = User::where('email', 'jane.member@example.com')->firstOrFail();
 
-        $this->assertDatabaseHas('subscriptions', [
-            'user_id' => $user->id,
-            'year' => now()->year,
-            'status' => 'outstanding',
-        ]);
+        $this->assertDatabaseMissing('subscriptions', ['user_id' => $user->id]);
     }
 
     public function test_paying_subscription_dues_returns_a_checkout_url_from_the_active_gateway(): void
@@ -45,12 +42,18 @@ class PaymentFlowTest extends TestCase
         ]);
 
         $user = User::factory()->create(['role' => 'member']);
+        $level = MembershipLevel::factory()->create(['subscription_amount' => 5_000, 'welfare_amount' => 12_000]);
 
-        $response = $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay');
+        $response = $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+            'membership_level_id' => $level->id,
+        ]);
 
         $response->assertOk()->assertJsonStructure(['authorizationUrl']);
         $this->assertDatabaseHas('subscriptions', [
             'user_id' => $user->id,
+            'membership_level_id' => $level->id,
+            'subscription_amount' => 5_000,
+            'welfare_amount' => 12_000,
             'payment_gateway' => 'paystack',
         ]);
     }
@@ -71,7 +74,10 @@ class PaymentFlowTest extends TestCase
         ]);
 
         $user = User::factory()->create(['role' => 'member']);
-        $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay')->assertOk();
+        $level = MembershipLevel::factory()->create();
+        $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+            'membership_level_id' => $level->id,
+        ])->assertOk();
 
         $subscription = $user->subscriptions()->first();
 

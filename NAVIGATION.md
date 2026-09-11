@@ -17,8 +17,8 @@ paths are relative to `VITE_API_URL`'s sibling frontend origin (e.g.
 | `/committees/:slug` | Committee detail | |
 | `/faqs` | FAQs | |
 | `/contact` | Contact | |
-| `/membership` | Membership overview | |
-| `/membership/register` | Membership registration form | Posts to `/api/register` |
+| `/membership` | Membership overview | Shows dues "from" the cheapest active membership level |
+| `/membership/register` | Membership registration form | Posts to `/api/register`; free — no payment happens here |
 | `/mentorship` | Mentorship | |
 | `/students` | Students | |
 | `/cpd` | CPD overview | |
@@ -50,7 +50,7 @@ Wrapped in `ProtectedRoute`, which bounces signed-out visitors to `/login`.
 |---|---|---|
 | `/members` | Dashboard overview | Shows the "confirm your email" banner until the registered email is verified, and the "dues are open" banner until paid |
 | `/members/cpd` | CPD record | |
-| `/members/subscription` | Dues / subscription | Pay-dues flow lives here |
+| `/members/subscription` | Dues / subscription | Choose a membership level, then pay online (Paystack/Flutterwave) or submit a bank transfer with evidence for admin review |
 | `/members/tickets` | Event tickets | |
 | `/members/profile` | Profile | Contact details, plus a "Notification emails" section (locked until the registered email is verified) for adding a personal/official email and choosing where notices go |
 
@@ -62,7 +62,8 @@ Wrapped in `ProtectedRoute`, which bounces signed-out visitors to `/login`.
 | `/admin/logout` | Admin sign-out |
 | `/admin` | Dashboard |
 | `/admin/users` | Members & admins — list, view (verification badge, personal/official email, notification preference, CPD/subscriptions/tickets tabs), create, edit |
-| `/admin/subscriptions` | Membership dues records |
+| `/admin/subscriptions` | Membership dues records — level, method, evidence link, and Approve/Reject actions for bank transfers pending review |
+| `/admin/membership-levels` | Membership levels — the priced tiers (subscription + welfare amount) members choose when paying dues |
 | `/admin/events` | Events |
 | `/admin/news-posts` | News posts |
 | `/admin/announcements` | Announcements |
@@ -82,7 +83,7 @@ Wrapped in `ProtectedRoute`, which bounces signed-out visitors to `/login`.
 | `/admin/partners` | Partners |
 | `/admin/core-values` | Core values |
 | `/admin/contact-messages` | Contact form submissions |
-| `/admin/manage-site-settings` | Site settings (fees, gateway, copy, etc.) |
+| `/admin/manage-site-settings` | Site settings (active payment gateway, copy, etc. — membership fees live under Membership Levels, not here) |
 | `/admin/manage-notification-settings` | Notification settings — channel toggles, per-type routing, and the site-wide default for which member email (registered/personal/official/all) notices go to |
 
 Resource paths above are the index route; each also has `/create` and
@@ -101,3 +102,9 @@ clicking through the UI:
   verification email; redirects to `/email/verified` on the frontend.
 - `GET /api/payments/verify/{reference}` and the `/api/payments/webhooks/*`
   routes — payment gateway callbacks.
+- `GET /api/membership-levels` — public list of active membership levels and
+  their prices, used by both the registration page and the member dues flow.
+- `POST /api/me/subscriptions/{year}/bank-transfer` — a member's manual
+  payment evidence submission; puts that year's subscription into
+  `pending_review` until an admin approves or rejects it from
+  `/admin/subscriptions`.

@@ -3,7 +3,9 @@
 namespace App\Services\Payments;
 
 use App\Models\EventRegistration;
+use App\Models\MembershipLevel;
 use App\Models\Subscription;
+use App\Models\User;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -17,6 +19,36 @@ use RuntimeException;
  */
 class PaymentProcessor
 {
+    /**
+     * Find or start this member's subscription for the year and apply the
+     * level they picked — a member can pick a different level on each
+     * year's subscription, but never once that year is already settled
+     * or awaiting review, since the amount they'd be charged has to stay
+     * fixed from that point on.
+     *
+     * @throws RuntimeException if the year is already paid or under review
+     */
+    public function resolveSubscriptionForLevel(User $user, int $year, MembershipLevel $level): Subscription
+    {
+        $subscription = $user->subscriptions()->firstOrCreate(['year' => $year]);
+
+        if ($subscription->status === 'paid') {
+            throw new RuntimeException("Dues for {$year} are already paid.");
+        }
+
+        if ($subscription->status === 'pending_review') {
+            throw new RuntimeException("Your {$year} dues payment is already awaiting review.");
+        }
+
+        $subscription->update([
+            'membership_level_id' => $level->id,
+            'subscription_amount' => $level->subscription_amount,
+            'welfare_amount' => $level->welfare_amount,
+        ]);
+
+        return $subscription;
+    }
+
     public function initializeForSubscription(Subscription $subscription, string $callbackUrl): string
     {
         $gateway = PaymentGatewayFactory::active();

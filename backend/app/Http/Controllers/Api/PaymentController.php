@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\SiteSetting;
+use App\Models\MembershipLevel;
 use App\Services\Payments\PaymentProcessor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,23 +17,21 @@ class PaymentController extends Controller
     /**
      * Start (or resume) payment for a member's dues in a given year —
      * used both right after registration and for renewing a past-due
-     * year from the member portal.
+     * year from the member portal. The member picks their membership
+     * level here; its price becomes this year's amount owed.
      */
     public function paySubscriptionDues(Request $request, int $year): JsonResponse
     {
-        $settings = SiteSetting::current();
+        $data = $request->validate([
+            'membership_level_id' => ['required', 'exists:membership_levels,id'],
+        ]);
 
-        $subscription = $request->user()->subscriptions()->firstOrCreate(
-            ['year' => $year],
-            [
-                'subscription_amount' => $settings->membership_subscription_fee ?? 0,
-                'welfare_amount' => $settings->membership_welfare_fee ?? 0,
-                'status' => 'outstanding',
-            ]
-        );
+        $level = MembershipLevel::findOrFail($data['membership_level_id']);
 
-        if ($subscription->status === 'paid') {
-            return response()->json(['message' => "Dues for {$year} are already paid."], 422);
+        try {
+            $subscription = $this->payments->resolveSubscriptionForLevel($request->user(), $year, $level);
+        } catch (RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
         }
 
         // Deliberately no query string of our own here: both gateways
@@ -51,6 +49,40 @@ class PaymentController extends Controller
         }
 
         return response()->json(['authorizationUrl' => $url]);
+    }
+
+    /**
+     * A member's alternative to paying through a gateway: they submit a
+     * reference plus evidence of a manual bank transfer, and the
+     * subscription sits in "pending_review" — not counted as paid —
+     * until an admin approves or rejects it in the admin panel.
+     */
+    public function submitBankTransfer(Request $request, int $year): JsonResponse
+    {
+        $data = $request->validate([
+            'membership_level_id' => ['required', 'exists:membership_levels,id'],
+            'reference' => ['required', 'string', 'max:255'],
+            'evidence' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+        ]);
+
+        $level = MembershipLevel::findOrFail($data['membership_level_id']);
+
+        try {
+            $subscription = $this->payments->resolveSubscriptionForLevel($request->user(), $year, $level);
+        } catch (RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        $subscription->update([
+            'status' => 'pending_review',
+            'payment_gateway' => 'bank_transfer',
+            'bank_transfer_reference' => $data['reference'],
+            'review_note' => null,
+        ]);
+
+        $subscription->addMediaFromRequest('evidence')->toMediaCollection('payment_evidence');
+
+        return response()->json(['message' => 'Payment evidence submitted. We will review it shortly.']);
     }
 
     public function verify(string $reference): JsonResponse

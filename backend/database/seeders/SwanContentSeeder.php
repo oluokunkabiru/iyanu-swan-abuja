@@ -12,6 +12,7 @@ use App\Models\Faq;
 use App\Models\Firm;
 use App\Models\GalleryImage;
 use App\Models\JobListing;
+use App\Models\MembershipLevel;
 use App\Models\MemberSpotlight;
 use App\Models\NewsPost;
 use App\Models\Partner;
@@ -60,7 +61,7 @@ class SwanContentSeeder extends Seeder
                 ['label' => 'Years in the FCT', 'value' => '24', 'note' => 'Serving Abuja and the surrounding districts'],
             ],
             'registration_steps' => [
-                ['step' => 1, 'title' => 'Pay your dues', 'description' => 'Pay ₦17,000 for the year — ₦5,000 subscription and ₦12,000 welfare. Card, transfer and USSD are all accepted through the portal.'],
+                ['step' => 1, 'title' => 'Pay your dues', 'description' => 'Choose your membership level and pay the year\'s subscription and welfare levy — by card, transfer or USSD through the portal, or by bank transfer with evidence for admin review.'],
                 ['step' => 2, 'title' => 'Get confirmed', 'description' => 'Once the Financial Secretary confirms your payment, you are formally admitted to the Society and your record is opened.'],
                 ['step' => 3, 'title' => 'Attend a meeting', 'description' => 'Show up at any scheduled chapter meeting. Attendance completes your registration and puts you on the active roll.'],
             ],
@@ -80,8 +81,14 @@ class SwanContentSeeder extends Seeder
                 'Deliver financial literacy and community service across the Federal Capital Territory.',
                 'Build a welfare structure that supports members through the whole of their professional lives.',
             ],
-            'membership_subscription_fee' => 5000,
-            'membership_welfare_fee' => 12000,
+        ]);
+
+        MembershipLevel::firstOrCreate(['name' => 'Standard Membership'], [
+            'description' => 'The chapter\'s regular annual subscription and welfare levy.',
+            'subscription_amount' => 5000,
+            'welfare_amount' => 12000,
+            'is_active' => true,
+            'sort_order' => 1,
         ]);
 
         $values = [

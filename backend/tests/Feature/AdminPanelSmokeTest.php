@@ -35,6 +35,7 @@ class AdminPanelSmokeTest extends TestCase
             'admin/job-listings',
             'admin/manage-site-settings',
             'admin/member-spotlights',
+            'admin/membership-levels',
             'admin/news-posts',
             'admin/news-posts/create',
             'admin/partners',

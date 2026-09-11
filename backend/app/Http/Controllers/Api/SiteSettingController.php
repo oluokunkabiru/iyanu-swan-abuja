@@ -24,8 +24,6 @@ class SiteSettingController extends Controller
             'phone' => $settings->phone ?? '',
             'email' => $settings->email ?? '',
             'socials' => $settings->social_links ?? [],
-            'subscriptionFee' => $settings->membership_subscription_fee,
-            'welfareFee' => $settings->membership_welfare_fee,
             'logoUrl' => $settings->logo_url,
             'constitutionUrl' => $settings->constitution_url,
             'constitutionLabel' => $settings->constitution_label,

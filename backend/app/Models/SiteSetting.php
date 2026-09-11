@@ -36,8 +36,6 @@ class SiteSetting extends Model implements HasMedia
         'registration_steps',
         'member_benefits',
         'aims_objectives',
-        'membership_subscription_fee',
-        'membership_welfare_fee',
         'active_payment_gateway',
         'constitution_label',
     ];
@@ -52,14 +50,18 @@ class SiteSetting extends Model implements HasMedia
             'registration_steps' => 'array',
             'member_benefits' => 'array',
             'aims_objectives' => 'array',
-            'membership_subscription_fee' => 'integer',
-            'membership_welfare_fee' => 'integer',
         ];
     }
 
+    /**
+     * This table only ever holds one row. See NotificationSetting::current()
+     * for why keying off "the first row, or make one" (rather than an
+     * explicit id=1 filter, which mass-assignment silently drops) is what
+     * keeps this a genuine singleton.
+     */
     public static function current(): self
     {
-        return static::firstOrCreate(['id' => 1], ['chapter_name' => 'Chapter']);
+        return static::query()->first() ?? static::create(['chapter_name' => 'Chapter'])->refresh();
     }
 
     public function getLogoUrlAttribute(): ?string
