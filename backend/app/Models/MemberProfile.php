@@ -19,6 +19,8 @@ class MemberProfile extends Model implements HasMedia
         'credential',
         'membership_status',
         'phone',
+        'residential_address',
+        'place_of_work',
         'date_of_birth',
         'sector',
         'specialisation',

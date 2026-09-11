@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/context/AuthContext'
 import { formatDate } from '@/lib/format'
 import type { NotificationEmailPreference } from '@/types'
@@ -34,6 +35,8 @@ function initials(name: string): string {
 export default function MembersProfile() {
   const { user, signOut, updateProfile } = useAuth()
   const [phone, setPhone] = useState(user?.phone ?? '')
+  const [residentialAddress, setResidentialAddress] = useState(user?.residentialAddress ?? '')
+  const [placeOfWork, setPlaceOfWork] = useState(user?.placeOfWork ?? '')
   const [dateOfBirth, setDateOfBirth] = useState(user?.dateOfBirth ?? '')
   const [isDirectoryListed, setIsDirectoryListed] = useState(user?.isDirectoryListed ?? true)
   const [photo, setPhoto] = useState<File | null>(null)
@@ -62,6 +65,8 @@ export default function MembersProfile() {
     try {
       await updateProfile({
         phone,
+        residentialAddress,
+        placeOfWork,
         dateOfBirth: dateOfBirth || undefined,
         isDirectoryListed,
         photo: photo ?? undefined,
@@ -176,7 +181,7 @@ export default function MembersProfile() {
             <Input id="profile-email" type="email" defaultValue={user.email} disabled />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="profile-phone">Phone number</Label>
+            <Label htmlFor="profile-phone">WhatsApp telephone number</Label>
             <Input
               id="profile-phone"
               type="tel"
@@ -196,6 +201,25 @@ export default function MembersProfile() {
             <p className="text-[0.78rem] text-muted-foreground">
               Used only to send you a birthday greeting.
             </p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="profile-place-of-work">Place of work</Label>
+            <Input
+              id="profile-place-of-work"
+              placeholder="Employer or firm name"
+              value={placeOfWork}
+              onChange={(e) => setPlaceOfWork(e.target.value)}
+            />
+          </div>
+          <div className="sm:col-span-2 space-y-2">
+            <Label htmlFor="profile-address">Residential address</Label>
+            <Textarea
+              id="profile-address"
+              placeholder="Street, city and state"
+              rows={2}
+              value={residentialAddress}
+              onChange={(e) => setResidentialAddress(e.target.value)}
+            />
           </div>
           <div className="sm:col-span-2">
             <label className="flex cursor-pointer items-start gap-3">

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Users\Schemas;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
@@ -62,10 +63,15 @@ class UserForm
                             ->default('pending')
                             ->required(),
                         TextInput::make('phone')
+                            ->label('WhatsApp telephone')
                             ->maxLength(50),
                         DatePicker::make('date_of_birth')
                             ->native(false)
                             ->displayFormat('d M'),
+                        Textarea::make('residential_address')
+                            ->columnSpanFull(),
+                        TextInput::make('place_of_work')
+                            ->maxLength(255),
                         Select::make('sector')
                             ->options([
                                 'Public practice' => 'Public practice',

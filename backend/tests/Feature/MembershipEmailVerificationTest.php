@@ -22,6 +22,11 @@ class MembershipEmailVerificationTest extends TestCase
             'name' => 'Jane Member',
             'email' => 'jane.member@example.com',
             'password' => 'password123',
+            'membership_number' => 'ICAN/12345',
+            'credential' => 'ACA',
+            'phone' => '08000000000',
+            'residential_address' => '12 Chapter Close, Abuja',
+            'place_of_work' => 'Federal Ministry of Finance',
         ])->assertCreated();
 
         $user = User::where('email', 'jane.member@example.com')->firstOrFail();

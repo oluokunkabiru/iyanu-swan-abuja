@@ -20,7 +20,11 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
-            'phone' => ['nullable', 'string', 'max:50'],
+            'membership_number' => ['required', 'string', 'max:255', 'unique:member_profiles,membership_number'],
+            'credential' => ['required', Rule::in(['ACA', 'FCA'])],
+            'phone' => ['required', 'string', 'max:50'],
+            'residential_address' => ['required', 'string', 'max:1000'],
+            'place_of_work' => ['required', 'string', 'max:255'],
             'date_of_birth' => ['nullable', 'date', 'before:today'],
         ]);
 
@@ -32,7 +36,11 @@ class AuthController extends Controller
         ]);
 
         $user->memberProfile()->create([
-            'phone' => $data['phone'] ?? null,
+            'membership_number' => $data['membership_number'],
+            'credential' => $data['credential'],
+            'phone' => $data['phone'],
+            'residential_address' => $data['residential_address'],
+            'place_of_work' => $data['place_of_work'],
             'date_of_birth' => $data['date_of_birth'] ?? null,
             'membership_status' => 'pending',
         ]);
@@ -138,6 +146,8 @@ class AuthController extends Controller
         $data = $request->validate([
             'name' => ['sometimes', 'string', 'max:255'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:50'],
+            'residential_address' => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'place_of_work' => ['sometimes', 'nullable', 'string', 'max:255'],
             'date_of_birth' => ['sometimes', 'nullable', 'date'],
             'is_directory_listed' => ['sometimes', 'boolean'],
             'photo' => ['sometimes', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
@@ -151,7 +161,9 @@ class AuthController extends Controller
             ...array_intersect_key($data, array_flip(['personal_email', 'official_email', 'notification_email_preference'])),
         ])->save();
 
-        $profileData = array_intersect_key($data, array_flip(['phone', 'date_of_birth', 'is_directory_listed']));
+        $profileData = array_intersect_key($data, array_flip([
+            'phone', 'residential_address', 'place_of_work', 'date_of_birth', 'is_directory_listed',
+        ]));
 
         if ($profileData !== []) {
             $user->memberProfile()->updateOrCreate([], $profileData);
@@ -213,6 +225,8 @@ class AuthController extends Controller
             'isDirectoryListed' => $profile?->is_directory_listed ?? false,
             'dateOfBirth' => $profile?->date_of_birth?->toDateString(),
             'phone' => $profile?->phone,
+            'residentialAddress' => $profile?->residential_address,
+            'placeOfWork' => $profile?->place_of_work,
             'sector' => $profile?->sector,
             'specialisation' => $profile?->specialisation,
             'yearAdmitted' => $profile?->year_admitted,

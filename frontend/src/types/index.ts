@@ -315,6 +315,8 @@ export interface AuthUser {
   isDirectoryListed: boolean
   dateOfBirth: string | null
   phone: string | null
+  residentialAddress: string | null
+  placeOfWork: string | null
   sector: Sector | null
   specialisation: string | null
   yearAdmitted: number | null

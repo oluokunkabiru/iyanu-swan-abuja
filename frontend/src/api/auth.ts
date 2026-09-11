@@ -5,7 +5,11 @@ export async function register(payload: {
   name: string
   email: string
   password: string
-  phone?: string
+  membershipNumber: string
+  credential: 'ACA' | 'FCA'
+  phone: string
+  residentialAddress: string
+  placeOfWork: string
   dateOfBirth?: string
 }): Promise<AuthUser> {
   await ensureCsrfCookie()
@@ -13,7 +17,11 @@ export async function register(payload: {
     name: payload.name,
     email: payload.email,
     password: payload.password,
+    membership_number: payload.membershipNumber,
+    credential: payload.credential,
     phone: payload.phone,
+    residential_address: payload.residentialAddress,
+    place_of_work: payload.placeOfWork,
     date_of_birth: payload.dateOfBirth,
   })
   return data
@@ -37,6 +45,8 @@ export async function fetchMe(): Promise<AuthUser> {
 export async function updateMe(payload: {
   name?: string
   phone?: string
+  residentialAddress?: string
+  placeOfWork?: string
   dateOfBirth?: string
   isDirectoryListed?: boolean
   photo?: File
@@ -48,6 +58,8 @@ export async function updateMe(payload: {
   form.append('_method', 'PUT')
   if (payload.name !== undefined) form.append('name', payload.name)
   if (payload.phone !== undefined) form.append('phone', payload.phone)
+  if (payload.residentialAddress !== undefined) form.append('residential_address', payload.residentialAddress)
+  if (payload.placeOfWork !== undefined) form.append('place_of_work', payload.placeOfWork)
   if (payload.dateOfBirth !== undefined) form.append('date_of_birth', payload.dateOfBirth)
   if (payload.isDirectoryListed !== undefined) {
     form.append('is_directory_listed', payload.isDirectoryListed ? '1' : '0')

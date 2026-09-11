@@ -83,11 +83,16 @@ class UserInfolist
                                                 default => 'Site default',
                                             }),
                                         TextEntry::make('memberProfile.credential')->label('Credential'),
-                                        TextEntry::make('memberProfile.phone')->label('Phone')->placeholder('—'),
+                                        TextEntry::make('memberProfile.phone')->label('WhatsApp telephone')->placeholder('—'),
                                         TextEntry::make('memberProfile.date_of_birth')
                                             ->label('Date of birth')
                                             ->date('d M')
                                             ->placeholder('—'),
+                                        TextEntry::make('memberProfile.place_of_work')->label('Place of work')->placeholder('—'),
+                                        TextEntry::make('memberProfile.residential_address')
+                                            ->label('Residential address')
+                                            ->placeholder('—')
+                                            ->columnSpanFull(),
                                         TextEntry::make('memberProfile.sector')->label('Sector')->placeholder('—'),
                                         TextEntry::make('memberProfile.specialisation')->label('Specialisation')->placeholder('—'),
                                         TextEntry::make('memberProfile.year_admitted')->label('Year admitted')->placeholder('—'),

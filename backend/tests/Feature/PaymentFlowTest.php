@@ -21,6 +21,11 @@ class PaymentFlowTest extends TestCase
             'name' => 'Jane Member',
             'email' => 'jane.member@example.com',
             'password' => 'password123',
+            'membership_number' => 'ICAN/12345',
+            'credential' => 'ACA',
+            'phone' => '08000000000',
+            'residential_address' => '12 Chapter Close, Abuja',
+            'place_of_work' => 'Federal Ministry of Finance',
         ]);
 
         $response->assertCreated();
@@ -28,6 +33,44 @@ class PaymentFlowTest extends TestCase
         $user = User::where('email', 'jane.member@example.com')->firstOrFail();
 
         $this->assertDatabaseMissing('subscriptions', ['user_id' => $user->id]);
+        $this->assertDatabaseHas('member_profiles', [
+            'user_id' => $user->id,
+            'membership_number' => 'ICAN/12345',
+            'credential' => 'ACA',
+            'phone' => '08000000000',
+            'residential_address' => '12 Chapter Close, Abuja',
+            'place_of_work' => 'Federal Ministry of Finance',
+        ]);
+    }
+
+    public function test_registering_requires_the_ican_and_contact_details(): void
+    {
+        $response = $this->postJson('/api/register', [
+            'name' => 'Jane Member',
+            'email' => 'jane.member@example.com',
+            'password' => 'password123',
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors([
+            'membership_number', 'credential', 'phone', 'residential_address', 'place_of_work',
+        ]);
+    }
+
+    public function test_member_can_update_their_place_of_work_and_residential_address(): void
+    {
+        $user = User::factory()->create();
+        $user->memberProfile()->create(['membership_status' => 'active']);
+
+        $this->actingAs($user)->putJson('/api/me', [
+            'residential_address' => '4 New Layout, Kubwa, Abuja',
+            'place_of_work' => 'ABC Chartered Accountants',
+        ])->assertOk();
+
+        $this->assertDatabaseHas('member_profiles', [
+            'user_id' => $user->id,
+            'residential_address' => '4 New Layout, Kubwa, Abuja',
+            'place_of_work' => 'ABC Chartered Accountants',
+        ]);
     }
 
     public function test_paying_subscription_dues_returns_a_checkout_url_from_the_active_gateway(): void

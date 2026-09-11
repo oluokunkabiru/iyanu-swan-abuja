@@ -18,7 +18,7 @@ paths are relative to `VITE_API_URL`'s sibling frontend origin (e.g.
 | `/faqs` | FAQs | |
 | `/contact` | Contact | |
 | `/membership` | Membership overview | Shows dues "from" the cheapest active membership level |
-| `/membership/register` | Membership registration form | Posts to `/api/register`; free — no payment happens here |
+| `/membership/register` | Membership registration form | Posts to `/api/register`; free — no payment happens here. Collects name, email, password, ICAN membership number, ICAN status (ACA/FCA), WhatsApp telephone, residential address, place of work, and optional date of birth |
 | `/mentorship` | Mentorship | |
 | `/students` | Students | |
 | `/cpd` | CPD overview | |

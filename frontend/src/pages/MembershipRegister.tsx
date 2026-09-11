@@ -6,6 +6,8 @@ import { PageHeader, Section, SectionHeading } from '@/components/common/Primiti
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/context/AuthContext'
 import { useSettings } from '@/context/SettingsContext'
 import { useApiData } from '@/hooks/useApiData'
@@ -18,6 +20,7 @@ export default function MembershipRegister() {
   const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [credential, setCredential] = useState<'ACA' | 'FCA' | ''>('')
 
   const { data: levels } = useApiData(getMembershipLevels, [] as MembershipLevel[])
   const registrationSteps = settings?.registrationSteps ?? []
@@ -29,11 +32,23 @@ export default function MembershipRegister() {
     const name = String(form.get('name') ?? '').trim()
     const email = String(form.get('email') ?? '').trim()
     const password = String(form.get('password') ?? '')
+    const membershipNumber = String(form.get('membershipNumber') ?? '').trim()
     const phone = String(form.get('phone') ?? '').trim()
+    const residentialAddress = String(form.get('residentialAddress') ?? '').trim()
+    const placeOfWork = String(form.get('placeOfWork') ?? '').trim()
     const dateOfBirth = String(form.get('dateOfBirth') ?? '').trim()
 
-    if (!name || !email || password.length < 8) {
-      setError('Enter your name and email, and choose a password of at least 8 characters.')
+    if (
+      !name ||
+      !email ||
+      password.length < 8 ||
+      !membershipNumber ||
+      !credential ||
+      !phone ||
+      !residentialAddress ||
+      !placeOfWork
+    ) {
+      setError('Fill in every field — a password of at least 8 characters and your ICAN status are both required.')
       return
     }
 
@@ -43,7 +58,11 @@ export default function MembershipRegister() {
         name,
         email,
         password,
-        phone: phone || undefined,
+        membershipNumber,
+        credential,
+        phone,
+        residentialAddress,
+        placeOfWork,
         dateOfBirth: dateOfBirth || undefined,
       })
       navigate('/members')
@@ -76,11 +95,27 @@ export default function MembershipRegister() {
                   <Input id="name" name="name" autoComplete="name" placeholder="As it appears on your ICAN record" />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="membershipNumber">ICAN membership number</Label>
+                  <Input id="membershipNumber" name="membershipNumber" placeholder="As it appears on your ICAN record" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="credential">ICAN status</Label>
+                  <Select value={credential || undefined} onValueChange={(value) => setCredential(value as 'ACA' | 'FCA')}>
+                    <SelectTrigger id="credential" className="w-full">
+                      <SelectValue placeholder="Select ACA or FCA" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ACA">ACA</SelectItem>
+                      <SelectItem value="FCA">FCA</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="email">Email address</Label>
                   <Input id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone number</Label>
+                  <Label htmlFor="phone">WhatsApp telephone number</Label>
                   <Input id="phone" name="phone" type="tel" autoComplete="tel" placeholder="0800 000 0000" />
                 </div>
                 <div className="space-y-2">
@@ -88,11 +123,25 @@ export default function MembershipRegister() {
                   <Input id="password" name="password" type="password" autoComplete="new-password" placeholder="At least 8 characters" />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="placeOfWork">Place of work</Label>
+                  <Input id="placeOfWork" name="placeOfWork" autoComplete="organization" placeholder="Employer or firm name" />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="dateOfBirth">Date of birth (optional)</Label>
                   <Input id="dateOfBirth" name="dateOfBirth" type="date" autoComplete="bday" />
                   <p className="text-[0.78rem] text-muted-foreground">
                     Used only to send you a birthday greeting.
                   </p>
+                </div>
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="residentialAddress">Residential address</Label>
+                  <Textarea
+                    id="residentialAddress"
+                    name="residentialAddress"
+                    autoComplete="street-address"
+                    placeholder="Street, city and state"
+                    rows={2}
+                  />
                 </div>
               </div>
 
