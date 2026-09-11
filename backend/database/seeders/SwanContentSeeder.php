@@ -232,6 +232,7 @@ class SwanContentSeeder extends Seeder
         $this->seedGallery($imagesPath);
         $this->seedMemberSpotlights($imagesPath);
         $this->seedPublicationsAndResources();
+        $this->seedConstitution();
         $this->seedDirectoryMembers();
         $this->seedMemberPortalDemoData();
     }
@@ -661,6 +662,26 @@ class SwanContentSeeder extends Seeder
                     ->toMediaCollection('file');
             }
         }
+    }
+
+    private function seedConstitution(): void
+    {
+        $setting = SiteSetting::current();
+
+        $setting->update(['constitution_label' => 'Adopted 2024']);
+
+        if ($setting->hasMedia('constitution')) {
+            return;
+        }
+
+        $text = 'SWAN Abuja Chapter - Constitution (placeholder text pending the adopted document)';
+        $stream = "BT /F1 14 Tf 72 720 Td ({$text}) Tj ET";
+
+        $pdf = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Resources<</Font<</F1 4 0 R>>>>/Contents 5 0 R>>endobj\n4 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\n5 0 obj<</Length ".strlen($stream).">>stream\n{$stream}\nendstream\nendobj\ntrailer<</Size 6/Root 1 0 R>>\n%%EOF";
+
+        $setting->addMediaFromString($pdf)
+            ->usingFileName('swan-abuja-chapter-constitution.pdf')
+            ->toMediaCollection('constitution');
     }
 
     private function seedDirectoryMembers(): void
