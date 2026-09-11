@@ -139,11 +139,11 @@ export default function MembersOverview() {
               <p className="tnum mt-2 text-[0.85rem] text-muted-foreground">
                 {duesPendingReview
                   ? 'Awaiting admin approval'
-                  : currentYearRecord
-                    ? `${formatNaira(currentYearRecord.subscription + currentYearRecord.welfare)} due`
-                    : duesNeedAction
-                      ? 'Choose a membership level to see the amount'
-                      : 'No balance on your record'}
+                  : duesNeedAction
+                    ? currentYearRecord
+                      ? `${formatNaira(currentYearRecord.subscription + currentYearRecord.welfare)} due`
+                      : 'Choose a membership level to see the amount'
+                    : 'No balance on your record'}
               </p>
             </div>
 
