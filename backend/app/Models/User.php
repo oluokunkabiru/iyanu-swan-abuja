@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\VerifyEmail;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -63,6 +64,16 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function firms(): HasMany
     {
         return $this->hasMany(Firm::class, 'principal_user_id');
+    }
+
+    /**
+     * Overrides the trait's default so this sends our own branded
+     * notification (frontend-facing link, chapter styling) instead of
+     * Laravel's plain default.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyEmail);
     }
 
     /**

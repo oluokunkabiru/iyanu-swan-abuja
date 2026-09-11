@@ -39,7 +39,7 @@ paths are relative to `VITE_API_URL`'s sibling frontend origin (e.g.
 | `/register` | — | Redirects to `/membership/register` |
 | `/dashboard` | — | Redirects to `/members` |
 | `/payments/callback` | Payment result | Gateway (Paystack/Flutterwave) redirects here after checkout; reads `?reference=`/`?tx_ref=`/`?trxref=` |
-| `/email/verified` | Email verification result | The backend's `verification.verify` link redirects here with `?status=success` or `?status=invalid` after a member clicks the link in their verification email |
+| `/email/verify/:id/:hash` | Email verification | The link in the verification email itself — points here (frontend), not the backend. On load, this page calls the backend's signed `verification.verify` API endpoint (passing the `expires`/`signature` query params through) to do the actual verifying, then shows the result |
 | `*` (anything else) | 404 | |
 
 ## Member area (`/members/*`, requires sign-in)
@@ -98,8 +98,11 @@ for the full, current list. Two routes worth knowing by name since they're
 reached from outside the SPA (email links, payment gateways) rather than by
 clicking through the UI:
 
-- `GET /api/email/verify/{id}/{hash}` — the signed link sent in the
-  verification email; redirects to `/email/verified` on the frontend.
+- `GET /api/email/verify/{id}/{hash}` — the actual signed verification
+  check. The email link itself points at the frontend's
+  `/email/verify/:id/:hash` page (not this URL directly); that page calls
+  this endpoint with the same `expires`/`signature` query params to verify,
+  then shows the result. Returns JSON, not a redirect.
 - `GET /api/payments/verify/{reference}` and the `/api/payments/webhooks/*`
   routes — payment gateway callbacks.
 - `GET /api/membership-levels` — public list of active membership levels and

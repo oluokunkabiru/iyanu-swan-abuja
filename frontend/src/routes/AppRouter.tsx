@@ -83,7 +83,7 @@ export function AppRouter() {
         {/* Account */}
         <Route path="login" element={<Login />} />
         <Route path="payments/callback" element={<PaymentCallback />} />
-        <Route path="email/verified" element={<EmailVerified />} />
+        <Route path="email/verify/:id/:hash" element={<EmailVerified />} />
         <Route path="register" element={<Navigate to="/membership/register" replace />} />
         <Route path="dashboard" element={<Navigate to="/members" replace />} />
 

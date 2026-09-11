@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\MembershipLevel;
 use App\Models\NotificationSetting;
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
+use App\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 use Tests\Concerns\UsesMysqlInTransaction;
@@ -53,11 +53,51 @@ class MembershipEmailVerificationTest extends TestCase
             'hash' => sha1($user->getEmailForVerification()),
         ]);
 
-        $this->get($url)->assertRedirect();
+        $this->get($url)->assertOk();
 
         $user->refresh();
         $this->assertNotNull($user->email_verified_at);
         $this->assertSame('active', $user->memberProfile->membership_status);
+    }
+
+    public function test_verification_email_links_to_the_frontend_not_the_backend(): void
+    {
+        Notification::fake();
+        $level = MembershipLevel::factory()->create();
+
+        $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
+            'name' => 'Jane Member',
+            'email' => 'jane.member@example.com',
+            'password' => 'password123',
+            'membership_number' => 'ICAN/12345',
+            'credential' => $level->name,
+            'phone' => '08000000000',
+            'residential_address' => '12 Chapter Close, Abuja',
+            'place_of_work' => 'Federal Ministry of Finance',
+        ])->assertCreated();
+
+        $user = User::where('email', 'jane.member@example.com')->firstOrFail();
+
+        Notification::assertSentTo($user, VerifyEmail::class, function (VerifyEmail $notification) use ($user) {
+            $url = $notification->toMail($user)->actionUrl;
+
+            return str_starts_with($url, rtrim(config('app.frontend_url'), '/').'/email/verify/')
+                && ! str_contains($url, '/api/');
+        });
+    }
+
+    public function test_verifying_with_a_tampered_hash_is_rejected(): void
+    {
+        $user = User::factory()->unverified()->create();
+
+        $url = URL::temporarySignedRoute('verification.verify', now()->addMinutes(60), [
+            'id' => $user->id,
+            'hash' => sha1('not-the-real-email'),
+        ]);
+
+        $this->get($url)->assertStatus(403);
+
+        $this->assertNull($user->fresh()->email_verified_at);
     }
 
     public function test_membership_stays_pending_after_verification_if_dues_are_unpaid(): void
@@ -70,7 +110,7 @@ class MembershipEmailVerificationTest extends TestCase
             'hash' => sha1($user->getEmailForVerification()),
         ]);
 
-        $this->get($url)->assertRedirect();
+        $this->get($url)->assertOk();
 
         $user->refresh();
         $this->assertNotNull($user->email_verified_at);

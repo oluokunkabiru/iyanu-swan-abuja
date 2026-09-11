@@ -80,6 +80,18 @@ export async function resendVerificationEmail(): Promise<{ message: string }> {
   return data
 }
 
+export async function verifyEmail(
+  id: string,
+  hash: string,
+  expires: string,
+  signature: string,
+): Promise<{ message: string }> {
+  const { data } = await api.get<{ message: string }>(`/email/verify/${id}/${hash}`, {
+    params: { expires, signature },
+  })
+  return data
+}
+
 export async function fetchMyRegistrations(): Promise<TicketRecord[]> {
   const { data } = await api.get<TicketRecord[]>('/me/registrations')
   return data

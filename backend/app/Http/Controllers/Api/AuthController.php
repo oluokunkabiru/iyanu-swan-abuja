@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\MembershipLevel;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -60,18 +59,20 @@ class AuthController extends Controller
     }
 
     /**
-     * Landing point for the signed link in the verification email. Not
-     * behind auth:sanctum — the browser opening it may not carry this
-     * app's session — so identity comes from the id/hash pair alone,
-     * which the "signed" middleware guarantees hasn't been tampered with.
+     * Does the actual verifying for the link in the verification email —
+     * called by the frontend page the link points to, not opened
+     * directly, so this only ever needs to answer "did it work" as
+     * JSON and leave the page/UX entirely to the frontend. Not behind
+     * auth:sanctum — the caller may not carry this app's session — so
+     * identity comes from the id/hash pair alone, which the "signed"
+     * middleware guarantees hasn't been tampered with.
      */
-    public function verifyEmail(int $id, string $hash): RedirectResponse
+    public function verifyEmail(int $id, string $hash): JsonResponse
     {
         $user = User::findOrFail($id);
-        $frontendUrl = rtrim(config('app.frontend_url'), '/');
 
         if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
-            return redirect("{$frontendUrl}/email/verified?status=invalid");
+            return response()->json(['message' => 'This verification link is invalid.'], 403);
         }
 
         if (! $user->hasVerifiedEmail()) {
@@ -79,7 +80,7 @@ class AuthController extends Controller
             $user->activateMembershipIfEligible();
         }
 
-        return redirect("{$frontendUrl}/email/verified?status=success");
+        return response()->json(['message' => 'Email verified.']);
     }
 
     public function resendVerification(Request $request): JsonResponse
