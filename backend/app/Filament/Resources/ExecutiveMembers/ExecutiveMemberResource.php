@@ -78,7 +78,7 @@ class ExecutiveMemberResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('created_at')
+            ->defaultSort('name')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('photo')->collection('photo')->circular(),
                 TextColumn::make('name')->searchable(),

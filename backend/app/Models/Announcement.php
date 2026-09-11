@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Database\Factories\AnnouncementFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Announcement extends Model
 {
-    /** @use HasFactory<\Database\Factories\AnnouncementFactory> */
+    /** @use HasFactory<AnnouncementFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -15,7 +16,6 @@ class Announcement extends Model
         'published_on',
         'href',
         'kind',
-        'sort_order',
         'is_active',
     ];
 
@@ -23,7 +23,6 @@ class Announcement extends Model
     {
         return [
             'published_on' => 'date',
-            'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
     }

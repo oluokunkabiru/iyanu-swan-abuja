@@ -60,7 +60,7 @@ class GalleryImageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('created_at')
+            ->defaultSort('caption')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('image')->collection('image'),
                 TextColumn::make('caption'),

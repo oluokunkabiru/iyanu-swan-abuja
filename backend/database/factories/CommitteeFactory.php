@@ -27,7 +27,6 @@ class CommitteeFactory extends Factory
             'chair' => fake()->name(),
             'focus_areas' => fake()->words(4),
             'meeting_cadence' => 'Monthly',
-            'sort_order' => fake()->numberBetween(0, 20),
             'is_active' => true,
         ];
     }

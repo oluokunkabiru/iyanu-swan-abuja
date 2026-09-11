@@ -13,13 +13,12 @@ class GalleryImage extends Model implements HasMedia
 
     protected $appends = ['image_url'];
 
-    protected $fillable = ['caption', 'album', 'year', 'event_id', 'sort_order'];
+    protected $fillable = ['caption', 'album', 'year', 'event_id'];
 
     protected function casts(): array
     {
         return [
             'year' => 'integer',
-            'sort_order' => 'integer',
         ];
     }
 

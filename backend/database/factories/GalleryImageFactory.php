@@ -22,7 +22,6 @@ class GalleryImageFactory extends Factory
             'album' => fake()->randomElement(['Seminars', 'Community outreach', 'Chapter life']),
             'year' => fake()->numberBetween(2024, 2026),
             'event_id' => null,
-            'sort_order' => fake()->numberBetween(0, 20),
         ];
     }
 }

@@ -12,7 +12,7 @@ class Partner extends Model implements HasMedia
 
     protected $appends = ['logo_url'];
 
-    protected $fillable = ['name', 'url', 'scope', 'sort_order'];
+    protected $fillable = ['name', 'url', 'scope'];
 
     public function getLogoUrlAttribute(): ?string
     {

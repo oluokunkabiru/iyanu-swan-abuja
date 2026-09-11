@@ -54,7 +54,7 @@ class CommitteeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('created_at')
+            ->defaultSort('name')
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')

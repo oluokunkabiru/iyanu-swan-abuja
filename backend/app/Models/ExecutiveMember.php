@@ -17,7 +17,6 @@ class ExecutiveMember extends Model implements HasMedia
         'credential',
         'position',
         'bio',
-        'sort_order',
         'is_active',
         'is_principal',
         'term_start_year',

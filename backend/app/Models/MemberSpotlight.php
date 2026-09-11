@@ -12,7 +12,7 @@ class MemberSpotlight extends Model implements HasMedia
 
     protected $appends = ['photo_url'];
 
-    protected $fillable = ['name', 'quote', 'sort_order'];
+    protected $fillable = ['name', 'quote'];
 
     public function getPhotoUrlAttribute(): ?string
     {

@@ -92,11 +92,11 @@ class SwanContentSeeder extends Seeder
         ]);
 
         $values = [
-            ['title' => 'Integrity', 'description' => 'Upholding honesty and strong moral principles in all we do.', 'sort_order' => 1],
-            ['title' => 'Professionalism', 'description' => 'Maintaining the highest standards of the accountancy profession.', 'sort_order' => 2],
-            ['title' => 'Passion', 'description' => 'Driven by a genuine commitment to our members and community.', 'sort_order' => 3],
-            ['title' => 'Impact', 'description' => 'Creating measurable, lasting change through our work.', 'sort_order' => 4],
-            ['title' => 'Accountability', 'description' => 'Taking ownership and responsibility for our actions and outcomes.', 'sort_order' => 5],
+            ['title' => 'Integrity', 'description' => 'Upholding honesty and strong moral principles in all we do.'],
+            ['title' => 'Professionalism', 'description' => 'Maintaining the highest standards of the accountancy profession.'],
+            ['title' => 'Passion', 'description' => 'Driven by a genuine commitment to our members and community.'],
+            ['title' => 'Impact', 'description' => 'Creating measurable, lasting change through our work.'],
+            ['title' => 'Accountability', 'description' => 'Taking ownership and responsibility for our actions and outcomes.'],
         ];
 
         foreach ($values as $value) {
@@ -106,11 +106,11 @@ class SwanContentSeeder extends Seeder
         $imagesPath = base_path('../frontend/src/assets/images');
 
         $executives = [
-            ['name' => 'Patricia Chinwe Ofili', 'credential' => 'ACA', 'position' => 'Chairperson', 'sort_order' => 1, 'photo' => 'chairperson-cropped.jpeg'],
-            ['name' => 'Dr Maryam Danna Mohammed', 'credential' => 'FCA', 'position' => 'Vice Chairperson', 'sort_order' => 2, 'photo' => 'Vice-chair-cropped-1024x1024.jpeg'],
-            ['name' => 'Ojoma Blessing Lawal-Adewale', 'credential' => 'ACA', 'position' => 'General Secretary', 'sort_order' => 3, 'photo' => 'Gen-sec-cropped.jpeg'],
-            ['name' => 'Biola Olawoore', 'credential' => 'FCA', 'position' => 'Treasurer', 'sort_order' => 4, 'photo' => 'treasurer-cropped.jpeg'],
-            ['name' => 'Ojoma Blessing Olaniran', 'credential' => 'FCA', 'position' => 'Financial Secretary', 'sort_order' => 5, 'photo' => 'Fin-sec-cropped.jpeg'],
+            ['name' => 'Patricia Chinwe Ofili', 'credential' => 'ACA', 'position' => 'Chairperson', 'photo' => 'chairperson-cropped.jpeg'],
+            ['name' => 'Dr Maryam Danna Mohammed', 'credential' => 'FCA', 'position' => 'Vice Chairperson', 'photo' => 'Vice-chair-cropped-1024x1024.jpeg'],
+            ['name' => 'Ojoma Blessing Lawal-Adewale', 'credential' => 'ACA', 'position' => 'General Secretary', 'photo' => 'Gen-sec-cropped.jpeg'],
+            ['name' => 'Biola Olawoore', 'credential' => 'FCA', 'position' => 'Treasurer', 'photo' => 'treasurer-cropped.jpeg'],
+            ['name' => 'Ojoma Blessing Olaniran', 'credential' => 'FCA', 'position' => 'Financial Secretary', 'photo' => 'Fin-sec-cropped.jpeg'],
         ];
 
         foreach ($executives as $executive) {
@@ -131,8 +131,8 @@ class SwanContentSeeder extends Seeder
         }
 
         $pastChairpersons = [
-            ['name' => 'Funmilayo Adeyemi', 'credential' => 'FCA', 'position' => 'Chairperson', 'term_start_year' => 2022, 'term_end_year' => 2024, 'sort_order' => 1],
-            ['name' => 'Halima Bello-Osagie', 'credential' => 'ACA', 'position' => 'Chairperson', 'term_start_year' => 2020, 'term_end_year' => 2022, 'sort_order' => 2],
+            ['name' => 'Funmilayo Adeyemi', 'credential' => 'FCA', 'position' => 'Chairperson', 'term_start_year' => 2022, 'term_end_year' => 2024],
+            ['name' => 'Halima Bello-Osagie', 'credential' => 'ACA', 'position' => 'Chairperson', 'term_start_year' => 2020, 'term_end_year' => 2022],
         ];
 
         foreach ($pastChairpersons as $chairperson) {
@@ -143,12 +143,12 @@ class SwanContentSeeder extends Seeder
         }
 
         $partners = [
-            ['name' => 'ICAN', 'url' => 'https://icanig.org', 'scope' => 'Parent body', 'sort_order' => 1],
-            ['name' => 'SWAN National', 'url' => '/about', 'scope' => 'Parent body', 'sort_order' => 2],
-            ['name' => 'Association of Accountancy Bodies in West Africa', 'url' => 'https://abwa.org.ng/', 'scope' => 'Affiliate', 'sort_order' => 3],
-            ['name' => 'Pan African Federation of Accountants', 'url' => 'https://www.pafa.org.za/', 'scope' => 'Affiliate', 'sort_order' => 4],
-            ['name' => 'International Federation of Accountants', 'url' => 'https://www.ifac.org/', 'scope' => 'Affiliate', 'sort_order' => 5],
-            ['name' => 'Chartered Accountants Worldwide', 'url' => 'https://charteredaccountantsworldwide.com/', 'scope' => 'Affiliate', 'sort_order' => 6],
+            ['name' => 'ICAN', 'url' => 'https://icanig.org', 'scope' => 'Parent body'],
+            ['name' => 'SWAN National', 'url' => '/about', 'scope' => 'Parent body'],
+            ['name' => 'Association of Accountancy Bodies in West Africa', 'url' => 'https://abwa.org.ng/', 'scope' => 'Affiliate'],
+            ['name' => 'Pan African Federation of Accountants', 'url' => 'https://www.pafa.org.za/', 'scope' => 'Affiliate'],
+            ['name' => 'International Federation of Accountants', 'url' => 'https://www.ifac.org/', 'scope' => 'Affiliate'],
+            ['name' => 'Chartered Accountants Worldwide', 'url' => 'https://charteredaccountantsworldwide.com/', 'scope' => 'Affiliate'],
         ];
 
         foreach ($partners as $partner) {
@@ -354,7 +354,7 @@ class SwanContentSeeder extends Seeder
             ['title' => 'Circular: new bank details for subscription payment', 'kind' => 'circular', 'daysAgo' => 30],
         ];
 
-        foreach ($announcements as $index => $announcement) {
+        foreach ($announcements as $announcement) {
             Announcement::query()->updateOrCreate(
                 ['title' => $announcement['title']],
                 [
@@ -362,7 +362,6 @@ class SwanContentSeeder extends Seeder
                     'kind' => $announcement['kind'],
                     'published_on' => now()->subDays($announcement['daysAgo'])->toDateString(),
                     'href' => '/announcements',
-                    'sort_order' => $index,
                     'is_active' => true,
                 ]
             );
@@ -380,7 +379,7 @@ class SwanContentSeeder extends Seeder
             ['name' => 'Quarterly welfare review meeting', 'venue' => 'Chapter Secretariat, Wuse II', 'daysFromNow' => 50],
         ];
 
-        foreach ($entries as $index => $entry) {
+        foreach ($entries as $entry) {
             $startsAt = now()->addDays($entry['daysFromNow']);
 
             ProgrammeEntry::query()->updateOrCreate(
@@ -391,7 +390,6 @@ class SwanContentSeeder extends Seeder
                     'starts_at' => $startsAt,
                     'venue' => $entry['venue'],
                     'href' => $event ? "/events/{$event->slug}" : '/events',
-                    'sort_order' => $index,
                     'is_active' => true,
                 ]
             );
@@ -459,12 +457,11 @@ class SwanContentSeeder extends Seeder
             ],
         ];
 
-        foreach ($committees as $index => $committee) {
+        foreach ($committees as $committee) {
             Committee::query()->updateOrCreate(
                 ['name' => $committee['name']],
                 $committee + [
                     'slug' => Str::slug($committee['name']),
-                    'sort_order' => $index,
                     'is_active' => true,
                 ]
             );
@@ -476,7 +473,7 @@ class SwanContentSeeder extends Seeder
         $faqs = [
             ['topic' => 'Membership', 'question' => 'Who is eligible to join SWAN?', 'answer' => 'Every female member of the Institute of Chartered Accountants of Nigeria is automatically a member of the Society of Women Accountants of Nigeria. There is no separate admission examination.'],
             ['topic' => 'Membership', 'question' => 'How do I become an active member of the Abuja Chapter?', 'answer' => 'Pay your annual subscription and welfare levy, get confirmed by the Financial Secretary, and attend a scheduled chapter meeting. That completes your registration.'],
-            ['topic' => 'Payments', 'question' => 'What are the annual dues?', 'answer' => 'Annual dues are ₦17,000 in total — ₦5,000 subscription and ₦12,000 welfare levy. Card, bank transfer and USSD are all accepted through the portal.'],
+            ['topic' => 'Payments', 'question' => 'What are the annual dues?', 'answer' => 'Annual dues depend on your membership level — each level has its own subscription and welfare levy, shown when you register or renew. Card, bank transfer and USSD are all accepted through the portal.'],
             ['topic' => 'Payments', 'question' => 'How do I get a receipt for my payment?', 'answer' => 'Receipts are issued automatically once the Financial Secretary confirms your payment. You can also find your payment history under Subscription in the members area.'],
             ['topic' => 'Events', 'question' => 'How do member rates work at chapter events?', 'answer' => 'Sign in before you check out on any event page. If your membership is active, the member rate is applied automatically — usually about 40% off the public rate.'],
             ['topic' => 'Events', 'question' => 'Can I get a refund if I cannot attend an event I paid for?', 'answer' => 'Refund requests are handled by the Financial Secretary on a case-by-case basis. Contact the chapter at least 48 hours before the event.'],
@@ -486,10 +483,10 @@ class SwanContentSeeder extends Seeder
             ['topic' => 'General', 'question' => 'Is my information in the members directory public?', 'answer' => 'Only what you choose to show. Members opt in to the directory, and only name, sector and specialisation are published — contact details are never shown.'],
         ];
 
-        foreach ($faqs as $index => $faq) {
+        foreach ($faqs as $faq) {
             Faq::query()->updateOrCreate(
                 ['question' => $faq['question']],
-                $faq + ['sort_order' => $index, 'is_active' => true]
+                $faq + ['is_active' => true]
             );
         }
     }
@@ -584,14 +581,13 @@ class SwanContentSeeder extends Seeder
             ['caption' => 'Newly inducted members at chapter induction', 'album' => 'Chapter life', 'file' => 'WhatsApp-Image-2026-07-06-at-16.15.25-967x1024.jpeg'],
         ];
 
-        foreach ($images as $index => $image) {
+        foreach ($images as $image) {
             $galleryImage = GalleryImage::query()->updateOrCreate(
                 ['caption' => $image['caption']],
                 [
                     'caption' => $image['caption'],
                     'album' => $image['album'],
                     'year' => now()->year,
-                    'sort_order' => $index,
                 ]
             );
 
@@ -612,10 +608,10 @@ class SwanContentSeeder extends Seeder
 
         $photo = "{$imagesPath}/gray-female-avatar-placeholder-nobg.png";
 
-        foreach ($spotlights as $index => $spotlight) {
+        foreach ($spotlights as $spotlight) {
             $memberSpotlight = MemberSpotlight::query()->updateOrCreate(
                 ['name' => $spotlight['name']],
-                $spotlight + ['sort_order' => $index]
+                $spotlight
             );
 
             if (! $memberSpotlight->hasMedia('photo') && is_file($photo)) {
@@ -657,10 +653,10 @@ class SwanContentSeeder extends Seeder
             ['title' => 'CPD Self-Declaration Form', 'category' => 'Form', 'format' => 'XLSX'],
         ];
 
-        foreach ($resources as $index => $resource) {
+        foreach ($resources as $resource) {
             $model = ResourceItem::query()->updateOrCreate(
                 ['title' => $resource['title']],
-                $resource + ['description' => 'Download the current version of this document.', 'sort_order' => $index, 'is_active' => true]
+                $resource + ['description' => 'Download the current version of this document.', 'is_active' => true]
             );
 
             if (! $model->hasMedia('file')) {

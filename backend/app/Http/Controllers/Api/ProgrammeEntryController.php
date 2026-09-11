@@ -14,8 +14,7 @@ class ProgrammeEntryController extends Controller
             ProgrammeEntry::query()
                 ->with('media')
                 ->where('is_active', true)
-                ->orderBy('created_at')
-                ->orderBy('id')
+                ->orderBy('starts_at')
                 ->get()
                 ->map(fn (ProgrammeEntry $entry): array => [
                     'id' => (string) $entry->id,

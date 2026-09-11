@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Database\Factories\CommitteeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Committee extends Model
 {
-    /** @use HasFactory<\Database\Factories\CommitteeFactory> */
+    /** @use HasFactory<CommitteeFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -17,7 +18,6 @@ class Committee extends Model
         'chair',
         'focus_areas',
         'meeting_cadence',
-        'sort_order',
         'is_active',
     ];
 
@@ -25,7 +25,6 @@ class Committee extends Model
     {
         return [
             'focus_areas' => 'array',
-            'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
     }

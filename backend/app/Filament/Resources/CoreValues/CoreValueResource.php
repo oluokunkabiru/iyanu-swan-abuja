@@ -43,7 +43,7 @@ class CoreValueResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('created_at')
+            ->defaultSort('title')
             ->columns([
                 TextColumn::make('title')->searchable(),
                 TextColumn::make('description')->limit(60),

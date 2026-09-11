@@ -22,7 +22,6 @@ class ResourceItemFactory extends Factory
             'description' => fake()->sentence(),
             'category' => fake()->randomElement(['Form', 'Guide', 'Policy', 'Template', 'Syllabus']),
             'format' => fake()->randomElement(['PDF', 'DOCX', 'XLSX']),
-            'sort_order' => fake()->numberBetween(0, 20),
             'is_active' => true,
         ];
     }

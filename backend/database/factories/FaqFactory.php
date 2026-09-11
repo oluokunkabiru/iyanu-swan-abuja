@@ -21,7 +21,6 @@ class FaqFactory extends Factory
             'topic' => fake()->randomElement(['General', 'Membership', 'Events', 'Payments', 'CPD']),
             'question' => fake()->sentence().'?',
             'answer' => fake()->paragraph(),
-            'sort_order' => fake()->numberBetween(0, 20),
             'is_active' => true,
         ];
     }

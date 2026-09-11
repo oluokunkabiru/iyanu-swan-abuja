@@ -24,7 +24,6 @@ class ProgrammeEntryFactory extends Factory
             'ends_at' => null,
             'venue' => fake()->city(),
             'href' => '/events',
-            'sort_order' => fake()->numberBetween(0, 20),
             'is_active' => true,
         ];
     }

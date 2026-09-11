@@ -20,7 +20,6 @@ class MemberSpotlightFactory extends Factory
         return [
             'name' => fake()->name('female'),
             'quote' => fake()->sentence(15),
-            'sort_order' => fake()->numberBetween(0, 20),
         ];
     }
 }

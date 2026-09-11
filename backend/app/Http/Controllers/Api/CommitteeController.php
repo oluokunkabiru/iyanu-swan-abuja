@@ -13,8 +13,7 @@ class CommitteeController extends Controller
         return response()->json(
             Committee::query()
                 ->where('is_active', true)
-                ->orderBy('created_at')
-                ->orderBy('id')
+                ->orderBy('name')
                 ->get()
                 ->map(fn (Committee $committee): array => $this->payload($committee))
         );

@@ -23,7 +23,6 @@ class ProgrammeEntry extends Model implements HasMedia
         'ends_at',
         'venue',
         'href',
-        'sort_order',
         'is_active',
     ];
 
@@ -32,7 +31,6 @@ class ProgrammeEntry extends Model implements HasMedia
         return [
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
-            'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
     }

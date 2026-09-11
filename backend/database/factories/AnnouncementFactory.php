@@ -22,7 +22,6 @@ class AnnouncementFactory extends Factory
             'published_on' => fake()->date(),
             'href' => '/announcements',
             'kind' => fake()->randomElement(['notice', 'circular', 'deadline']),
-            'sort_order' => fake()->numberBetween(0, 20),
             'is_active' => true,
         ];
     }

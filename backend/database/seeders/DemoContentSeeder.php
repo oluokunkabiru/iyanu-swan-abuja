@@ -117,11 +117,11 @@ class DemoContentSeeder extends Seeder
             ['Charity Okongwu', 'FCA', 'Ex-Officio Member', false, 'Ex-officio-cropped-1024x1024.jpeg'],
         ];
 
-        foreach ($executives as $index => [$name, $credential, $position, $principal, $image]) {
+        foreach ($executives as [$name, $credential, $position, $principal, $image]) {
             $executive = ExecutiveMember::query()->updateOrCreate(['name' => $name], [
                 'credential' => $credential, 'position' => $position,
                 'bio' => 'Serves the chapter through the responsibilities of the '.$position.'.',
-                'sort_order' => $index + 1, 'is_active' => true, 'is_principal' => $principal,
+                'is_active' => true, 'is_principal' => $principal,
             ]);
             $this->attachAsset($executive, 'photo', $image);
         }
@@ -199,10 +199,10 @@ class DemoContentSeeder extends Seeder
         ]);
 
         $this->upsertOrdered(ProgrammeEntry::class, 'name', [
-            ['Mentorship clinic for newly inducted members', 'date_label' => '27 September 2026', 'venue' => 'ICAN Abuja Liaison Office', 'href' => '/events/mentorship-clinic-newly-inducted'],
-            ['Annual technical seminar — sustainability reporting', 'date_label' => '9 October 2026', 'venue' => 'Transcorp Hilton, Maitama', 'href' => '/events/annual-technical-seminar-2026'],
-            ['56th Annual Accountants’ Conference', 'date_label' => '18 – 23 October 2026', 'venue' => 'Abuja', 'href' => '/news/annual-accountants-conference-abuja'],
-            ['October general meeting', 'date_label' => '25 October 2026', 'venue' => 'ICAN Abuja Liaison Office', 'href' => '/events/october-general-meeting'],
+            ['Mentorship clinic for newly inducted members', 'date_label' => '27 September 2026', 'starts_at' => '2026-09-27', 'venue' => 'ICAN Abuja Liaison Office', 'href' => '/events/mentorship-clinic-newly-inducted'],
+            ['Annual technical seminar — sustainability reporting', 'date_label' => '9 October 2026', 'starts_at' => '2026-10-09', 'venue' => 'Transcorp Hilton, Maitama', 'href' => '/events/annual-technical-seminar-2026'],
+            ['56th Annual Accountants’ Conference', 'date_label' => '18 – 23 October 2026', 'starts_at' => '2026-10-18', 'venue' => 'Abuja', 'href' => '/news/annual-accountants-conference-abuja'],
+            ['October general meeting', 'date_label' => '25 October 2026', 'starts_at' => '2026-10-25', 'venue' => 'ICAN Abuja Liaison Office', 'href' => '/events/october-general-meeting'],
         ]);
 
         $faqs = [
@@ -217,10 +217,10 @@ class DemoContentSeeder extends Seeder
             ['Payments', 'Can I pay for an event at the venue?'],
             ['Membership', 'My dues lapsed. How do I get back on the active roll?'],
         ];
-        foreach ($faqs as $index => [$topic, $question]) {
+        foreach ($faqs as [$topic, $question]) {
             Faq::query()->updateOrCreate(['question' => $question], [
                 'topic' => $topic, 'answer' => 'The chapter team can provide current guidance through the website and member portal.',
-                'sort_order' => $index + 1, 'is_active' => true,
+                'is_active' => true,
             ]);
         }
 
@@ -234,11 +234,11 @@ class DemoContentSeeder extends Seeder
             ['Community Outreach', 'community-outreach', 'Oluwakemi Toluwani, FCA'],
             ['Publicity and Communications', 'publicity-and-communications', 'Oluwakemi Toluwani, FCA'],
         ];
-        foreach ($committees as $index => [$name, $slug, $chair]) {
+        foreach ($committees as [$name, $slug, $chair]) {
             Committee::query()->updateOrCreate(['slug' => $slug], [
                 'name' => $name, 'remit' => 'Plans and delivers the chapter work assigned to this committee.',
                 'chair' => $chair, 'focus_areas' => ['Planning', 'Member engagement', 'Reporting'],
-                'meeting_cadence' => 'Monthly', 'sort_order' => $index + 1, 'is_active' => true,
+                'meeting_cadence' => 'Monthly', 'is_active' => true,
             ]);
         }
 
@@ -262,10 +262,10 @@ class DemoContentSeeder extends Seeder
             ['Practice attachment application form', 'Form', 'DOCX'], ['SWAN Abuja Chapter constitution and standing rules', 'Policy', 'PDF'],
             ['Welfare fund policy', 'Policy', 'PDF'], ['Mentorship programme pack', 'Template', 'DOCX'],
             ['ICAN professional examination syllabus', 'Syllabus', 'PDF'],
-        ] as $index => [$title, $category, $format]) {
+        ] as [$title, $category, $format]) {
             ResourceItem::query()->updateOrCreate(['title' => $title], [
                 'description' => 'Downloadable chapter resource.', 'category' => $category, 'format' => $format,
-                'sort_order' => $index + 1, 'is_active' => true,
+                'is_active' => true,
             ]);
         }
 
@@ -353,9 +353,9 @@ class DemoContentSeeder extends Seeder
             ['Medical screening day', 'Community outreach', 'DSC05883-1024x684.jpg'],
             ['Chapter picnic', 'Chapter life', 'SWAN-ABUJA-PICNIC-085-1024x663.jpg'],
             ['Members at the general meeting', 'Chapter life', 'WhatsApp-Image-2026-07-06-at-16.15.25-967x1024.jpeg'],
-        ] as $index => [$caption, $album, $image]) {
+        ] as [$caption, $album, $image]) {
             $record = GalleryImage::query()->updateOrCreate(['caption' => $caption], [
-                'album' => $album, 'year' => 2026, 'sort_order' => $index + 1,
+                'album' => $album, 'year' => 2026,
             ]);
             $this->attachAsset($record, 'image', $image);
         }
@@ -367,8 +367,8 @@ class DemoContentSeeder extends Seeder
             ['Pan African Federation of Accountants', 'https://www.pafa.org.za/', 'Affiliate'],
             ['International Federation of Accountants', 'https://www.ifac.org/', 'Affiliate'],
             ['Chartered Accountants Worldwide', 'https://charteredaccountantsworldwide.com/', 'Affiliate'],
-        ] as $index => [$name, $url, $scope]) {
-            Partner::query()->updateOrCreate(['name' => $name], ['url' => $url, 'scope' => $scope, 'sort_order' => $index + 1]);
+        ] as [$name, $url, $scope]) {
+            Partner::query()->updateOrCreate(['name' => $name], ['url' => $url, 'scope' => $scope]);
         }
     }
 
@@ -424,9 +424,9 @@ class DemoContentSeeder extends Seeder
     /** @param class-string<Model> $model */
     private function upsertOrdered(string $model, string $key, array $rows): void
     {
-        foreach ($rows as $index => $row) {
+        foreach ($rows as $row) {
             $value = array_shift($row);
-            $model::query()->updateOrCreate([$key => $value], $row + ['sort_order' => $index + 1, 'is_active' => true]);
+            $model::query()->updateOrCreate([$key => $value], $row + ['is_active' => true]);
         }
     }
 

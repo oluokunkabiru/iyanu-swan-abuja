@@ -58,7 +58,7 @@ class FaqResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('created_at')
+            ->defaultSort('question')
             ->recordTitleAttribute('question')
             ->columns([
                 TextColumn::make('question')

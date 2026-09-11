@@ -48,7 +48,7 @@ export default function MembershipRegister() {
       !residentialAddress ||
       !placeOfWork
     ) {
-      setError('Fill in every field — a password of at least 8 characters and your ICAN status are both required.')
+      setError('Fill in every field — a password of at least 8 characters and your ICAN level are both required.')
       return
     }
 
@@ -99,7 +99,7 @@ export default function MembershipRegister() {
                   <Input id="membershipNumber" name="membershipNumber" placeholder="As it appears on your ICAN record" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="credential">ICAN status</Label>
+                  <Label htmlFor="credential">ICAN level</Label>
                   <Select value={credential || undefined} onValueChange={(value) => setCredential(value as 'ACA' | 'FCA')}>
                     <SelectTrigger id="credential" className="w-full">
                       <SelectValue placeholder="Select ACA or FCA" />
