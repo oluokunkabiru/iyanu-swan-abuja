@@ -4,6 +4,7 @@ import { CalendarDays, Clock, MapPin } from 'lucide-react'
 import { getEvent, getEvents, registerForEvent } from '@/api/content'
 import { LazyImage } from '@/components/common/LazyImage'
 import { EmptyState, PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
@@ -11,6 +12,15 @@ import { useApiData } from '@/hooks/useApiData'
 import { formatDate, formatNaira, formatTimeRange } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { ChapterEvent } from '@/types'
+
+function speakerInitials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
+}
 
 export default function EventDetail() {
   const { slug } = useParams<{ slug: string }>()
@@ -125,9 +135,17 @@ export default function EventDetail() {
                 <SectionHeading title="Speakers and chairs" className="mb-6" />
                 <ul className="divide-y divide-border border-y border-border">
                   {event.speakers.map((s) => (
-                    <li key={s.name} className="flex flex-wrap items-baseline justify-between gap-2 py-3.5">
-                      <span className="font-medium">{s.name}</span>
-                      <span className="text-[0.85rem] text-muted-foreground">{s.role}</span>
+                    <li key={s.name} className="flex items-center gap-3 py-3.5">
+                      <Avatar className="h-10 w-10 shrink-0">
+                        <AvatarImage src={s.photoUrl ?? undefined} alt="" />
+                        <AvatarFallback className="bg-secondary text-secondary-foreground">
+                          {speakerInitials(s.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-2">
+                        <span className="font-medium">{s.name}</span>
+                        <span className="text-[0.85rem] text-muted-foreground">{s.role}</span>
+                      </div>
                     </li>
                   ))}
                 </ul>

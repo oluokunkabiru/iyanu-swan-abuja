@@ -93,7 +93,7 @@ export interface ChapterEvent {
   status: 'upcoming' | 'past'
   coverUrl: string | null
   ticketTiers: TicketTier[]
-  speakers: { name: string; role: string }[]
+  speakers: { name: string; role: string; photoUrl: string | null }[]
 }
 
 export interface NewsPost {

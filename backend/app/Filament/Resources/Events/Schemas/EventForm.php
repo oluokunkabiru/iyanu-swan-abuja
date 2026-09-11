@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Events\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
@@ -64,6 +65,14 @@ class EventForm
                     ->required(),
                 Repeater::make('speakers')
                     ->schema([
+                        FileUpload::make('photo')
+                            ->label('Photo (optional)')
+                            ->image()
+                            ->disk('public')
+                            ->directory('speakers')
+                            ->imageEditor()
+                            ->circleCropper()
+                            ->columnSpanFull(),
                         TextInput::make('name')->required(),
                         TextInput::make('role')->required(),
                     ])

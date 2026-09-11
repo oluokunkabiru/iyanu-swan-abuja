@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -60,7 +61,13 @@ class EventController extends Controller
                 'price' => $ticket->price,
                 'includes' => $ticket->includes ?? [],
             ])->values(),
-            'speakers' => $event->speakers ?? [],
+            'speakers' => collect($event->speakers ?? [])
+                ->map(fn (array $speaker): array => [
+                    'name' => $speaker['name'] ?? '',
+                    'role' => $speaker['role'] ?? '',
+                    'photoUrl' => filled($speaker['photo'] ?? null) ? Storage::disk('public')->url($speaker['photo']) : null,
+                ])
+                ->all(),
         ];
     }
 }
