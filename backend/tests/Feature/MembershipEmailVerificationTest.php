@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\MembershipLevel;
 use App\Models\NotificationSetting;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
@@ -17,13 +18,14 @@ class MembershipEmailVerificationTest extends TestCase
     public function test_registering_sends_a_verification_email_to_the_registered_address(): void
     {
         Notification::fake();
+        $level = MembershipLevel::factory()->create();
 
         $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
             'name' => 'Jane Member',
             'email' => 'jane.member@example.com',
             'password' => 'password123',
             'membership_number' => 'ICAN/12345',
-            'credential' => 'ACA',
+            'credential' => $level->name,
             'phone' => '08000000000',
             'residential_address' => '12 Chapter Close, Abuja',
             'place_of_work' => 'Federal Ministry of Finance',

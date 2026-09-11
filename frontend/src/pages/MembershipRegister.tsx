@@ -20,7 +20,7 @@ export default function MembershipRegister() {
   const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
-  const [credential, setCredential] = useState<'ACA' | 'FCA' | ''>('')
+  const [credential, setCredential] = useState('')
 
   const { data: levels } = useApiData(getMembershipLevels, [] as MembershipLevel[])
   const registrationSteps = settings?.registrationSteps ?? []
@@ -100,13 +100,16 @@ export default function MembershipRegister() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="credential">ICAN level</Label>
-                  <Select value={credential || undefined} onValueChange={(value) => setCredential(value as 'ACA' | 'FCA')}>
+                  <Select value={credential || undefined} onValueChange={setCredential}>
                     <SelectTrigger id="credential" className="w-full">
-                      <SelectValue placeholder="Select ACA or FCA" />
+                      <SelectValue placeholder="Select your level" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ACA">ACA</SelectItem>
-                      <SelectItem value="FCA">FCA</SelectItem>
+                      {levels.map((level) => (
+                        <SelectItem key={level.id} value={level.name}>
+                          {level.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -168,8 +171,8 @@ export default function MembershipRegister() {
             <div className="border border-border bg-card p-6">
               <h2 className="text-[1.05rem]">Membership levels</h2>
               <p className="mt-2 text-[0.85rem] text-muted-foreground">
-                Pick the level that fits once you&rsquo;re signed in — each has its own subscription
-                and welfare levy.
+                Each level has its own subscription and welfare levy — you can review or change
+                yours later from your dashboard.
               </p>
               {levels.length > 0 && (
                 <dl className="mt-4 space-y-3 text-[0.9rem]">

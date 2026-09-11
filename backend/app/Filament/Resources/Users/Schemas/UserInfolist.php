@@ -82,7 +82,7 @@ class UserInfolist
                                                 'registered' => 'Registered email only',
                                                 default => 'Site default',
                                             }),
-                                        TextEntry::make('memberProfile.credential')->label('Credential'),
+                                        TextEntry::make('memberProfile.credential')->label('ICAN level'),
                                         TextEntry::make('memberProfile.phone')->label('WhatsApp telephone')->placeholder('—'),
                                         TextEntry::make('memberProfile.date_of_birth')
                                             ->label('Date of birth')

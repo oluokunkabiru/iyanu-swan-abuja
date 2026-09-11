@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Models\MembershipLevel;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
@@ -50,10 +51,9 @@ class UserForm
                         TextInput::make('membership_number')
                             ->maxLength(50),
                         Select::make('credential')
-                            ->options([
-                                'ACA' => 'ACA',
-                                'FCA' => 'FCA',
-                            ]),
+                            ->label('ICAN level')
+                            ->options(fn (): array => MembershipLevel::query()->orderBy('sort_order')->pluck('name', 'name')->all())
+                            ->native(false),
                         Select::make('membership_status')
                             ->options([
                                 'pending' => 'Pending',

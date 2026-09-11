@@ -6,7 +6,7 @@ export async function register(payload: {
   email: string
   password: string
   membershipNumber: string
-  credential: 'ACA' | 'FCA'
+  credential: string
   phone: string
   residentialAddress: string
   placeOfWork: string

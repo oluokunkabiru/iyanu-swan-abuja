@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\MembershipLevel;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +22,10 @@ class AuthController extends Controller
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
             'membership_number' => ['required', 'string', 'max:255', 'unique:member_profiles,membership_number'],
-            'credential' => ['required', Rule::in(['ACA', 'FCA'])],
+            // "Credential" here is the member's ICAN level — one of the
+            // chapter's admin-configured Membership Levels (e.g. ACA,
+            // FCA, AATWA), not a fixed ACA/FCA enum.
+            'credential' => ['required', Rule::in(MembershipLevel::active()->pluck('name'))],
             'phone' => ['required', 'string', 'max:50'],
             'residential_address' => ['required', 'string', 'max:1000'],
             'place_of_work' => ['required', 'string', 'max:255'],

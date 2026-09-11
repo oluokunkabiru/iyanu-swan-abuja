@@ -17,12 +17,14 @@ class PaymentFlowTest extends TestCase
 
     public function test_registering_is_free_and_creates_no_subscription(): void
     {
+        $level = MembershipLevel::factory()->create();
+
         $response = $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
             'name' => 'Jane Member',
             'email' => 'jane.member@example.com',
             'password' => 'password123',
             'membership_number' => 'ICAN/12345',
-            'credential' => 'ACA',
+            'credential' => $level->name,
             'phone' => '08000000000',
             'residential_address' => '12 Chapter Close, Abuja',
             'place_of_work' => 'Federal Ministry of Finance',
@@ -36,7 +38,7 @@ class PaymentFlowTest extends TestCase
         $this->assertDatabaseHas('member_profiles', [
             'user_id' => $user->id,
             'membership_number' => 'ICAN/12345',
-            'credential' => 'ACA',
+            'credential' => $level->name,
             'phone' => '08000000000',
             'residential_address' => '12 Chapter Close, Abuja',
             'place_of_work' => 'Federal Ministry of Finance',
@@ -54,6 +56,25 @@ class PaymentFlowTest extends TestCase
         $response->assertStatus(422)->assertJsonValidationErrors([
             'membership_number', 'credential', 'phone', 'residential_address', 'place_of_work',
         ]);
+    }
+
+    public function test_registering_rejects_an_ican_level_that_is_not_an_active_membership_level(): void
+    {
+        MembershipLevel::factory()->create(['name' => 'Real Level', 'is_active' => true]);
+        MembershipLevel::factory()->create(['name' => 'Retired Level', 'is_active' => false]);
+
+        $response = $this->postJson('/api/register', [
+            'name' => 'Jane Member',
+            'email' => 'jane.member@example.com',
+            'password' => 'password123',
+            'membership_number' => 'ICAN/12345',
+            'credential' => 'Retired Level',
+            'phone' => '08000000000',
+            'residential_address' => '12 Chapter Close, Abuja',
+            'place_of_work' => 'Federal Ministry of Finance',
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['credential']);
     }
 
     public function test_member_can_update_their_place_of_work_and_residential_address(): void

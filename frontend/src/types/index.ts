@@ -190,7 +190,7 @@ export type Sector =
 export interface DirectoryMember {
   id: string
   name: string
-  credential: 'ACA' | 'FCA'
+  credential: string
   sector: Sector
   chapterRole: string | null
   photoUrl: string | null
@@ -305,7 +305,7 @@ export interface AuthUser {
   personalEmail: string | null
   officialEmail: string | null
   notificationEmailPreference: NotificationEmailPreference | null
-  credential: 'ACA' | 'FCA'
+  credential: string
   membershipNumber: string
   membershipStatus: 'active' | 'pending' | 'expired'
   role: 'member' | 'admin'

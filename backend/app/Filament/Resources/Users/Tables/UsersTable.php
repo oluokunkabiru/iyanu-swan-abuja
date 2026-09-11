@@ -25,7 +25,7 @@ class UsersTable
                 TextColumn::make('role')->badge(),
                 TextColumn::make('memberProfile.membership_status')->label('Membership')->badge(),
                 TextColumn::make('memberProfile.membership_number')->label('Member #'),
-                TextColumn::make('memberProfile.credential')->label('Credential'),
+                TextColumn::make('memberProfile.credential')->label('ICAN level'),
                 TextColumn::make('memberProfile.sector')->label('Sector'),
                 TextColumn::make('created_at')->dateTime()->sortable(),
             ])
