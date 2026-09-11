@@ -2,6 +2,9 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\ContactMessages\ContactMessageResource;
+use App\Filament\Resources\Events\EventResource;
+use App\Filament\Resources\Users\UserResource;
 use App\Models\ContactMessage;
 use App\Models\Event;
 use App\Models\EventRegistration;
@@ -44,28 +47,33 @@ class OverviewStats extends StatsOverviewWidget
                 ->description("{$pendingMembers} pending approval")
                 ->descriptionIcon('heroicon-m-user-plus')
                 ->color($pendingMembers > 0 ? 'warning' : 'success')
-                ->chart($memberTrend),
+                ->chart($memberTrend)
+                ->url(UserResource::getUrl('index')),
 
-            Stat::make('Revenue collected', '₦' . number_format($revenue))
+            Stat::make('Revenue collected', '₦'.number_format($revenue))
                 ->description('From confirmed registrations')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success')
-                ->chart($revenueTrend),
+                ->chart($revenueTrend)
+                ->url(EventResource::getUrl('index')),
 
             Stat::make('Event registrations', $confirmedRegistrations)
                 ->description("{$pendingRegistrations} awaiting confirmation")
                 ->descriptionIcon('heroicon-m-clock')
-                ->color($pendingRegistrations > 0 ? 'warning' : 'success'),
+                ->color($pendingRegistrations > 0 ? 'warning' : 'success')
+                ->url(EventResource::getUrl('index')),
 
             Stat::make('Upcoming events', $upcomingEvents)
                 ->description('Published & scheduled')
                 ->descriptionIcon('heroicon-m-calendar-days')
-                ->color('info'),
+                ->color('info')
+                ->url(EventResource::getUrl('index')),
 
             Stat::make('Unread messages', $unreadMessages)
                 ->description($unreadMessages > 0 ? 'Needs attention' : 'All caught up')
                 ->descriptionIcon('heroicon-m-envelope')
-                ->color($unreadMessages > 0 ? 'danger' : 'success'),
+                ->color($unreadMessages > 0 ? 'danger' : 'success')
+                ->url(ContactMessageResource::getUrl('index')),
         ];
     }
 }
