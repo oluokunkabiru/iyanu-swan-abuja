@@ -58,6 +58,25 @@ class PaymentFlowTest extends TestCase
         ]);
     }
 
+    public function test_registering_accepts_a_membership_level_name_longer_than_the_old_credential_limit(): void
+    {
+        $level = MembershipLevel::factory()->create(['name' => 'AATWA (Associate Accounting Technician)']);
+
+        $response = $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
+            'name' => 'Jane Member',
+            'email' => 'jane.member@example.com',
+            'password' => 'password123',
+            'membership_number' => 'ICAN/12345',
+            'credential' => $level->name,
+            'phone' => '08000000000',
+            'residential_address' => '12 Chapter Close, Abuja',
+            'place_of_work' => 'Federal Ministry of Finance',
+        ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('member_profiles', ['credential' => 'AATWA (Associate Accounting Technician)']);
+    }
+
     public function test_registering_rejects_an_ican_level_that_is_not_an_active_membership_level(): void
     {
         MembershipLevel::factory()->create(['name' => 'Real Level', 'is_active' => true]);
