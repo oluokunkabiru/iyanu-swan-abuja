@@ -7,6 +7,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -20,6 +21,7 @@ class UsersTable
             ->columns([
                 TextColumn::make('name')->searchable(),
                 TextColumn::make('email')->searchable(),
+                IconColumn::make('email_verified_at')->label('Verified')->boolean(),
                 TextColumn::make('role')->badge(),
                 TextColumn::make('memberProfile.membership_status')->label('Membership')->badge(),
                 TextColumn::make('memberProfile.membership_number')->label('Member #'),

@@ -92,6 +92,21 @@ class ManageNotificationSettings extends Page
                             ->options($channelOptions)
                             ->columns(3),
                     ]),
+                Section::make('Member email routing')
+                    ->description('Members can have a registered email plus a personal and/or official email on file. This picks which of those a notification goes to by default — a member can override it for their own account from their dashboard.')
+                    ->schema([
+                        Select::make('member_email_default')
+                            ->label('Default recipient email')
+                            ->options([
+                                'registered' => 'Registered email only',
+                                'personal' => 'Personal email only',
+                                'official' => 'Official email only',
+                                'all' => 'All emails on file',
+                            ])
+                            ->native(false)
+                            ->default('registered')
+                            ->required(),
+                    ]),
             ])
             ->statePath('data')
             ->model(NotificationSetting::current());

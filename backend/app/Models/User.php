@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,9 +15,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password', 'role'])]
+#[Fillable(['name', 'email', 'personal_email', 'official_email', 'notification_email_preference', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
@@ -63,5 +63,51 @@ class User extends Authenticatable implements FilamentUser
     public function firms(): HasMany
     {
         return $this->hasMany(Firm::class, 'principal_user_id');
+    }
+
+    /**
+     * Flip the member's profile to active once they've both paid the
+     * current year's dues and verified their registered email — either
+     * event can be the one that completes this, so both call it.
+     */
+    public function activateMembershipIfEligible(): void
+    {
+        if (! $this->hasVerifiedEmail()) {
+            return;
+        }
+
+        $hasPaidCurrentYear = $this->subscriptions()
+            ->where('year', now()->year)
+            ->where('status', 'paid')
+            ->exists();
+
+        if (! $hasPaidCurrentYear) {
+            return;
+        }
+
+        $this->memberProfile()->update(['membership_status' => 'active']);
+    }
+
+    /**
+     * Which of this member's email addresses mail notifications go to —
+     * their own preference if they've set one, otherwise the site-wide
+     * default from NotificationSetting.
+     *
+     * @return string[]
+     */
+    public function routeNotificationForMail(): array
+    {
+        $preference = $this->notification_email_preference ?: NotificationSetting::current()->member_email_default;
+
+        $addresses = match ($preference) {
+            'personal' => [$this->personal_email],
+            'official' => [$this->official_email],
+            'all' => [$this->email, $this->personal_email, $this->official_email],
+            default => [$this->email],
+        };
+
+        $addresses = array_values(array_unique(array_filter($addresses)));
+
+        return $addresses !== [] ? $addresses : [$this->email];
     }
 }

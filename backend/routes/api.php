@@ -60,6 +60,10 @@ Route::post('/contact', [ContactMessageController::class, 'store']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+    ->middleware('signed')
+    ->name('verification.verify');
+
 Route::get('/payments/verify/{reference}', [PaymentController::class, 'verify']);
 Route::post('/payments/webhooks/paystack', [PaymentController::class, 'webhookPaystack']);
 Route::post('/payments/webhooks/flutterwave', [PaymentController::class, 'webhookFlutterwave']);
@@ -68,6 +72,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/me', [AuthController::class, 'updateMe']);
+    Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
+        ->middleware('throttle:6,1');
     Route::get('/me/registrations', [AuthController::class, 'registrations']);
     Route::get('/me/cpd-records', [MemberCpdRecordController::class, 'index']);
     Route::get('/me/subscriptions', [MemberSubscriptionController::class, 'index']);

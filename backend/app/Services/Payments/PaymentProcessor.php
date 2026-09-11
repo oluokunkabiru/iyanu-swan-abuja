@@ -69,6 +69,10 @@ class PaymentProcessor
                 'paid_at' => $result->successful ? now() : null,
             ]);
 
+            if ($result->successful) {
+                $subscription->user->activateMembershipIfEligible();
+            }
+
             return ['type' => 'subscription', 'status' => $subscription->status, 'record' => $subscription];
         }
 

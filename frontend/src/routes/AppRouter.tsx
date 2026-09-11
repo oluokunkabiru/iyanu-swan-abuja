@@ -10,6 +10,7 @@ import Constitution from '@/pages/Constitution'
 import Contact from '@/pages/Contact'
 import Cpd from '@/pages/Cpd'
 import Directory from '@/pages/Directory'
+import EmailVerified from '@/pages/EmailVerified'
 import EventDetail from '@/pages/EventDetail'
 import Events from '@/pages/Events'
 import Faqs from '@/pages/Faqs'
@@ -82,6 +83,7 @@ export function AppRouter() {
         {/* Account */}
         <Route path="login" element={<Login />} />
         <Route path="payments/callback" element={<PaymentCallback />} />
+        <Route path="email/verified" element={<EmailVerified />} />
         <Route path="register" element={<Navigate to="/membership/register" replace />} />
         <Route path="dashboard" element={<Navigate to="/members" replace />} />
 

@@ -283,10 +283,16 @@ export interface TicketRecord {
   issuedAt: string
 }
 
+export type NotificationEmailPreference = 'registered' | 'personal' | 'official' | 'all'
+
 export interface AuthUser {
   id: string
   name: string
   email: string
+  emailVerified: boolean
+  personalEmail: string | null
+  officialEmail: string | null
+  notificationEmailPreference: NotificationEmailPreference | null
   credential: 'ACA' | 'FCA'
   membershipNumber: string
   membershipStatus: 'active' | 'pending' | 'expired'

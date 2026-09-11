@@ -1,5 +1,5 @@
 import { api, ensureCsrfCookie } from '@/api/client'
-import type { AuthUser, CpdRecord, SubscriptionRecord, TicketRecord } from '@/types'
+import type { AuthUser, CpdRecord, NotificationEmailPreference, SubscriptionRecord, TicketRecord } from '@/types'
 
 export async function register(payload: {
   name: string
@@ -40,6 +40,9 @@ export async function updateMe(payload: {
   dateOfBirth?: string
   isDirectoryListed?: boolean
   photo?: File
+  personalEmail?: string
+  officialEmail?: string
+  notificationEmailPreference?: NotificationEmailPreference | ''
 }): Promise<AuthUser> {
   const form = new FormData()
   form.append('_method', 'PUT')
@@ -50,8 +53,18 @@ export async function updateMe(payload: {
     form.append('is_directory_listed', payload.isDirectoryListed ? '1' : '0')
   }
   if (payload.photo) form.append('photo', payload.photo)
+  if (payload.personalEmail !== undefined) form.append('personal_email', payload.personalEmail)
+  if (payload.officialEmail !== undefined) form.append('official_email', payload.officialEmail)
+  if (payload.notificationEmailPreference !== undefined) {
+    form.append('notification_email_preference', payload.notificationEmailPreference)
+  }
 
   const { data } = await api.post<AuthUser>('/me', form)
+  return data
+}
+
+export async function resendVerificationEmail(): Promise<{ message: string }> {
+  const { data } = await api.post<{ message: string }>('/email/verification-notification')
   return data
 }
 

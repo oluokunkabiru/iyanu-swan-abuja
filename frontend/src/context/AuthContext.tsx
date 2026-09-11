@@ -17,6 +17,7 @@ interface AuthContextValue {
   signUp: (input: Parameters<typeof register>[0]) => Promise<AuthUser>
   signOut: () => void
   updateProfile: (payload: Parameters<typeof updateMe>[0]) => Promise<AuthUser>
+  refreshUser: () => Promise<AuthUser | null>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -54,9 +55,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return next
   }, [])
 
+  const refreshUser = useCallback(async () => {
+    try {
+      const next = await fetchMe()
+      setUser(next)
+      return next
+    } catch {
+      setUser(null)
+      return null
+    }
+  }, [])
+
   const value = useMemo(
-    () => ({ user, isLoading, signIn, signUp, signOut, updateProfile }),
-    [user, isLoading, signIn, signUp, signOut, updateProfile],
+    () => ({ user, isLoading, signIn, signUp, signOut, updateProfile, refreshUser }),
+    [user, isLoading, signIn, signUp, signOut, updateProfile, refreshUser],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

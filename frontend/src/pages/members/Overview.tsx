@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Award, CalendarDays, GraduationCap, Ticket, Wallet, ArrowRight } from 'lucide-react'
-import { fetchMyCpdRecords, fetchMyRegistrations, fetchMySubscriptions } from '@/api/auth'
+import { Award, CalendarDays, GraduationCap, Mail, Ticket, Wallet, ArrowRight } from 'lucide-react'
+import { fetchMyCpdRecords, fetchMyRegistrations, fetchMySubscriptions, resendVerificationEmail } from '@/api/auth'
 import { getEvents } from '@/api/content'
 import { EmptyState, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,8 @@ import type { ChapterEvent, CpdRecord, SubscriptionRecord, TicketRecord } from '
 
 export default function MembersOverview() {
   const { user } = useAuth()
+  const [resending, setResending] = useState(false)
+  const [resent, setResent] = useState(false)
   const { data: cpdRecords, isLoading: loadingCpd } = useApiData(fetchMyCpdRecords, [] as CpdRecord[])
   const { data: subscriptions, isLoading: loadingSubscriptions } = useApiData(
     fetchMySubscriptions,
@@ -34,8 +37,36 @@ export default function MembersOverview() {
   const nextTicket = tickets.find((t) => t.status === 'Confirmed')
   const nextEvent = upcomingEvents[0]
 
+  async function handleResend() {
+    setResending(true)
+    try {
+      await resendVerificationEmail()
+      setResent(true)
+    } finally {
+      setResending(false)
+    }
+  }
+
   return (
     <div className="space-y-12">
+      {!user.emailVerified && (
+        <div className="flex flex-col gap-4 rounded-xl border border-gold-500/40 bg-accent/60 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="flex items-center gap-2 text-[1.05rem] font-semibold">
+              <Mail className="h-4 w-4 text-accent-foreground" aria-hidden="true" />
+              Confirm your email
+            </h2>
+            <p className="mt-1.5 max-w-[60ch] text-[0.9rem] leading-relaxed text-muted-foreground">
+              We sent a link to {user.email}. Verifying it — alongside paying your dues — activates
+              your membership and unlocks adding a personal or official email for notices.
+            </p>
+          </div>
+          <Button variant="outline" className="shrink-0" onClick={handleResend} disabled={resending || resent}>
+            {resent ? 'Link sent' : resending ? 'Sending…' : 'Resend link'}
+          </Button>
+        </div>
+      )}
+
       <div>
         <SectionHeading title="Where you stand" className="mb-6" />
         {isLoading ? (

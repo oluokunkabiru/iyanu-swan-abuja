@@ -1,11 +1,20 @@
 import { useMemo, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { SectionHeading, StatusTag } from '@/components/common/Primitives'
+import { EmptyState, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuth } from '@/context/AuthContext'
 import { formatDate } from '@/lib/format'
+import type { NotificationEmailPreference } from '@/types'
+
+const notificationPreferenceOptions: { value: NotificationEmailPreference; label: string }[] = [
+  { value: 'registered', label: 'Registered email only' },
+  { value: 'personal', label: 'Personal email only' },
+  { value: 'official', label: 'Official email only' },
+  { value: 'all', label: 'All emails on file' },
+]
 
 const preferences = [
   { id: 'pref-mentor', label: 'Available as a mentor', detail: 'The Membership Secretary may match you with a newly inducted member.' },
@@ -30,6 +39,13 @@ export default function MembersProfile() {
   const [photo, setPhoto] = useState<File | null>(null)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [personalEmail, setPersonalEmail] = useState(user?.personalEmail ?? '')
+  const [officialEmail, setOfficialEmail] = useState(user?.officialEmail ?? '')
+  const [notificationPreference, setNotificationPreference] = useState<NotificationEmailPreference | ''>(
+    user?.notificationEmailPreference ?? '',
+  )
+  const [savingEmails, setSavingEmails] = useState(false)
+  const [savedEmails, setSavedEmails] = useState(false)
   const [checked, setChecked] = useState<Record<string, boolean>>({
     'pref-mentor': false,
     'pref-attachment': false,
@@ -54,6 +70,21 @@ export default function MembersProfile() {
       setSaved(true)
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleSaveEmails() {
+    setSavingEmails(true)
+    setSavedEmails(false)
+    try {
+      await updateProfile({
+        personalEmail,
+        officialEmail,
+        notificationEmailPreference: notificationPreference,
+      })
+      setSavedEmails(true)
+    } finally {
+      setSavingEmails(false)
     }
   }
 
@@ -191,6 +222,77 @@ export default function MembersProfile() {
             {saved && <span className="text-[0.85rem] text-muted-foreground">Saved.</span>}
           </div>
         </form>
+      </div>
+
+      <div>
+        <SectionHeading
+          title="Notification emails"
+          lede="Which of your emails should chapter notices go to."
+          className="mb-6"
+        />
+        {!user.emailVerified ? (
+          <EmptyState
+            title="Verify your registered email first"
+            body="Once you confirm the link we sent to your registered email, you can add a personal or official email and choose where notices go."
+          />
+        ) : (
+          <form
+            className="grid max-w-lg gap-5 sm:grid-cols-2"
+            onSubmit={(e) => {
+              e.preventDefault()
+              handleSaveEmails()
+            }}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="profile-personal-email">Personal email</Label>
+              <Input
+                id="profile-personal-email"
+                type="email"
+                placeholder="you@example.com"
+                value={personalEmail}
+                onChange={(e) => setPersonalEmail(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="profile-official-email">Official email</Label>
+              <Input
+                id="profile-official-email"
+                type="email"
+                placeholder="you@firm.com"
+                value={officialEmail}
+                onChange={(e) => setOfficialEmail(e.target.value)}
+              />
+            </div>
+            <div className="sm:col-span-2 space-y-2">
+              <Label htmlFor="profile-notification-preference">Send notices to</Label>
+              <Select
+                value={notificationPreference || undefined}
+                onValueChange={(value) => setNotificationPreference(value as NotificationEmailPreference)}
+              >
+                <SelectTrigger id="profile-notification-preference" className="w-full sm:w-64">
+                  <SelectValue placeholder="Chapter default" />
+                </SelectTrigger>
+                <SelectContent>
+                  {notificationPreferenceOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-[0.78rem] text-muted-foreground">
+                Leave unset to use the chapter&rsquo;s default. Only emails you&rsquo;ve added above are
+                usable here.
+              </p>
+            </div>
+            <div className="sm:col-span-2 flex items-center gap-3">
+              <Button type="submit" disabled={savingEmails}>
+                {savingEmails ? 'Saving…' : 'Save changes'}
+              </Button>
+              {savedEmails && <span className="text-[0.85rem] text-muted-foreground">Saved.</span>}
+            </div>
+          </form>
+        )}
       </div>
 
       <div>

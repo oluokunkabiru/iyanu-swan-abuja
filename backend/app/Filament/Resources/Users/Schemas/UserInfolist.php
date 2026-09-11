@@ -38,7 +38,7 @@ class UserInfolist
                                         TextEntry::make('email')
                                             ->icon('heroicon-m-envelope')
                                             ->copyable(),
-                                        Grid::make(3)
+                                        Grid::make(4)
                                             ->schema([
                                                 TextEntry::make('role')->badge(),
                                                 TextEntry::make('memberProfile.membership_status')
@@ -53,6 +53,9 @@ class UserInfolist
                                                 TextEntry::make('memberProfile.membership_number')
                                                     ->label('Membership number')
                                                     ->placeholder('Not yet assigned'),
+                                                IconEntry::make('email_verified_at')
+                                                    ->label('Email verified')
+                                                    ->boolean(),
                                             ]),
                                     ])
                                     ->columnSpan(3),
@@ -67,6 +70,18 @@ class UserInfolist
                             ->schema([
                                 Grid::make(3)
                                     ->schema([
+                                        TextEntry::make('personal_email')->label('Personal email')->placeholder('—'),
+                                        TextEntry::make('official_email')->label('Official email')->placeholder('—'),
+                                        TextEntry::make('notification_email_preference')
+                                            ->label('Notification email')
+                                            ->placeholder('Site default')
+                                            ->formatStateUsing(fn (?string $state): string => match ($state) {
+                                                'personal' => 'Personal email only',
+                                                'official' => 'Official email only',
+                                                'all' => 'All emails on file',
+                                                'registered' => 'Registered email only',
+                                                default => 'Site default',
+                                            }),
                                         TextEntry::make('memberProfile.credential')->label('Credential'),
                                         TextEntry::make('memberProfile.phone')->label('Phone')->placeholder('—'),
                                         TextEntry::make('memberProfile.date_of_birth')
