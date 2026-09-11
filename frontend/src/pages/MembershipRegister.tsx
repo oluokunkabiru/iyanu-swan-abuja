@@ -29,6 +29,7 @@ export default function MembershipRegister() {
     const email = String(form.get('email') ?? '').trim()
     const password = String(form.get('password') ?? '')
     const phone = String(form.get('phone') ?? '').trim()
+    const dateOfBirth = String(form.get('dateOfBirth') ?? '').trim()
 
     if (!name || !email || password.length < 8) {
       setError('Enter your name and email, and choose a password of at least 8 characters.')
@@ -37,7 +38,13 @@ export default function MembershipRegister() {
 
     setSubmitting(true)
     try {
-      await signUp({ name, email, password, phone: phone || undefined })
+      await signUp({
+        name,
+        email,
+        password,
+        phone: phone || undefined,
+        dateOfBirth: dateOfBirth || undefined,
+      })
       const { authorizationUrl } = await paySubscriptionDues(new Date().getFullYear())
       window.location.href = authorizationUrl
     } catch {
@@ -79,6 +86,13 @@ export default function MembershipRegister() {
                 <div className="space-y-2">
                   <Label htmlFor="password">Choose a password</Label>
                   <Input id="password" name="password" type="password" autoComplete="new-password" placeholder="At least 8 characters" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dateOfBirth">Date of birth (optional)</Label>
+                  <Input id="dateOfBirth" name="dateOfBirth" type="date" autoComplete="bday" />
+                  <p className="text-[0.78rem] text-muted-foreground">
+                    Used only to send you a birthday greeting.
+                  </p>
                 </div>
               </div>
 

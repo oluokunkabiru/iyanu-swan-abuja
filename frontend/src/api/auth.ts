@@ -6,9 +6,16 @@ export async function register(payload: {
   email: string
   password: string
   phone?: string
+  dateOfBirth?: string
 }): Promise<AuthUser> {
   await ensureCsrfCookie()
-  const { data } = await api.post<AuthUser>('/register', payload)
+  const { data } = await api.post<AuthUser>('/register', {
+    name: payload.name,
+    email: payload.email,
+    password: payload.password,
+    phone: payload.phone,
+    date_of_birth: payload.dateOfBirth,
+  })
   return data
 }
 

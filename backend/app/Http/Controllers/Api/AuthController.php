@@ -20,6 +20,7 @@ class AuthController extends Controller
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
             'phone' => ['nullable', 'string', 'max:50'],
+            'date_of_birth' => ['nullable', 'date', 'before:today'],
         ]);
 
         $user = User::create([
@@ -31,6 +32,7 @@ class AuthController extends Controller
 
         $user->memberProfile()->create([
             'phone' => $data['phone'] ?? null,
+            'date_of_birth' => $data['date_of_birth'] ?? null,
             'membership_status' => 'pending',
         ]);
 
