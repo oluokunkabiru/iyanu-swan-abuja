@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { CalendarDays, Clock, Download, MapPin } from 'lucide-react'
+import { LazyImage } from '@/components/common/LazyImage'
 import { StatusTag } from '@/components/common/Primitives'
 import { dateParts, formatDate, formatNaira, formatShortDate, formatTimeRange } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -15,10 +16,9 @@ export function EventCard({ event, compact = false }: { event: ChapterEvent; com
     <article className="group flex h-full flex-col border border-border bg-card">
       {event.coverUrl && !compact && (
         <Link to={`/events/${event.slug}`} className="block overflow-hidden">
-          <img
+          <LazyImage
             src={event.coverUrl}
             alt=""
-            loading="lazy"
             className="aspect-[16/10] w-full object-cover"
           />
         </Link>
@@ -98,10 +98,9 @@ export function NewsCard({ post, featured = false }: { post: NewsPost; featured?
           to={`/news/${post.slug}`}
           className={cn('block overflow-hidden', featured && 'md:w-1/2 md:shrink-0')}
         >
-          <img
+          <LazyImage
             src={post.coverUrl}
             alt=""
-            loading="lazy"
             className={cn('w-full object-cover', featured ? 'h-full min-h-56' : 'aspect-[16/9]')}
           />
         </Link>

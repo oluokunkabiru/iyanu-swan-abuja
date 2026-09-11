@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { getGallery } from '@/api/content'
+import { LazyImage } from '@/components/common/LazyImage'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
@@ -52,10 +53,9 @@ export default function Gallery() {
           <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {visible.map((img) => (
               <li key={img.id} className="border border-border bg-card">
-                <img
+                <LazyImage
                   src={img.imageUrl}
                   alt={img.caption}
-                  loading="lazy"
                   className="aspect-[4/3] w-full object-cover"
                 />
                 <div className="p-4">

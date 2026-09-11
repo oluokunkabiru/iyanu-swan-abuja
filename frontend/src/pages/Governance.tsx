@@ -1,4 +1,5 @@
 import { getExecutives, getPastChairpersons } from '@/api/content'
+import { LazyImage } from '@/components/common/LazyImage'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
@@ -65,10 +66,9 @@ export default function Governance() {
             : principals.map((exec) => (
             <li key={exec.id} className="flex gap-4 border border-border bg-card p-5">
               {exec.photoUrl && (
-                <img
+                <LazyImage
                   src={exec.photoUrl}
                   alt=""
-                  loading="lazy"
                   className="h-20 w-20 shrink-0 rounded-sm object-cover object-top"
                 />
               )}
@@ -92,10 +92,9 @@ export default function Governance() {
           {!isLoading && others.map((exec) => (
             <li key={exec.id} className="flex gap-4 border border-border bg-card p-5">
               {exec.photoUrl && (
-                <img
+                <LazyImage
                   src={exec.photoUrl}
                   alt=""
-                  loading="lazy"
                   className="h-16 w-16 shrink-0 rounded-sm object-cover object-top"
                 />
               )}
@@ -126,10 +125,9 @@ export default function Governance() {
               : pastChairpersons.map((exec) => (
                   <li key={exec.id} className="flex gap-4 border border-border bg-card p-5">
                     {exec.photoUrl && (
-                      <img
+                      <LazyImage
                         src={exec.photoUrl}
                         alt=""
-                        loading="lazy"
                         className="h-16 w-16 shrink-0 rounded-sm object-cover object-top"
                       />
                     )}

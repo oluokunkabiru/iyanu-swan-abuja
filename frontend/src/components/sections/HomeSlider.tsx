@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type TouchEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { LazyImage } from '@/components/common/LazyImage'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { HomeSlide } from '@/types'
@@ -98,7 +99,7 @@ export function HomeSlider({ slides }: { slides: HomeSlide[] }) {
         </div>
 
         <div className="order-1 h-72 min-w-0 overflow-hidden bg-secondary lg:order-2 lg:h-auto lg:min-h-[38rem]">
-          <img
+          <LazyImage
             src={activeSlide.image}
             alt={activeSlide.imageAlt}
             className="h-full w-full object-cover"

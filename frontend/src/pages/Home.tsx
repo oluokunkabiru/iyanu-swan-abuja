@@ -11,6 +11,7 @@ import {
 } from '@/api/content'
 import { getSliders } from '@/api/sliders'
 import { EventCard, NewsCard } from '@/components/common/Cards'
+import { LazyImage } from '@/components/common/LazyImage'
 import { Section, SectionHeading, Stat } from '@/components/common/Primitives'
 import { HomeSlider } from '@/components/sections/HomeSlider'
 import { Noticeboard } from '@/components/sections/Noticeboard'
@@ -105,9 +106,10 @@ export default function Home() {
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(17rem,0.72fr)_minmax(0,1.28fr)] lg:gap-16">
             <div className="relative mx-auto w-full max-w-sm border border-border bg-secondary p-3 lg:mx-0">
               {chairperson?.photoUrl && (
-                <img
+                <LazyImage
                   src={chairperson.photoUrl}
                   alt={`${chairperson.name}, ${chairperson.position}`}
+                  loading="eager"
                   className="aspect-[4/5] w-full object-cover object-top"
                 />
               )}
@@ -361,10 +363,9 @@ export default function Home() {
               .map((exec) => (
                 <li key={exec.id} className="border border-border bg-card">
                   {exec.photoUrl && (
-                    <img
+                    <LazyImage
                       src={exec.photoUrl}
                       alt=""
-                      loading="lazy"
                       className="aspect-square w-full object-cover object-top"
                     />
                   )}

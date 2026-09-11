@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { CalendarDays, Clock, MapPin } from 'lucide-react'
 import { getEvent, getEvents, registerForEvent } from '@/api/content'
+import { LazyImage } from '@/components/common/LazyImage'
 import { EmptyState, PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -106,7 +107,7 @@ export default function EventDetail() {
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
           <article>
             {event.coverUrl && (
-              <img
+              <LazyImage
                 src={event.coverUrl}
                 alt=""
                 className="mb-8 aspect-[16/9] w-full border border-border object-cover"

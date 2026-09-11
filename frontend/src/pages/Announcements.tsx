@@ -1,5 +1,6 @@
 import { getAnnouncements, getProgramme } from '@/api/content'
 import { AnnouncementRow } from '@/components/common/Cards'
+import { LazyImage } from '@/components/common/LazyImage'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
@@ -54,7 +55,7 @@ export default function Announcements() {
                 {programme.map((p) => (
                   <li key={p.id} className="flex gap-3 py-3.5">
                     {p.imageUrl && (
-                      <img
+                      <LazyImage
                         src={p.imageUrl}
                         alt=""
                         className="h-14 w-14 shrink-0 rounded-sm object-cover"

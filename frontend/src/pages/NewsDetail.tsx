@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import { getNews, getNewsPost } from '@/api/content'
+import { LazyImage } from '@/components/common/LazyImage'
 import { EmptyState, PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -65,7 +66,7 @@ export default function NewsDetail() {
             </div>
 
             {post.coverUrl && (
-              <img
+              <LazyImage
                 src={post.coverUrl}
                 alt=""
                 className="mt-6 aspect-[16/9] w-full border border-border object-cover"
