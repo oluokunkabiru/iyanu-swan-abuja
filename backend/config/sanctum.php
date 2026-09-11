@@ -18,12 +18,21 @@ return [
     |
     */
 
-    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
-        '%s%s',
-        'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
-        Sanctum::currentApplicationUrlWithPort(),
-        // Sanctum::currentRequestHost(),
-    ))),
+    'stateful' => [
+        ...explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
+            '%s%s',
+            'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
+            Sanctum::currentApplicationUrlWithPort(),
+            // Sanctum::currentRequestHost(),
+        ))),
+        // This dev box's env vars have repeatedly drifted to the wrong local
+        // port (other projects sharing the machine use 5173-5179+ too),
+        // silently breaking every stateful request (session cookies never
+        // get issued) until someone notices. Trusting any localhost/127.0.0.1
+        // port outside production removes that whole class of failure
+        // without loosening anything in a real deployment.
+        ...(in_array(env('APP_ENV', 'production'), ['local', 'testing'], true) ? ['localhost:*', '127.0.0.1:*'] : []),
+    ],
 
     /*
     |--------------------------------------------------------------------------
