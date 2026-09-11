@@ -26,8 +26,8 @@ class PaymentController extends Controller
         $subscription = $request->user()->subscriptions()->firstOrCreate(
             ['year' => $year],
             [
-                'subscription_amount' => $settings->membership_subscription_fee,
-                'welfare_amount' => $settings->membership_welfare_fee,
+                'subscription_amount' => $settings->membership_subscription_fee ?? 0,
+                'welfare_amount' => $settings->membership_welfare_fee ?? 0,
                 'status' => 'outstanding',
             ]
         );

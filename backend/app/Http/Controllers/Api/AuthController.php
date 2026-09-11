@@ -40,8 +40,8 @@ class AuthController extends Controller
 
         $user->subscriptions()->create([
             'year' => now()->year,
-            'subscription_amount' => $settings->membership_subscription_fee,
-            'welfare_amount' => $settings->membership_welfare_fee,
+            'subscription_amount' => $settings->membership_subscription_fee ?? 0,
+            'welfare_amount' => $settings->membership_welfare_fee ?? 0,
             'status' => 'outstanding',
         ]);
 
