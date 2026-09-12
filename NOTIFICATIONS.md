@@ -80,6 +80,28 @@ If this box ever gets a permanent queue worker (systemd unit, Supervisor, etc.),
 un-queued four can switch to `ShouldQueue` too — nothing else about them needs to
 change.
 
+### Running the worker once this goes live
+
+A `Procfile` at the backend root declares the worker process
+(`php artisan queue:work --sleep=3 --tries=3 --max-time=3600`) for platforms that read
+one. What actually starts it depends on where this deploys:
+
+- **Laravel Forge**: add a queue worker under the site's "Daemons" (or the dedicated
+  Queue tab, depending on Forge version) pointed at `php artisan queue:work`. Forge
+  supervises and restarts it for you.
+- **Laravel Vapor**: queues run automatically on Lambda — no worker process to manage;
+  just make sure the relevant queue is declared in `vapor.yml`.
+- **Railway (or another Procfile/Nixpacks platform)**: the `Procfile`'s `worker` line is
+  picked up as its own deployable process — scale it to at least 1 instance in the
+  Railway dashboard.
+- **A plain VPS**: run `queue:work` under Supervisor or a systemd service so it
+  restarts on crash and on deploy (`php artisan queue:restart` after each deploy to
+  pick up new code, since a running worker keeps old code in memory otherwise).
+
+Whichever it is, verify it's actually running by checking `jobs`/`failed_jobs` don't
+grow unbounded — `php artisan queue:monitor` or a quick
+`DB::table('jobs')->count()` after triggering a broadcast is the fastest check.
+
 ## Channels
 
 Every event-triggered/scheduled notification above sends `mail` only, except
