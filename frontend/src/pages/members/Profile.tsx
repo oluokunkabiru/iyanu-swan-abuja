@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { fetchMySubscriptions } from '@/api/auth'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { EmptyState, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
@@ -7,8 +8,9 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/context/AuthContext'
+import { useApiData } from '@/hooks/useApiData'
 import { formatDate } from '@/lib/format'
-import type { NotificationEmailPreference } from '@/types'
+import type { NotificationEmailPreference, SubscriptionRecord } from '@/types'
 
 const notificationPreferenceOptions: { value: NotificationEmailPreference; label: string }[] = [
   { value: 'registered', label: 'Registered email only' },
@@ -56,6 +58,9 @@ export default function MembersProfile() {
   })
 
   const photoPreviewUrl = useMemo(() => (photo ? URL.createObjectURL(photo) : null), [photo])
+  const { data: subscriptions } = useApiData(fetchMySubscriptions, [] as SubscriptionRecord[])
+  const currentYear = new Date().getFullYear()
+  const currentYearDues = subscriptions.find((s) => s.year === currentYear)
 
   if (!user) return null
 
@@ -100,17 +105,32 @@ export default function MembersProfile() {
         <dl className="divide-y divide-border border-y border-border">
           <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
             <dt className="text-[0.88rem] text-muted-foreground">Name</dt>
-            <dd className="text-[0.92rem]">
-              {user.name}, {user.credential}
-            </dd>
+            <dd className="text-[0.92rem]">{user.name}</dd>
           </div>
           <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
             <dt className="text-[0.88rem] text-muted-foreground">Membership number</dt>
             <dd className="tnum text-[0.92rem]">{user.membershipNumber}</dd>
           </div>
           <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">Email</dt>
-            <dd className="text-[0.92rem]">{user.email}</dd>
+            <dt className="text-[0.88rem] text-muted-foreground">Level</dt>
+            <dd className="text-[0.92rem]">{user.credential}</dd>
+          </div>
+          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
+            <dt className="text-[0.88rem] text-muted-foreground">Registered email</dt>
+            <dd className="flex flex-wrap items-center gap-2 text-[0.92rem]">
+              <span>{user.email}</span>
+              <StatusTag tone={user.emailVerified ? 'positive' : 'warning'}>
+                {user.emailVerified ? 'Verified' : 'Unverified'}
+              </StatusTag>
+            </dd>
+          </div>
+          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
+            <dt className="text-[0.88rem] text-muted-foreground">Personal email</dt>
+            <dd className="text-[0.92rem]">{user.personalEmail ?? '—'}</dd>
+          </div>
+          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
+            <dt className="text-[0.88rem] text-muted-foreground">Official email</dt>
+            <dd className="text-[0.92rem]">{user.officialEmail ?? '—'}</dd>
           </div>
           <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
             <dt className="text-[0.88rem] text-muted-foreground">Member since</dt>
@@ -121,6 +141,14 @@ export default function MembersProfile() {
             <dd>
               <StatusTag tone={user.membershipStatus === 'active' ? 'positive' : 'warning'}>
                 {user.membershipStatus}
+              </StatusTag>
+            </dd>
+          </div>
+          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
+            <dt className="text-[0.88rem] text-muted-foreground">{currentYear} dues</dt>
+            <dd>
+              <StatusTag tone={currentYearDues?.status === 'Paid' ? 'positive' : 'warning'}>
+                {currentYearDues?.status ?? 'Not started'}
               </StatusTag>
             </dd>
           </div>
