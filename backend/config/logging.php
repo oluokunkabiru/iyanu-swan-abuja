@@ -67,7 +67,7 @@ return [
 
         'daily' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/laravel.log'),
+            'path' => storage_path('logs/swan.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'max_files' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
