@@ -19,6 +19,7 @@ class NotificationSetting extends Model
         'newsletter_channels',
         'event_notification_channels',
         'member_email_default',
+        'cpanel_email_provisioning_enabled',
     ];
 
     protected function casts(): array
@@ -27,6 +28,7 @@ class NotificationSetting extends Model
             'email_enabled' => 'boolean',
             'sms_enabled' => 'boolean',
             'whatsapp_enabled' => 'boolean',
+            'cpanel_email_provisioning_enabled' => 'boolean',
             'birthday_channels' => 'array',
             'broadcast_channels' => 'array',
             'newsletter_channels' => 'array',

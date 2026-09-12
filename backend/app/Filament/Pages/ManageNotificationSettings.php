@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\NotificationSetting;
 use App\Notifications\TestEmail;
+use App\Services\Email\CpanelEmailProvisioner;
 use App\Services\Sms\SmsGatewayFactory;
 use App\Services\WhatsApp\WhatsAppGatewayFactory;
 use BackedEnum;
@@ -133,6 +134,17 @@ class ManageNotificationSettings extends Page
                             ->label('Newsletters')
                             ->options($channelOptions)
                             ->columns(3),
+                    ]),
+                Section::make('Official membership email')
+                    ->description(
+                        app(CpanelEmailProvisioner::class)->isConfigured()
+                            ? 'Automatically creates a real @-domain mailbox for a member the moment their membership activates.'
+                            : 'Automatically creates a real @-domain mailbox for a member the moment their membership activates. The CPANEL_* variables aren\'t set on this environment yet, so this stays off regardless of the toggle below.',
+                    )
+                    ->schema([
+                        Toggle::make('cpanel_email_provisioning_enabled')
+                            ->label('Create an official email on activation')
+                            ->default(true),
                     ]),
                 Section::make('Member email routing')
                     ->description('Members can have a registered email plus a personal and/or official email on file. This picks which of those a notification goes to by default — a member can override it for their own account from their dashboard.')

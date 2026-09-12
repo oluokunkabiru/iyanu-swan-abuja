@@ -119,12 +119,16 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
      * that exhausts every fallback must never block the activation this is
      * called from, so every failure is caught and logged rather than
      * thrown. Skips entirely if the member already has an official email
-     * (e.g. a later renewal) or cPanel isn't configured on this
-     * environment.
+     * (e.g. a later renewal), cPanel isn't configured on this environment,
+     * or an admin has switched it off from Notification Settings.
      */
     private function provisionOfficialMailbox(): ?ProvisionedMailbox
     {
         if (filled($this->official_email)) {
+            return null;
+        }
+
+        if (! NotificationSetting::current()->cpanel_email_provisioning_enabled) {
             return null;
         }
 

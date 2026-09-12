@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Event;
 use App\Models\EventTicketType;
 use App\Models\MembershipLevel;
+use App\Models\NotificationSetting;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Notifications\DuesPaymentConfirmed;
@@ -295,6 +296,40 @@ class PaymentFlowTest extends TestCase
         $user->activateMembershipIfEligible();
 
         $this->assertSame('jane.doe@swanabujachapter.org', $user->fresh()->official_email);
+        Notification::assertSentTo($user, MembershipActivated::class);
+    }
+
+    public function test_admin_can_switch_off_official_email_provisioning_even_when_cpanel_is_configured(): void
+    {
+        Notification::fake();
+        NotificationSetting::current()->update(['cpanel_email_provisioning_enabled' => false]);
+        config([
+            'services.cpanel.host' => 'server.example.com',
+            'services.cpanel.port' => 2083,
+            'services.cpanel.username' => 'swanabuj',
+            'services.cpanel.api_token' => 'test-token',
+            'services.cpanel.email_domain' => 'swanabujachapter.org',
+            'services.cpanel.quota_mb' => 250,
+        ]);
+
+        Http::fake([
+            '*/execute/Email/add_pop*' => Http::response(['result' => ['status' => 1, 'errors' => null]]),
+        ]);
+
+        $user = User::factory()->create(['name' => 'Jane Doe', 'role' => 'member']);
+        $user->memberProfile()->create(['membership_status' => 'pending']);
+        $user->subscriptions()->create([
+            'year' => now()->year,
+            'subscription_amount' => 5_000,
+            'welfare_amount' => 12_000,
+            'status' => 'paid',
+            'paid_at' => now(),
+        ]);
+
+        $user->activateMembershipIfEligible();
+
+        $this->assertNull($user->fresh()->official_email);
+        Http::assertNothingSent();
         Notification::assertSentTo($user, MembershipActivated::class);
     }
 

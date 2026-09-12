@@ -155,6 +155,7 @@ since a ticket confirmation isn't tied to a member's account routing preference.
 | `broadcast_channels` | `AdminBroadcast::via()` |
 | `member_email_default` | `User::routeNotificationForMail()` |
 | `sms_provider`, `whatsapp_provider` | `SmsGatewayFactory` / `WhatsAppGatewayFactory` |
+| `cpanel_email_provisioning_enabled` | `User::provisionOfficialMailbox()` — on/off switch independent of whether `CPANEL_*` env vars are even set |
 | `newsletter_channels` | **Nothing.** No code reads this. |
 
 `newsletter_channels` is still scaffolding for a feature that was never built — an

@@ -33,6 +33,7 @@ class AdminPanelSmokeTest extends TestCase
             'admin/firms',
             'admin/gallery-images',
             'admin/job-listings',
+            'admin/manage-notification-settings',
             'admin/manage-site-settings',
             'admin/member-spotlights',
             'admin/membership-levels',
