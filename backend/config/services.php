@@ -58,4 +58,13 @@ return [
         'sender_id' => env('AFRICAS_TALKING_SENDER_ID'),
     ],
 
+    'cpanel' => [
+        'host' => env('CPANEL_HOST'),
+        'port' => env('CPANEL_PORT', 2083),
+        'username' => env('CPANEL_USERNAME'),
+        'api_token' => env('CPANEL_API_TOKEN'),
+        'email_domain' => env('CPANEL_EMAIL_DOMAIN'),
+        'quota_mb' => env('CPANEL_EMAIL_QUOTA_MB', 250),
+    ],
+
 ];

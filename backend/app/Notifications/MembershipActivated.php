@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\SiteSetting;
+use App\Services\Email\ProvisionedMailbox;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -15,6 +16,13 @@ use Illuminate\Notifications\Notification;
  */
 class MembershipActivated extends Notification
 {
+    /**
+     * $officialMailbox is null whenever cPanel provisioning was skipped or
+     * failed (see User::provisionOfficialMailbox()) — this notification
+     * still sends either way, just without that section.
+     */
+    public function __construct(private readonly ?ProvisionedMailbox $officialMailbox = null) {}
+
     /** @return string[] */
     public function via(object $notifiable): array
     {
@@ -25,11 +33,20 @@ class MembershipActivated extends Notification
     {
         $chapterName = SiteSetting::current()->short_name ?? SiteSetting::current()->chapter_name;
 
-        return (new MailMessage)
+        $mail = (new MailMessage)
             ->subject("Welcome to the active roll — {$chapterName}")
             ->greeting("Congratulations, {$notifiable->name}!")
             ->line("Your email is confirmed and your dues are paid — you're now an active member of {$chapterName}.")
-            ->line('Active membership unlocks member rates on events, eligibility for committee and executive office, and access to the welfare fund.')
+            ->line('Active membership unlocks member rates on events, eligibility for committee and executive office, and access to the welfare fund.');
+
+        if ($this->officialMailbox) {
+            $mail->line("We've also set up your official {$chapterName} email address:")
+                ->line("Address: {$this->officialMailbox->address}")
+                ->line("Temporary password: {$this->officialMailbox->password}")
+                ->line('Please sign in and change this password as soon as possible.');
+        }
+
+        return $mail
             ->action('Go to your dashboard', rtrim(config('app.frontend_url'), '/').'/members')
             ->line('Welcome aboard.');
     }

@@ -266,6 +266,58 @@ class PaymentFlowTest extends TestCase
         Notification::assertSentTo($user, MembershipActivated::class);
     }
 
+    public function test_activating_membership_provisions_an_official_mailbox_when_cpanel_is_configured(): void
+    {
+        Notification::fake();
+        config([
+            'services.cpanel.host' => 'server.example.com',
+            'services.cpanel.port' => 2083,
+            'services.cpanel.username' => 'swanabuj',
+            'services.cpanel.api_token' => 'test-token',
+            'services.cpanel.email_domain' => 'swanabujachapter.org',
+            'services.cpanel.quota_mb' => 250,
+        ]);
+
+        Http::fake([
+            '*/execute/Email/add_pop*' => Http::response(['result' => ['status' => 1, 'errors' => null]]),
+        ]);
+
+        $user = User::factory()->create(['name' => 'Jane Doe', 'role' => 'member']);
+        $user->memberProfile()->create(['membership_status' => 'pending']);
+        $user->subscriptions()->create([
+            'year' => now()->year,
+            'subscription_amount' => 5_000,
+            'welfare_amount' => 12_000,
+            'status' => 'paid',
+            'paid_at' => now(),
+        ]);
+
+        $user->activateMembershipIfEligible();
+
+        $this->assertSame('jane.doe@swanabujachapter.org', $user->fresh()->official_email);
+        Notification::assertSentTo($user, MembershipActivated::class);
+    }
+
+    public function test_activating_membership_without_cpanel_configured_still_notifies_normally(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create(['name' => 'Jane Doe', 'role' => 'member']);
+        $user->memberProfile()->create(['membership_status' => 'pending']);
+        $user->subscriptions()->create([
+            'year' => now()->year,
+            'subscription_amount' => 5_000,
+            'welfare_amount' => 12_000,
+            'status' => 'paid',
+            'paid_at' => now(),
+        ]);
+
+        $user->activateMembershipIfEligible();
+
+        $this->assertNull($user->fresh()->official_email);
+        Notification::assertSentTo($user, MembershipActivated::class);
+    }
+
     public function test_renewing_dues_while_already_active_does_not_resend_the_welcome_email(): void
     {
         Notification::fake();
