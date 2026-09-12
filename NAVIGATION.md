@@ -87,6 +87,7 @@ Wrapped in `ProtectedRoute`, which bounces signed-out visitors to `/login`.
 | `/admin/manage-site-settings` | Site settings (active payment gateway, copy, etc. — membership fees live under Membership Levels, not here) |
 | `/admin/manage-notification-settings` | Notification settings — channel toggles, per-type routing, and the site-wide default for which member email (registered/personal/official/all) notices go to |
 | `/admin/send-broadcast` | Compose and send an ad-hoc message to all members, active members only, or pending/expired members only (see `NOTIFICATIONS.md`) |
+| `/admin/shield/roles` | Build admin panel roles — a role is a checked set of permissions (view/create/update/delete/...) per resource, page, and widget. Assign a role to an admin from their edit page under "Admin panel roles". The `role` field elsewhere (Admin/Member) only gates entry to the panel; a role built here decides what an admin who's in can actually do — a new admin can sign in but do nothing until a `super_admin` assigns one |
 
 Resource paths above are the index route; each also has `/create` and
 `/{record}/edit` (and `/{record}` for the Users resource's view page).
