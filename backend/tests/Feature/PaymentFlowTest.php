@@ -7,7 +7,10 @@ use App\Models\EventTicketType;
 use App\Models\MembershipLevel;
 use App\Models\SiteSetting;
 use App\Models\User;
+use App\Notifications\DuesPaymentConfirmed;
+use App\Notifications\MembershipActivated;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
 use Tests\Concerns\UsesMysqlInTransaction;
 use Tests\TestCase;
 
@@ -168,6 +171,129 @@ class PaymentFlowTest extends TestCase
 
         $response->assertOk()->assertJson(['type' => 'subscription', 'status' => 'paid']);
         $this->assertSame('paid', $subscription->fresh()->status);
+    }
+
+    public function test_verifying_a_subscription_payment_sends_a_dues_confirmation_email(): void
+    {
+        Notification::fake();
+        SiteSetting::current()->update(['active_payment_gateway' => 'paystack']);
+
+        Http::fake([
+            'api.paystack.co/transaction/initialize' => Http::response([
+                'status' => true,
+                'data' => ['authorization_url' => 'https://checkout.paystack.com/abc123'],
+            ]),
+            'api.paystack.co/transaction/verify/*' => Http::response([
+                'status' => true,
+                'data' => ['status' => 'success', 'amount' => 1_700_000, 'reference' => 'SUB-TEST-REF'],
+            ]),
+        ]);
+
+        $user = User::factory()->create(['role' => 'member']);
+        $level = MembershipLevel::factory()->create();
+        $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+            'membership_level_id' => $level->id,
+        ])->assertOk();
+
+        $subscription = $user->subscriptions()->first();
+
+        $this->getJson('/api/payments/verify/'.$subscription->reference)->assertOk();
+
+        Notification::assertSentTo($user, DuesPaymentConfirmed::class);
+    }
+
+    public function test_re_verifying_an_already_paid_subscription_does_not_resend_the_confirmation_email(): void
+    {
+        Notification::fake();
+        SiteSetting::current()->update(['active_payment_gateway' => 'paystack']);
+
+        Http::fake([
+            'api.paystack.co/transaction/initialize' => Http::response([
+                'status' => true,
+                'data' => ['authorization_url' => 'https://checkout.paystack.com/abc123'],
+            ]),
+            'api.paystack.co/transaction/verify/*' => Http::response([
+                'status' => true,
+                'data' => ['status' => 'success', 'amount' => 1_700_000, 'reference' => 'SUB-TEST-REF'],
+            ]),
+        ]);
+
+        $user = User::factory()->create(['role' => 'member']);
+        $level = MembershipLevel::factory()->create();
+        $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+            'membership_level_id' => $level->id,
+        ])->assertOk();
+
+        $subscription = $user->subscriptions()->first();
+
+        // Simulate the gateway webhook and the frontend's own callback both
+        // verifying the same reference.
+        $this->getJson('/api/payments/verify/'.$subscription->reference)->assertOk();
+        $this->getJson('/api/payments/verify/'.$subscription->reference)->assertOk();
+
+        Notification::assertSentTimes(DuesPaymentConfirmed::class, 1);
+    }
+
+    public function test_paying_dues_activates_membership_and_sends_a_welcome_email_once_verified(): void
+    {
+        Notification::fake();
+        SiteSetting::current()->update(['active_payment_gateway' => 'paystack']);
+
+        Http::fake([
+            'api.paystack.co/transaction/initialize' => Http::response([
+                'status' => true,
+                'data' => ['authorization_url' => 'https://checkout.paystack.com/abc123'],
+            ]),
+            'api.paystack.co/transaction/verify/*' => Http::response([
+                'status' => true,
+                'data' => ['status' => 'success', 'amount' => 1_700_000, 'reference' => 'SUB-TEST-REF'],
+            ]),
+        ]);
+
+        $user = User::factory()->create(['role' => 'member']);
+        $user->memberProfile()->create(['membership_status' => 'pending']);
+        $level = MembershipLevel::factory()->create();
+        $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+            'membership_level_id' => $level->id,
+        ])->assertOk();
+
+        $subscription = $user->subscriptions()->first();
+
+        $this->getJson('/api/payments/verify/'.$subscription->reference)->assertOk();
+
+        $this->assertSame('active', $user->memberProfile->fresh()->membership_status);
+        Notification::assertSentTo($user, MembershipActivated::class);
+    }
+
+    public function test_renewing_dues_while_already_active_does_not_resend_the_welcome_email(): void
+    {
+        Notification::fake();
+        SiteSetting::current()->update(['active_payment_gateway' => 'paystack']);
+
+        Http::fake([
+            'api.paystack.co/transaction/initialize' => Http::response([
+                'status' => true,
+                'data' => ['authorization_url' => 'https://checkout.paystack.com/abc123'],
+            ]),
+            'api.paystack.co/transaction/verify/*' => Http::response([
+                'status' => true,
+                'data' => ['status' => 'success', 'amount' => 1_700_000, 'reference' => 'SUB-TEST-REF'],
+            ]),
+        ]);
+
+        $user = User::factory()->create(['role' => 'member']);
+        $user->memberProfile()->create(['membership_status' => 'active']);
+        $level = MembershipLevel::factory()->create();
+        $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+            'membership_level_id' => $level->id,
+        ])->assertOk();
+
+        $subscription = $user->subscriptions()->first();
+
+        $this->getJson('/api/payments/verify/'.$subscription->reference)->assertOk();
+
+        Notification::assertNotSentTo($user, MembershipActivated::class);
+        Notification::assertSentTo($user, DuesPaymentConfirmed::class);
     }
 
     public function test_registering_for_a_free_ticket_skips_the_payment_gateway_entirely(): void

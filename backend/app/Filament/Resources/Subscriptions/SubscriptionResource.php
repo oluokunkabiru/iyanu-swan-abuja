@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Subscriptions;
 
 use App\Filament\Resources\Subscriptions\Pages\ManageSubscriptions;
 use App\Models\Subscription;
+use App\Notifications\DuesPaymentConfirmed;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -119,6 +120,7 @@ class SubscriptionResource extends Resource
                     ->action(function (Subscription $record): void {
                         $record->update(['status' => 'paid', 'paid_at' => now(), 'review_note' => null]);
                         $record->user->activateMembershipIfEligible();
+                        $record->user->notify(new DuesPaymentConfirmed($record));
 
                         Notification::make()->title('Subscription approved')->success()->send();
                     }),

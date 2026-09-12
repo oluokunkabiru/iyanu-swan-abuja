@@ -6,6 +6,7 @@ use App\Models\EventRegistration;
 use App\Models\MembershipLevel;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Notifications\DuesPaymentConfirmed;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -94,6 +95,12 @@ class PaymentProcessor
     public function finalize(string $reference): array
     {
         if ($subscription = Subscription::where('reference', $reference)->first()) {
+            // Both the gateway webhook and the frontend's own callback
+            // verification can call finalize() for the same reference —
+            // only notify on the transition into "paid", not every
+            // redundant re-verification of an already-settled payment.
+            $wasAlreadyPaid = $subscription->status === 'paid';
+
             $result = PaymentGatewayFactory::make($subscription->payment_gateway ?? 'paystack')->verify($reference);
 
             $subscription->update([
@@ -103,6 +110,10 @@ class PaymentProcessor
 
             if ($result->successful) {
                 $subscription->user->activateMembershipIfEligible();
+
+                if (! $wasAlreadyPaid) {
+                    $subscription->user->notify(new DuesPaymentConfirmed($subscription));
+                }
             }
 
             return ['type' => 'subscription', 'status' => $subscription->status, 'record' => $subscription];

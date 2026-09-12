@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\MembershipActivated;
 use App\Notifications\VerifyEmail;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
@@ -79,11 +80,20 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     /**
      * Flip the member's profile to active once they've both paid the
      * current year's dues and verified their registered email — either
-     * event can be the one that completes this, so both call it.
+     * event can be the one that completes this, so both call it. Guards
+     * on the profile already being active so a later year's renewal
+     * (paid while already active from a prior year) never re-sends the
+     * "welcome" email — that only makes sense the first time.
      */
     public function activateMembershipIfEligible(): void
     {
         if (! $this->hasVerifiedEmail()) {
+            return;
+        }
+
+        $profile = $this->memberProfile;
+
+        if (! $profile || $profile->membership_status === 'active') {
             return;
         }
 
@@ -96,7 +106,8 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             return;
         }
 
-        $this->memberProfile()->update(['membership_status' => 'active']);
+        $profile->update(['membership_status' => 'active']);
+        $this->notify(new MembershipActivated);
     }
 
     /**
