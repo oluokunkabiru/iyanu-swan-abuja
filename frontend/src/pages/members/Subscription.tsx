@@ -25,9 +25,15 @@ function DuesPaymentCard({
   preferredLevelId?: string
   onSubmitted: () => void
 }) {
-  const [selectedLevelId, setSelectedLevelId] = useState(
-    existing?.membershipLevelId ?? preferredLevelId ?? levels[0]?.id ?? '',
-  )
+  // Whichever year this card is for, the level to charge is detected
+  // automatically — from that year's own subscription if one already
+  // exists (e.g. a past attempt), otherwise from the ICAN level the
+  // member registered under — rather than asking them to pick one each
+  // time. Only falls back to a manual picker if neither resolves to a
+  // level that's still actually offered.
+  const lockedLevelId = existing?.membershipLevelId ?? preferredLevelId
+  const lockedLevel = levels.find((l) => l.id === lockedLevelId)
+  const [selectedLevelId, setSelectedLevelId] = useState(lockedLevelId ?? levels[0]?.id ?? '')
   const [method, setMethod] = useState<'online' | 'bank_transfer'>('online')
   const [payingOnline, setPayingOnline] = useState(false)
   const [reference, setReference] = useState('')
@@ -102,38 +108,58 @@ function DuesPaymentCard({
         </p>
       ) : (
         <>
-          <fieldset className="mt-4">
-            <legend className="text-[0.85rem] font-medium">Choose your membership level</legend>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              {levels.map((level) => (
-                <label
-                  key={level.id}
-                  className={cn(
-                    'cursor-pointer border p-4 transition-colors',
-                    selectedLevelId === level.id
-                      ? 'border-plum-700 bg-card dark:border-primary'
-                      : 'border-border bg-card/60 hover:bg-card',
-                  )}
-                >
-                  <input
-                    type="radio"
-                    name={`level-${year}`}
-                    value={level.id}
-                    checked={selectedLevelId === level.id}
-                    onChange={() => setSelectedLevelId(level.id)}
-                    className="sr-only"
-                  />
-                  <span className="block text-[0.93rem] font-medium">{level.name}</span>
-                  {level.description && (
-                    <span className="mt-1 block text-[0.78rem] text-muted-foreground">{level.description}</span>
-                  )}
-                  <span className="tnum mt-2 block font-heading text-lg text-plum-700 dark:text-primary">
-                    {formatNaira(level.subscriptionAmount + level.welfareAmount)}
-                  </span>
-                </label>
-              ))}
+          {lockedLevel ? (
+            <div className="mt-4 border border-border bg-card p-4">
+              <span className="block text-[0.78rem] text-muted-foreground">Your membership level</span>
+              <span className="mt-1 block text-[0.93rem] font-medium">{lockedLevel.name}</span>
+              {lockedLevel.description && (
+                <span className="mt-1 block text-[0.78rem] text-muted-foreground">{lockedLevel.description}</span>
+              )}
+              <span className="tnum mt-2 block font-heading text-lg text-plum-700 dark:text-primary">
+                {formatNaira(lockedLevel.subscriptionAmount + lockedLevel.welfareAmount)}
+              </span>
+              <p className="mt-2 text-[0.78rem] text-muted-foreground">
+                Matched to the ICAN level on your profile. Contact the Membership Secretary if this
+                needs to change.
+              </p>
             </div>
-          </fieldset>
+          ) : (
+            <fieldset className="mt-4">
+              <legend className="text-[0.85rem] font-medium">Choose your membership level</legend>
+              <p className="mt-1 text-[0.78rem] text-muted-foreground">
+                We couldn&rsquo;t match a level to your profile automatically — choose one below.
+              </p>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                {levels.map((level) => (
+                  <label
+                    key={level.id}
+                    className={cn(
+                      'cursor-pointer border p-4 transition-colors',
+                      selectedLevelId === level.id
+                        ? 'border-plum-700 bg-card dark:border-primary'
+                        : 'border-border bg-card/60 hover:bg-card',
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name={`level-${year}`}
+                      value={level.id}
+                      checked={selectedLevelId === level.id}
+                      onChange={() => setSelectedLevelId(level.id)}
+                      className="sr-only"
+                    />
+                    <span className="block text-[0.93rem] font-medium">{level.name}</span>
+                    {level.description && (
+                      <span className="mt-1 block text-[0.78rem] text-muted-foreground">{level.description}</span>
+                    )}
+                    <span className="tnum mt-2 block font-heading text-lg text-plum-700 dark:text-primary">
+                      {formatNaira(level.subscriptionAmount + level.welfareAmount)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          )}
 
           {error && (
             <p role="alert" className="mt-4 border-l-2 border-destructive bg-destructive/8 px-4 py-3 text-[0.85rem] text-destructive">
