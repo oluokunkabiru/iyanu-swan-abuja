@@ -115,8 +115,21 @@ ad-hoc `AdminBroadcast` message. Toggling it today has no effect. If it gets bui
 wire its `via()` to `NotificationSetting::resolveChannels('newsletter_channels')` the
 same way the others do.
 
+## Testing your mail setup
+
+The "Send test email" button in the header of `/admin/manage-notification-settings`
+sends `TestEmail` to any address the admin types in — not tied to a `User`, so it
+works even before any real member exists. It reports the currently configured
+mailer (`config('mail.default')`) in the email body, and shows a Filament error toast
+with the underlying exception message if sending fails (bad SMTP credentials, etc.)
+instead of a generic failure. Not queued — the admin expects an immediate answer.
+
 ## Gaps
 
+- `MembershipActivated` has no admin control at all: no channel toggle (it's
+  unconditionally mail, unlike `BirthdayGreeting`/`EventRegistrationConfirmed`/
+  `AdminBroadcast`), and no way to manually resend it to a member who says they never
+  got it. `VerifyEmail` and `DuesPaymentConfirmed` are the same — mail-only, no resend.
 - No newsletter/digest sender exists — `newsletter_channels` is dead config (see
   above). The general-purpose `AdminBroadcast` tool covers most of what a newsletter
   would, short of a "send this news post" button on `NewsPostResource`.

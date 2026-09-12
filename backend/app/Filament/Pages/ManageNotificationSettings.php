@@ -3,17 +3,22 @@
 namespace App\Filament\Pages;
 
 use App\Models\NotificationSetting;
+use App\Notifications\TestEmail;
 use App\Services\Sms\SmsGatewayFactory;
 use App\Services\WhatsApp\WhatsAppGatewayFactory;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
+use Throwable;
 
 class ManageNotificationSettings extends Page
 {
@@ -33,6 +38,43 @@ class ManageNotificationSettings extends Page
     public function mount(): void
     {
         $this->form->fill(NotificationSetting::current()->attributesToArray());
+    }
+
+    /** @return array<int, Action> */
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('sendTestEmail')
+                ->label('Send test email')
+                ->icon(Heroicon::OutlinedPaperAirplane)
+                ->color('gray')
+                ->schema([
+                    TextInput::make('address')
+                        ->label('Send to')
+                        ->email()
+                        ->required()
+                        ->default(fn () => auth()->user()?->email),
+                ])
+                ->action(function (array $data): void {
+                    try {
+                        NotificationFacade::route('mail', $data['address'])
+                            ->notify(new TestEmail(auth()->user()?->name ?? 'an admin'));
+
+                        Notification::make()
+                            ->title("Test email sent to {$data['address']}")
+                            ->success()
+                            ->send();
+                    } catch (Throwable $e) {
+                        report($e);
+
+                        Notification::make()
+                            ->title('Could not send the test email')
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                }),
+        ];
     }
 
     public function form(Schema $schema): Schema
