@@ -48,6 +48,7 @@ Route::get('/membership-levels', [MembershipLevelController::class, 'index']);
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{event}', [EventController::class, 'show']);
 Route::post('/events/{event}/register', [EventRegistrationController::class, 'store']);
+Route::get('/tickets/{reference}/verify', [EventRegistrationController::class, 'verifyTicket']);
 
 Route::get('/news', [NewsPostController::class, 'index']);
 Route::get('/news/{newsPost}', [NewsPostController::class, 'show']);

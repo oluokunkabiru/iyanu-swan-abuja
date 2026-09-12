@@ -76,6 +76,18 @@ export interface TicketTier {
   includes: string[]
 }
 
+export interface TicketVerificationResult {
+  valid: boolean
+  reason?: 'not_found' | 'not_paid'
+  alreadyCheckedIn?: boolean
+  checkedInAt?: string
+  name?: string
+  ticketLabel?: string
+  eventTitle?: string
+  venue?: string
+  startsAt?: string
+}
+
 export interface ChapterEvent {
   id: string
   title: string

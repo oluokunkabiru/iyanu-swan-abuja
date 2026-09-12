@@ -40,6 +40,7 @@ paths are relative to `VITE_API_URL`'s sibling frontend origin (e.g.
 | `/dashboard` | — | Redirects to `/members` |
 | `/payments/callback` | Payment result | Gateway (Paystack/Flutterwave) redirects here after checkout; reads `?reference=`/`?tx_ref=`/`?trxref=` |
 | `/email/verify/:id/:hash` | Email verification | The link in the verification email itself — points here (frontend), not the backend. On load, this page calls the backend's signed `verification.verify` API endpoint (passing the `expires`/`signature` query params through) to do the actual verifying, then shows the result |
+| `/tickets/verify/:reference` | Event ticket verification | The link/QR code in an event ticket confirmation email. No login required — calls `GET /api/tickets/{reference}/verify`, which marks the ticket checked in on its first successful scan. Meant for door staff scanning on a phone |
 | `*` (anything else) | 404 | |
 
 ## Member area (`/members/*`, requires sign-in)

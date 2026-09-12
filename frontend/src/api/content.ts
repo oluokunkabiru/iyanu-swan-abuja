@@ -18,6 +18,7 @@ import type {
   Publication,
   ResourceItem,
   SiteSettings,
+  TicketVerificationResult,
   Training,
 } from '@/types'
 
@@ -56,6 +57,15 @@ export const registerForEvent = async (
     )
     .then((r) => r.data)
 }
+
+export const verifyTicket = (reference: string) =>
+  api
+    .get<TicketVerificationResult>(`/tickets/${reference}/verify`)
+    .then((r) => r.data)
+    .catch((error) => {
+      if (error?.response?.data) return error.response.data as TicketVerificationResult
+      throw error
+    })
 
 export const getNews = () => api.get<NewsPost[]>('/news').then((r) => r.data)
 

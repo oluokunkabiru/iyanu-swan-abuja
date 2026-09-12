@@ -31,6 +31,15 @@ Fired inline, synchronously, from the code path that causes them — no cron inv
 | `MembershipActivated` | `User::activateMembershipIfEligible()` | The moment a member has *both* a verified email and paid current-year dues, whichever of the two completes it. Guarded so a later year's renewal (paid while already active) never re-fires it |
 | `EventRegistrationConfirmed` | `EventRegistrationController::store()` (free tickets) and `PaymentProcessor::finalize()` (paid tickets) | Right away for a free ticket; on successful payment verification for a paid one. Guarded the same way as `DuesPaymentConfirmed` against a webhook/frontend double-verify. Sent to the `EventRegistration` itself (it's `Notifiable`), not the logged-in user — works the same for guests and members |
 
+`EventRegistrationConfirmed`'s email includes a QR code (an email attachment, `ticket-qr.png`, generated via `App\Services\QrCodeGenerator`) and a "View my ticket" link, both encoding
+`{frontend}/tickets/verify/{reference}`. That link is public — no login required, same
+trust model as this app's payment-verification links (the reference is an
+unguessable bearer token) — and hits `GET /api/tickets/{reference}/verify`
+(`EventRegistrationController::verifyTicket()`). The first scan of a paid
+ticket marks `checked_in_at`; later scans report "already checked in" with
+the original time instead of moving it. An unpaid ticket reports invalid
+without checking anyone in.
+
 ## Admin-triggered
 
 Composed and sent on demand from an admin page, to a chosen audience — not a fixed

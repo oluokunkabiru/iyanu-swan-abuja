@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\EventRegistration;
 use App\Models\NotificationSetting;
+use App\Services\QrCodeGenerator;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -29,6 +30,7 @@ class EventRegistrationConfirmed extends Notification
     {
         $event = $this->registration->event;
         $ticketType = $this->registration->ticketType;
+        $verificationUrl = $this->verificationUrl();
 
         $mail = (new MailMessage)
             ->subject("You're registered — {$event->title}")
@@ -45,11 +47,20 @@ class EventRegistrationConfirmed extends Notification
             $mail->line('Amount paid: ₦'.number_format($this->registration->amount));
         }
 
+        $mail->line('Show the QR code attached to this email, or the link below, at the door — either one lets us verify your ticket on the spot.')
+            ->action('View my ticket', $verificationUrl)
+            ->attachData(QrCodeGenerator::png($verificationUrl), 'ticket-qr.png', ['mime' => 'image/png']);
+
         if ($this->registration->user_id) {
-            $mail->action('View my tickets', rtrim(config('app.frontend_url'), '/').'/members/tickets');
+            $mail->line('You can also find this ticket any time from your member dashboard.');
         }
 
         return $mail->line('See you there!');
+    }
+
+    private function verificationUrl(): string
+    {
+        return rtrim(config('app.frontend_url'), '/').'/tickets/verify/'.$this->registration->reference;
     }
 
     public function toSms(object $notifiable): string

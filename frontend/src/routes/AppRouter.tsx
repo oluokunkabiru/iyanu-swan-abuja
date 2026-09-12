@@ -31,6 +31,7 @@ import Practice from '@/pages/Practice'
 import Publications from '@/pages/Publications'
 import Resources from '@/pages/Resources'
 import Students from '@/pages/Students'
+import TicketVerify from '@/pages/TicketVerify'
 import Trainings from '@/pages/Trainings'
 
 import MembersCpd from '@/pages/members/Cpd'
@@ -69,6 +70,7 @@ export function AppRouter() {
         {/* Events and news */}
         <Route path="events" element={<Events />} />
         <Route path="events/:slug" element={<EventDetail />} />
+        <Route path="tickets/verify/:reference" element={<TicketVerify />} />
         <Route path="news" element={<News />} />
         <Route path="news/:slug" element={<NewsDetail />} />
         <Route path="gallery" element={<Gallery />} />

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\EventRegistration;
 use App\Notifications\EventRegistrationConfirmed;
 use App\Services\Payments\PaymentProcessor;
 use Illuminate\Http\JsonResponse;
@@ -63,5 +64,51 @@ class EventRegistrationController extends Controller
         }
 
         return response()->json([...$registration->toArray(), 'authorizationUrl' => $authorizationUrl], 201);
+    }
+
+    /**
+     * Public, unauthenticated ticket verification — the link embedded in
+     * the confirmation email/QR code. Deliberately no login gate (the
+     * reference is an unguessable bearer token, the same trust model this
+     * app already uses for payment references) so door staff can scan and
+     * check a ticket without needing an admin account on hand. The first
+     * successful scan of a paid ticket marks it checked in; later scans
+     * report that it was already checked in rather than re-marking it.
+     */
+    public function verifyTicket(string $reference): JsonResponse
+    {
+        $registration = EventRegistration::with(['event', 'ticketType'])
+            ->where('reference', $reference)
+            ->first();
+
+        if (! $registration) {
+            return response()->json(['valid' => false, 'reason' => 'not_found'], 404);
+        }
+
+        if ($registration->payment_status !== 'paid') {
+            return response()->json([
+                'valid' => false,
+                'reason' => 'not_paid',
+                'name' => $registration->name,
+                'eventTitle' => $registration->event->title,
+            ]);
+        }
+
+        $wasAlreadyCheckedIn = $registration->checked_in_at !== null;
+
+        if (! $wasAlreadyCheckedIn) {
+            $registration->update(['checked_in_at' => now()]);
+        }
+
+        return response()->json([
+            'valid' => true,
+            'alreadyCheckedIn' => $wasAlreadyCheckedIn,
+            'checkedInAt' => $registration->checked_in_at->toIso8601String(),
+            'name' => $registration->name,
+            'ticketLabel' => $registration->ticketType?->label,
+            'eventTitle' => $registration->event->title,
+            'venue' => $registration->event->location,
+            'startsAt' => $registration->event->starts_at->toIso8601String(),
+        ]);
     }
 }

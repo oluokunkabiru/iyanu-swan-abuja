@@ -22,6 +22,7 @@ class EventRegistration extends Model
         'reference',
         'payment_gateway',
         'issued_at',
+        'checked_in_at',
         'notes',
     ];
 
@@ -30,6 +31,7 @@ class EventRegistration extends Model
         return [
             'amount' => 'integer',
             'issued_at' => 'datetime',
+            'checked_in_at' => 'datetime',
         ];
     }
 
