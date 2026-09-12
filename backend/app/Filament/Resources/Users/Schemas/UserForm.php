@@ -38,7 +38,15 @@ class UserForm
                         'member' => 'Member',
                     ])
                     ->default('member')
-                    ->required(),
+                    ->required()
+                    ->live(),
+                Select::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->label('Admin panel roles')
+                    ->helperText('What this admin can actually do once signed in — separate from the Admin/Member toggle above, which only controls whether they can sign in to the panel at all.')
+                    ->visible(fn ($get) => $get('role') === 'admin'),
                 Fieldset::make('Member profile')
                     ->relationship('memberProfile')
                     ->schema([

@@ -57,7 +57,7 @@ class AdminPanelSmokeTest extends TestCase
     #[DataProvider('adminPages')]
     public function test_admin_page_loads_for_authenticated_admin(string $path): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->admin()->create();
 
         $response = $this->actingAs($admin)->get('/'.$path);
 
@@ -66,7 +66,7 @@ class AdminPanelSmokeTest extends TestCase
 
     public function test_site_settings_can_be_saved(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->admin()->create();
 
         Livewire::actingAs($admin)
             ->test(ManageSiteSettings::class)

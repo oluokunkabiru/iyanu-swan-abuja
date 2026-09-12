@@ -18,7 +18,7 @@ class AdminBroadcastTest extends TestCase
     {
         Notification::fake();
 
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->admin()->create();
         $activeMember = User::factory()->create(['role' => 'member']);
         $activeMember->memberProfile()->create(['membership_status' => 'active']);
         $pendingMember = User::factory()->create(['role' => 'member']);
@@ -37,7 +37,7 @@ class AdminBroadcastTest extends TestCase
     {
         Notification::fake();
 
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->admin()->create();
         $activeMember = User::factory()->create(['role' => 'member']);
         $activeMember->memberProfile()->create(['membership_status' => 'active']);
         $pendingMember = User::factory()->create(['role' => 'member']);
@@ -62,7 +62,7 @@ class AdminBroadcastTest extends TestCase
         // is genuinely empty for this assertion.
         User::where('role', 'member')->update(['role' => 'former-member']);
 
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->admin()->create();
 
         Livewire::actingAs($admin)
             ->test(SendBroadcast::class)

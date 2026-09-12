@@ -38,9 +38,13 @@ class UserInfolist
                                         TextEntry::make('email')
                                             ->icon('heroicon-m-envelope')
                                             ->copyable(),
-                                        Grid::make(4)
+                                        Grid::make(5)
                                             ->schema([
                                                 TextEntry::make('role')->badge(),
+                                                TextEntry::make('roles.name')
+                                                    ->label('Admin panel roles')
+                                                    ->badge()
+                                                    ->placeholder('—'),
                                                 TextEntry::make('memberProfile.membership_status')
                                                     ->label('Membership')
                                                     ->badge()

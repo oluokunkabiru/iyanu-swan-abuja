@@ -23,6 +23,7 @@ class UsersTable
                 TextColumn::make('email')->searchable(),
                 IconColumn::make('email_verified_at')->label('Verified')->boolean(),
                 TextColumn::make('role')->badge(),
+                TextColumn::make('roles.name')->label('Panel roles')->badge()->placeholder('—'),
                 TextColumn::make('memberProfile.membership_status')->label('Membership')->badge(),
                 TextColumn::make('memberProfile.membership_number')->label('Member #'),
                 TextColumn::make('memberProfile.credential')->label('ICAN level'),

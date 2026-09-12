@@ -77,7 +77,7 @@ class MembershipLevelPaymentTest extends TestCase
 
     public function test_admin_approving_a_pending_bank_transfer_activates_an_eligible_member(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->admin()->create();
         $member = User::factory()->create(); // email_verified_at set by default factory state
         $member->memberProfile()->create(['membership_status' => 'pending']);
         $level = MembershipLevel::factory()->create();
@@ -103,7 +103,7 @@ class MembershipLevelPaymentTest extends TestCase
 
     public function test_admin_rejecting_a_pending_bank_transfer_returns_it_to_outstanding(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->admin()->create();
         $member = User::factory()->create();
         $level = MembershipLevel::factory()->create();
         $subscription = $member->subscriptions()->create([

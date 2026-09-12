@@ -228,6 +228,14 @@ class SwanContentSeeder extends Seeder
             'joined_at' => now(),
         ]);
 
+        // Being role=admin only grants entry to the panel — Filament
+        // Shield's per-resource policies gate what happens once inside, so
+        // the seeded admin needs the super_admin role too, or a fresh
+        // install would leave them locked out of every resource.
+        if (! $admin->hasRole('super_admin')) {
+            $admin->assignRole('super_admin');
+        }
+
         $this->seedNews($imagesPath);
         $this->seedAnnouncements();
         $this->seedProgramme();

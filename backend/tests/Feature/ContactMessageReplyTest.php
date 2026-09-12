@@ -20,7 +20,7 @@ class ContactMessageReplyTest extends TestCase
     {
         Notification::fake();
 
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->admin()->create();
         $message = ContactMessage::create([
             'name' => 'Jane Visitor',
             'email' => 'jane.visitor@example.com',
@@ -49,7 +49,7 @@ class ContactMessageReplyTest extends TestCase
     {
         Notification::fake();
 
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->admin()->create();
         $message = ContactMessage::create([
             'name' => 'Jane Visitor',
             'email' => 'jane.visitor@example.com',

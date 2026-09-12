@@ -18,7 +18,7 @@ class SendTestEmailTest extends TestCase
     {
         Notification::fake();
 
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->admin()->create();
 
         Livewire::actingAs($admin)
             ->test(ManageNotificationSettings::class)
@@ -32,7 +32,7 @@ class SendTestEmailTest extends TestCase
     {
         Notification::fake();
 
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->admin()->create();
 
         Livewire::actingAs($admin)
             ->test(ManageNotificationSettings::class)

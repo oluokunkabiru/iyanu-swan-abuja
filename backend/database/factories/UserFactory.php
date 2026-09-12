@@ -42,4 +42,16 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * An admin with the super_admin Spatie role, i.e. one that can pass
+     * every Filament Shield policy check — what most tests mean by "an
+     * admin," as opposed to one deliberately given a restricted role to
+     * test permission boundaries themselves.
+     */
+    public function admin(): static
+    {
+        return $this->state(['role' => 'admin'])
+            ->afterCreating(fn (User $user) => $user->assignRole('super_admin'));
+    }
 }
