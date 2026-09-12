@@ -10,8 +10,8 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -50,8 +50,7 @@ class ExecutiveMemberResource extends Resource
                 TextInput::make('position')
                     ->required()
                     ->maxLength(255),
-                Textarea::make('bio')
-                    ->rows(3)
+                RichEditor::make('bio')
                     ->columnSpanFull(),
                 Toggle::make('is_active')
                     ->label('Currently serving')

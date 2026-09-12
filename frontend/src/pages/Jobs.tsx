@@ -76,9 +76,10 @@ export default function Jobs() {
                   <StatusTag tone="gold">{job.level}</StatusTag>
                 </div>
               </div>
-              <p className="mt-3 max-w-[70ch] text-[0.9rem] leading-relaxed text-muted-foreground">
-                {job.summary}
-              </p>
+              <div
+                className="prose prose-sm mt-3 max-w-[70ch] text-[0.9rem] leading-relaxed text-muted-foreground prose-p:my-1"
+                dangerouslySetInnerHTML={{ __html: job.summary }}
+              />
               <p className="tnum mt-3 text-[0.8rem] text-muted-foreground">
                 Posted {formatShortDate(job.postedAt)} · closes {formatShortDate(job.closesAt)}
               </p>

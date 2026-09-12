@@ -11,8 +11,8 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -59,7 +59,7 @@ class JobListingResource extends Resource
                     ->required(),
                 DatePicker::make('posted_at')->required()->default(now()),
                 DatePicker::make('closes_at')->required()->afterOrEqual('posted_at'),
-                Textarea::make('summary')->required()->rows(4)->columnSpanFull(),
+                RichEditor::make('summary')->required()->columnSpanFull(),
                 TextInput::make('application_url')->url()->maxLength(255),
                 Toggle::make('is_active')->default(true),
             ]);

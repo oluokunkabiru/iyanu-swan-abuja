@@ -77,9 +77,12 @@ export default function Governance() {
                   {exec.name}, {exec.credential}
                 </h3>
                 <p className="mt-1 text-[0.8rem] font-semibold text-accent-foreground">{exec.position}</p>
-                <p className="mt-2 text-[0.84rem] leading-relaxed text-muted-foreground">
-                  {exec.bio}
-                </p>
+                {exec.bio && (
+                  <div
+                    className="prose prose-sm mt-2 text-[0.84rem] leading-relaxed text-muted-foreground prose-p:my-1"
+                    dangerouslySetInnerHTML={{ __html: exec.bio }}
+                  />
+                )}
               </div>
             </li>
           ))}
