@@ -39,9 +39,16 @@ recipient list decided by application state.
 | Notification | Admin page | Audience |
 |---|---|---|
 | `AdminBroadcast` | `/admin/send-broadcast` (`SendBroadcast`) | Admin picks: all members, active members only, or pending/expired members only |
+| `ContactMessageReplied` | `/admin/contact-messages`'s "Reply" row action | Whoever submitted that one contact form message |
 
-The admin writes a subject and a plain-text message; it goes out through whichever
-channels the "Broadcasts" setting has picked (see Channels below).
+The admin writes a subject and a plain-text message for a broadcast; it goes out
+through whichever channels the "Broadcasts" setting has picked (see Channels below).
+A contact-message reply is mail-only (unconditional, like `VerifyEmail`) and includes
+a `replyTo` back to the chapter's own contact email (`SiteSetting::email`) so a
+follow-up doesn't land on the app's no-reply address. The reply text and who sent it
+are saved on the `ContactMessage` itself (`reply_message`, `replied_at`,
+`replied_by_user_id`), so replying again overwrites the record of the previous reply
+rather than keeping a thread.
 
 ## Why some are queued and others aren't
 
