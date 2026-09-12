@@ -7,6 +7,7 @@ use App\Models\MembershipLevel;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Notifications\DuesPaymentConfirmed;
+use App\Notifications\EventRegistrationConfirmed;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -120,11 +121,17 @@ class PaymentProcessor
         }
 
         if ($registration = EventRegistration::where('reference', $reference)->first()) {
+            $wasAlreadyPaid = $registration->payment_status === 'paid';
+
             $result = PaymentGatewayFactory::make($registration->payment_gateway ?? 'paystack')->verify($reference);
 
             $registration->update([
                 'payment_status' => $result->successful ? 'paid' : 'failed',
             ]);
+
+            if ($result->successful && ! $wasAlreadyPaid) {
+                $registration->notify(new EventRegistrationConfirmed($registration));
+            }
 
             return ['type' => 'event_registration', 'status' => $registration->payment_status, 'record' => $registration];
         }

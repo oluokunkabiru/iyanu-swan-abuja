@@ -85,6 +85,7 @@ Wrapped in `ProtectedRoute`, which bounces signed-out visitors to `/login`.
 | `/admin/contact-messages` | Contact form submissions |
 | `/admin/manage-site-settings` | Site settings (active payment gateway, copy, etc. — membership fees live under Membership Levels, not here) |
 | `/admin/manage-notification-settings` | Notification settings — channel toggles, per-type routing, and the site-wide default for which member email (registered/personal/official/all) notices go to |
+| `/admin/send-broadcast` | Compose and send an ad-hoc message to all members, active members only, or pending/expired members only (see `NOTIFICATIONS.md`) |
 
 Resource paths above are the index route; each also has `/create` and
 `/{record}/edit` (and `/{record}` for the Users resource's view page).

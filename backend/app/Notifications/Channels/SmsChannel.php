@@ -2,7 +2,6 @@
 
 namespace App\Notifications\Channels;
 
-use App\Models\User;
 use App\Services\Sms\SmsGatewayFactory;
 use Illuminate\Notifications\Notification;
 use Throwable;
@@ -14,9 +13,13 @@ use Throwable;
  */
 class SmsChannel
 {
-    public function send(User $notifiable, Notification $notification): void
+    public function send(object $notifiable, Notification $notification): void
     {
-        $phone = $notifiable->memberProfile?->phone;
+        // A member (User) keeps their phone on their MemberProfile; a
+        // guest event registration keeps it on the registration record
+        // itself. Either shape works here without the channel needing to
+        // know which one it's dealing with.
+        $phone = $notifiable->memberProfile?->phone ?? $notifiable->phone ?? null;
 
         if (! $phone) {
             return;

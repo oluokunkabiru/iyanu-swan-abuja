@@ -8,6 +8,7 @@ use App\Models\MembershipLevel;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Notifications\DuesPaymentConfirmed;
+use App\Notifications\EventRegistrationConfirmed;
 use App\Notifications\MembershipActivated;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
@@ -371,5 +372,131 @@ class PaymentFlowTest extends TestCase
             'email' => 'paying.attendee@example.com',
             'payment_gateway' => 'flutterwave',
         ]);
+    }
+
+    public function test_registering_for_a_free_ticket_sends_a_confirmation_email(): void
+    {
+        Notification::fake();
+        Http::fake();
+
+        $event = Event::create([
+            'title' => 'Chapter Open Day',
+            'slug' => 'chapter-open-day-'.uniqid(),
+            'summary' => 'A free chapter open day.',
+            'starts_at' => now()->addWeek(),
+            'status' => 'published',
+        ]);
+
+        $ticketType = EventTicketType::create([
+            'event_id' => $event->id,
+            'label' => 'General admission',
+            'audience' => 'non-member',
+            'mode' => 'physical',
+            'price' => 0,
+            'currency' => 'NGN',
+        ]);
+
+        $this->postJson("/api/events/{$event->slug}/register", [
+            'event_ticket_type_id' => $ticketType->id,
+            'name' => 'Free Attendee',
+            'email' => 'free.attendee@example.com',
+        ])->assertCreated();
+
+        $registration = $event->registrations()->first();
+
+        Notification::assertSentTo($registration, EventRegistrationConfirmed::class);
+    }
+
+    public function test_verifying_a_paid_ticket_reference_sends_a_confirmation_email(): void
+    {
+        Notification::fake();
+        SiteSetting::current()->update(['active_payment_gateway' => 'paystack']);
+
+        Http::fake([
+            'api.paystack.co/transaction/initialize' => Http::response([
+                'status' => true,
+                'data' => ['authorization_url' => 'https://checkout.paystack.com/abc123'],
+            ]),
+            'api.paystack.co/transaction/verify/*' => Http::response([
+                'status' => true,
+                'data' => ['status' => 'success', 'amount' => 3_000_000, 'reference' => 'TKT-TEST-REF'],
+            ]),
+        ]);
+
+        $event = Event::create([
+            'title' => 'Annual Technical Conference',
+            'slug' => 'annual-technical-conference-'.uniqid(),
+            'summary' => 'A paid technical conference.',
+            'starts_at' => now()->addWeek(),
+            'status' => 'published',
+        ]);
+
+        $ticketType = EventTicketType::create([
+            'event_id' => $event->id,
+            'label' => 'Member — physical',
+            'audience' => 'member',
+            'mode' => 'physical',
+            'price' => 30000,
+            'currency' => 'NGN',
+        ]);
+
+        $this->postJson("/api/events/{$event->slug}/register", [
+            'event_ticket_type_id' => $ticketType->id,
+            'name' => 'Paying Attendee',
+            'email' => 'paying.attendee@example.com',
+        ])->assertCreated();
+
+        $registration = $event->registrations()->first();
+
+        $this->getJson('/api/payments/verify/'.$registration->reference)->assertOk();
+
+        Notification::assertSentTo($registration->fresh(), EventRegistrationConfirmed::class);
+    }
+
+    public function test_re_verifying_an_already_paid_ticket_does_not_resend_the_confirmation_email(): void
+    {
+        Notification::fake();
+        SiteSetting::current()->update(['active_payment_gateway' => 'paystack']);
+
+        Http::fake([
+            'api.paystack.co/transaction/initialize' => Http::response([
+                'status' => true,
+                'data' => ['authorization_url' => 'https://checkout.paystack.com/abc123'],
+            ]),
+            'api.paystack.co/transaction/verify/*' => Http::response([
+                'status' => true,
+                'data' => ['status' => 'success', 'amount' => 3_000_000, 'reference' => 'TKT-TEST-REF'],
+            ]),
+        ]);
+
+        $event = Event::create([
+            'title' => 'Annual Technical Conference',
+            'slug' => 'annual-technical-conference-'.uniqid(),
+            'summary' => 'A paid technical conference.',
+            'starts_at' => now()->addWeek(),
+            'status' => 'published',
+        ]);
+
+        $ticketType = EventTicketType::create([
+            'event_id' => $event->id,
+            'label' => 'Member — physical',
+            'audience' => 'member',
+            'mode' => 'physical',
+            'price' => 30000,
+            'currency' => 'NGN',
+        ]);
+
+        $this->postJson("/api/events/{$event->slug}/register", [
+            'event_ticket_type_id' => $ticketType->id,
+            'name' => 'Paying Attendee',
+            'email' => 'paying.attendee@example.com',
+        ])->assertCreated();
+
+        $registration = $event->registrations()->first();
+
+        $this->getJson('/api/payments/verify/'.$registration->reference)->assertOk();
+        $this->getJson('/api/payments/verify/'.$registration->reference)->assertOk();
+
+        Notification::assertSentTimes(EventRegistrationConfirmed::class, 1);
     }
 }

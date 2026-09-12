@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Notifications\EventRegistrationConfirmed;
 use App\Services\Payments\PaymentProcessor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -42,6 +43,8 @@ class EventRegistrationController extends Controller
         ]);
 
         if ($isFree) {
+            $registration->notify(new EventRegistrationConfirmed($registration));
+
             return response()->json($registration, 201);
         }
 

@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Notifications\Notifiable;
 
 class EventRegistration extends Model
 {
+    use Notifiable;
+
     protected $fillable = [
         'event_id',
         'event_ticket_type_id',

@@ -4,8 +4,6 @@ namespace App\Notifications;
 
 use App\Models\NotificationSetting;
 use App\Models\SiteSetting;
-use App\Notifications\Channels\SmsChannel;
-use App\Notifications\Channels\WhatsAppChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -18,19 +16,7 @@ class BirthdayGreeting extends Notification implements ShouldQueue
     /** @return array<int, string> */
     public function via(object $notifiable): array
     {
-        $settings = NotificationSetting::current();
-        $requested = $settings->birthday_channels ?? [];
-        $available = array_intersect($requested, $settings->enabledChannels());
-
-        return array_values(array_filter(array_map(
-            fn (string $channel): ?string => match ($channel) {
-                'email' => 'mail',
-                'sms' => SmsChannel::class,
-                'whatsapp' => WhatsAppChannel::class,
-                default => null,
-            },
-            $available,
-        )));
+        return NotificationSetting::current()->resolveChannels('birthday_channels');
     }
 
     public function toMail(object $notifiable): MailMessage

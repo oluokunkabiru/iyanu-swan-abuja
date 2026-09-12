@@ -42,6 +42,7 @@ class AdminPanelSmokeTest extends TestCase
             'admin/programme-entries',
             'admin/publications',
             'admin/resource-items',
+            'admin/send-broadcast',
             'admin/sliders',
             'admin/sliders/create',
             'admin/subscriptions',
