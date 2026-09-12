@@ -31,6 +31,16 @@ Fired inline, synchronously, from the code path that causes them — no cron inv
 | `MembershipActivated` | `User::activateMembershipIfEligible()` | The moment a member has *both* a verified email and paid current-year dues, whichever of the two completes it. Guarded so a later year's renewal (paid while already active) never re-fires it |
 | `EventRegistrationConfirmed` | `EventRegistrationController::store()` (free tickets) and `PaymentProcessor::finalize()` (paid tickets) | Right away for a free ticket; on successful payment verification for a paid one. Guarded the same way as `DuesPaymentConfirmed` against a webhook/frontend double-verify. Sent to the `EventRegistration` itself (it's `Notifiable`), not the logged-in user — works the same for guests and members |
 
+`MembershipActivated`'s email also provisions a real @-domain mailbox for the member
+via `App\Services\Email\CpanelEmailProvisioner` (cPanel's UAPI, `Email::add_pop`) —
+`firstname.lastname@{CPANEL_EMAIL_DOMAIN}`, retried with a numeric suffix
+(`jane.doe1`, `jane.doe2`, ...) on a naming collision. The generated password is
+included once in that email; nothing else stores it, cPanel is the sole holder of the
+real credential afterward. This is best-effort: skipped entirely if any of the four
+`CPANEL_*` env vars are unset, or if the member already has an `official_email` — and
+any cPanel failure (outage, rejected quota, exhausted collision retries) is caught and
+logged rather than blocking activation or the welcome email itself.
+
 `EventRegistrationConfirmed`'s email includes a QR code (an email attachment, `ticket-qr.png`, generated via `App\Services\QrCodeGenerator`) and a "View my ticket" link, both encoding
 `{frontend}/tickets/verify/{reference}`. That link is public — no login required, same
 trust model as this app's payment-verification links (the reference is an

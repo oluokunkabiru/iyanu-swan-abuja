@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Notifications\MembershipActivated;
 use App\Notifications\VerifyEmail;
+use App\Services\Email\CpanelEmailProvisioner;
+use App\Services\Email\ProvisionedMailbox;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -17,6 +19,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Throwable;
 
 #[Fillable(['name', 'email', 'personal_email', 'official_email', 'notification_email_preference', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
@@ -108,7 +111,40 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         }
 
         $profile->update(['membership_status' => 'active']);
-        $this->notify(new MembershipActivated);
+        $this->notify(new MembershipActivated($this->provisionOfficialMailbox()));
+    }
+
+    /**
+     * Best-effort: a cPanel outage, misconfiguration, or naming collision
+     * that exhausts every fallback must never block the activation this is
+     * called from, so every failure is caught and logged rather than
+     * thrown. Skips entirely if the member already has an official email
+     * (e.g. a later renewal) or cPanel isn't configured on this
+     * environment.
+     */
+    private function provisionOfficialMailbox(): ?ProvisionedMailbox
+    {
+        if (filled($this->official_email)) {
+            return null;
+        }
+
+        $provisioner = app(CpanelEmailProvisioner::class);
+
+        if (! $provisioner->isConfigured()) {
+            return null;
+        }
+
+        try {
+            $mailbox = $provisioner->provisionFor($this);
+        } catch (Throwable $e) {
+            report($e);
+
+            return null;
+        }
+
+        $this->update(['official_email' => $mailbox->address]);
+
+        return $mailbox;
     }
 
     /**
