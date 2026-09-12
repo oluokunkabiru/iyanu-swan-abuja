@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Auth\Login;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -10,6 +11,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -25,14 +27,24 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(Login::class)
             ->brandName('SWAN Abuja Chapter')
             ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('2rem')
             ->favicon(asset('favicon.ico'))
             ->colors([
-                'primary' => Color::Indigo,
+                'primary' => Color::hex('#000066'),
             ])
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => <<<'HTML'
+                    <style>
+                        .fi-simple-main {
+                            border-top: 4px solid #ffff00;
+                        }
+                    </style>
+                    HTML,
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
