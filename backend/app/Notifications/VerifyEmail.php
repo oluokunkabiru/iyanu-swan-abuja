@@ -4,18 +4,23 @@ namespace App\Notifications;
 
 use App\Models\SiteSetting;
 use Illuminate\Auth\Notifications\VerifyEmail as BaseVerifyEmail;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
-class VerifyEmail extends BaseVerifyEmail implements ShouldQueue
+/**
+ * Deliberately NOT queued (unlike BirthdayGreeting/YearlyDuesReminder,
+ * which are fired from scheduled batch commands where a queue worker
+ * is expected to be running): this fires synchronously from an
+ * interactive registration request, and this box doesn't reliably run
+ * a queue worker outside `composer run dev`. A queued verification
+ * email here would silently never send whenever nothing is draining
+ * the queue — worse than the trivial delay of sending it inline.
+ */
+class VerifyEmail extends BaseVerifyEmail
 {
-    use Queueable;
-
     protected function buildMailMessage($url): MailMessage
     {
         $settings = SiteSetting::current();
