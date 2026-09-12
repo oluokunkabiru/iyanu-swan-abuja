@@ -327,6 +327,8 @@ class SwanContentSeeder extends Seeder
             $daysAgo = $post['daysAgo'];
             unset($post['image'], $post['daysAgo']);
 
+            $post['body'] = collect($post['body'])->map(fn ($paragraph) => "<p>{$paragraph}</p>")->implode('');
+
             $newsPost = NewsPost::query()->updateOrCreate(
                 ['slug' => Str::slug($post['title'])],
                 $post + [

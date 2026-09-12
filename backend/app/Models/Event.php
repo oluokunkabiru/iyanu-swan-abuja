@@ -35,7 +35,6 @@ class Event extends Model implements HasMedia
         return [
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
-            'body' => 'array',
             'cpd_hours' => 'integer',
             'speakers' => 'array',
             'is_featured' => 'boolean',

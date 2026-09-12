@@ -26,7 +26,7 @@ class NewsPostFactory extends Factory
             'excerpt' => fake()->sentence(20),
             'category' => fake()->randomElement(['Chapter', 'ICAN', 'Profession', 'Advocacy']),
             'author' => fake()->name(),
-            'body' => fake()->paragraphs(4),
+            'body' => collect(fake()->paragraphs(4))->map(fn ($paragraph) => "<p>{$paragraph}</p>")->implode(''),
             'published_at' => fake()->dateTimeBetween('-6 months', 'now'),
             'is_published' => true,
         ];

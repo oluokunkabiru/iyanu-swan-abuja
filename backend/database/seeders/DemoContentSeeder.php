@@ -142,7 +142,7 @@ class DemoContentSeeder extends Seeder
             $event = Event::query()->updateOrCreate(['slug' => $slug], [
                 'title' => $title,
                 'summary' => $title.' — a SWAN Abuja Chapter programme.',
-                'body' => ['Programme details are published by the chapter.', 'Register through the portal where registration applies.'],
+                'body' => '<p>Programme details are published by the chapter.</p><p>Register through the portal where registration applies.</p>',
                 'category' => $category,
                 'location' => $venue,
                 'starts_at' => $startsAt,
@@ -179,7 +179,7 @@ class DemoContentSeeder extends Seeder
             ['outreach-report-welfare-levy', 'Outreach report: what the welfare levy paid for this year', 'Chapter', 'Taiye Fasan, ACA', '2026-02-28', 'SWAN-KWALI-ORPHANAGE-22-1024x683.jpg'],
         ] as [$slug, $title, $category, $author, $date, $image]) {
             $post = NewsPost::query()->updateOrCreate(['slug' => $slug], [
-                'title' => $title, 'excerpt' => $title.'.', 'body' => [$title.'.', 'Read the full chapter update.'],
+                'title' => $title, 'excerpt' => $title.'.', 'body' => "<p>{$title}.</p><p>Read the full chapter update.</p>",
                 'category' => $category, 'author' => $author, 'published_at' => $date, 'is_published' => true,
             ]);
             $this->attachAsset($post, 'cover', $image);

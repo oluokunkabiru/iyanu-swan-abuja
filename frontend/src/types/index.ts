@@ -81,7 +81,7 @@ export interface ChapterEvent {
   title: string
   slug: string
   summary: string
-  body: string[]
+  body: string
   category: 'Seminar' | 'Outreach' | 'Training' | 'Meeting' | 'Conference'
   venue: string
   startsAt: string
@@ -99,7 +99,7 @@ export interface NewsPost {
   title: string
   slug: string
   excerpt: string
-  body: string[]
+  body: string
   category: 'Chapter' | 'ICAN' | 'Profession' | 'Advocacy'
   publishedAt: string
   author: string

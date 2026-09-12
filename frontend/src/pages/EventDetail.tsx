@@ -124,11 +124,10 @@ export default function EventDetail() {
               />
             )}
 
-            <div className="max-w-[70ch] space-y-4 text-[1rem] leading-relaxed">
-              {event.body.map((para) => (
-                <p key={para.slice(0, 40)}>{para}</p>
-              ))}
-            </div>
+            <div
+              className="prose prose-neutral dark:prose-invert max-w-[70ch] text-[1rem] leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: event.body }}
+            />
 
             {event.speakers.length > 0 && (
               <div className="mt-10">

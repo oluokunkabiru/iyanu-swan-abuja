@@ -38,7 +38,7 @@ class NewsPostController extends Controller
             'title' => $post->title,
             'slug' => $post->slug,
             'excerpt' => $post->excerpt ?? '',
-            'body' => $post->body ?? [],
+            'body' => $post->body ?? '',
             'category' => $post->category ?? 'Chapter',
             'publishedAt' => $post->published_at?->toDateString(),
             'author' => $post->author ?? 'SWAN Abuja Chapter',

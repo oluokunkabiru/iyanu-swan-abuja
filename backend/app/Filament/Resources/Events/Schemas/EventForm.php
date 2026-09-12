@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Events\Schemas;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
@@ -32,9 +33,9 @@ class EventForm
                     ->required()
                     ->rows(3)
                     ->columnSpanFull(),
-                Repeater::make('body')
+                RichEditor::make('body')
                     ->label('Event details')
-                    ->simple(Textarea::make('paragraph')->required())
+                    ->required()
                     ->columnSpanFull(),
                 Select::make('category')
                     ->options([

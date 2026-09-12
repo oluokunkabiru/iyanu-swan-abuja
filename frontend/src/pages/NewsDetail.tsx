@@ -73,11 +73,10 @@ export default function NewsDetail() {
               />
             )}
 
-            <div className="mt-8 max-w-[70ch] space-y-4 text-[1.02rem] leading-relaxed">
-              {post.body.map((para) => (
-                <p key={para.slice(0, 40)}>{para}</p>
-              ))}
-            </div>
+            <div
+              className="prose prose-neutral dark:prose-invert mt-8 max-w-[70ch] text-[1.02rem] leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: post.body }}
+            />
           </article>
 
           <aside className="space-y-6">

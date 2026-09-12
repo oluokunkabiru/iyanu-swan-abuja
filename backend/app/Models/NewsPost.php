@@ -28,7 +28,6 @@ class NewsPost extends Model implements HasMedia
         return [
             'published_at' => 'datetime',
             'is_published' => 'boolean',
-            'body' => 'array',
         ];
     }
 

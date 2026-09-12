@@ -44,7 +44,7 @@ class EventController extends Controller
             'title' => $event->title,
             'slug' => $event->slug,
             'summary' => $event->summary ?? $event->description ?? '',
-            'body' => $event->body ?? array_filter([$event->description]),
+            'body' => $event->body ?? ($event->description !== null ? '<p>'.e($event->description).'</p>' : ''),
             'category' => $event->category ?? 'Meeting',
             'venue' => $event->location ?? '',
             'startsAt' => $event->starts_at->toIso8601String(),
