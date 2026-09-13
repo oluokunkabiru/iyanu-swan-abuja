@@ -75,6 +75,19 @@ export async function updateMe(payload: {
   return data
 }
 
+export async function changePassword(payload: {
+  currentPassword: string
+  password: string
+  passwordConfirmation: string
+}): Promise<AuthUser> {
+  const { data } = await api.put<AuthUser>('/me/password', {
+    current_password: payload.currentPassword,
+    password: payload.password,
+    password_confirmation: payload.passwordConfirmation,
+  })
+  return data
+}
+
 export async function resendVerificationEmail(): Promise<{ message: string }> {
   const { data } = await api.post<{ message: string }>('/email/verification-notification')
   return data

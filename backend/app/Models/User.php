@@ -21,7 +21,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Throwable;
 
-#[Fillable(['name', 'email', 'personal_email', 'official_email', 'notification_email_preference', 'password', 'role'])]
+#[Fillable(['name', 'email', 'personal_email', 'official_email', 'notification_email_preference', 'password', 'must_change_password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
@@ -38,6 +38,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'must_change_password' => 'boolean',
         ];
     }
 

@@ -18,5 +18,9 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />
   }
 
+  if (user.mustChangePassword) {
+    return <Navigate to="/change-password" replace />
+  }
+
   return <>{children}</>
 }

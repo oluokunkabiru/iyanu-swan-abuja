@@ -321,6 +321,7 @@ export interface AuthUser {
   membershipNumber: string
   membershipStatus: 'active' | 'pending' | 'expired'
   role: 'member' | 'admin'
+  mustChangePassword: boolean
   joinedAt: string
   cpdTarget: number
   photoUrl: string | null

@@ -128,6 +128,37 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out']);
     }
 
+    public function changePassword(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        /** @var User $user */
+        $user = $request->user();
+
+        if (! Hash::check($data['current_password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['The current password is incorrect.'],
+            ]);
+        }
+
+        $user->update([
+            'password' => $data['password'],
+            'must_change_password' => false,
+        ]);
+
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
+
+        return response()->json([
+            'message' => 'Password changed successfully.',
+            ...$this->userPayload($user->fresh('memberProfile')),
+        ]);
+    }
+
     public function me(Request $request): JsonResponse
     {
         /** @var User $user */
@@ -224,6 +255,7 @@ class AuthController extends Controller
             'membershipNumber' => $profile?->membership_number ?? '',
             'membershipStatus' => $profile?->membership_status ?? 'pending',
             'role' => $user->role,
+            'mustChangePassword' => $user->must_change_password,
             'joinedAt' => $profile?->joined_at?->toDateString(),
             'cpdTarget' => $profile?->cpd_target ?? 120,
             'photoUrl' => $profile?->photo_url,

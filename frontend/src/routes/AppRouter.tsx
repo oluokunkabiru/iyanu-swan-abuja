@@ -20,6 +20,7 @@ import Governance from '@/pages/Governance'
 import Home from '@/pages/Home'
 import Jobs from '@/pages/Jobs'
 import Login from '@/pages/Login'
+import ChangePassword from '@/pages/ChangePassword'
 import Membership from '@/pages/Membership'
 import MembershipRegister from '@/pages/MembershipRegister'
 import Mentorship from '@/pages/Mentorship'
@@ -84,6 +85,7 @@ export function AppRouter() {
 
         {/* Account */}
         <Route path="login" element={<Login />} />
+        <Route path="change-password" element={<ChangePassword />} />
         <Route path="payments/callback" element={<PaymentCallback />} />
         <Route path="email/verify/:id/:hash" element={<EmailVerified />} />
         <Route path="register" element={<Navigate to="/membership/register" replace />} />

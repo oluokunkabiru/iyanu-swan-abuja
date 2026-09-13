@@ -74,12 +74,16 @@ Route::post('/payments/webhooks/flutterwave', [PaymentController::class, 'webhoo
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
-    Route::put('/me', [AuthController::class, 'updateMe']);
-    Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
-        ->middleware('throttle:6,1');
-    Route::get('/me/registrations', [AuthController::class, 'registrations']);
-    Route::get('/me/cpd-records', [MemberCpdRecordController::class, 'index']);
-    Route::get('/me/subscriptions', [MemberSubscriptionController::class, 'index']);
-    Route::post('/me/subscriptions/{year}/pay', [PaymentController::class, 'paySubscriptionDues']);
-    Route::post('/me/subscriptions/{year}/bank-transfer', [PaymentController::class, 'submitBankTransfer']);
+    Route::put('/me/password', [AuthController::class, 'changePassword']);
+
+    Route::middleware('password.changed')->group(function () {
+        Route::put('/me', [AuthController::class, 'updateMe']);
+        Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
+            ->middleware('throttle:6,1');
+        Route::get('/me/registrations', [AuthController::class, 'registrations']);
+        Route::get('/me/cpd-records', [MemberCpdRecordController::class, 'index']);
+        Route::get('/me/subscriptions', [MemberSubscriptionController::class, 'index']);
+        Route::post('/me/subscriptions/{year}/pay', [PaymentController::class, 'paySubscriptionDues']);
+        Route::post('/me/subscriptions/{year}/bank-transfer', [PaymentController::class, 'submitBankTransfer']);
+    });
 });

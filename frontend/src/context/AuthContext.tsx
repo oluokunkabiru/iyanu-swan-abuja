@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { fetchMe, login, logout, register, updateMe } from '@/api/auth'
+import { changePassword, fetchMe, login, logout, register, updateMe } from '@/api/auth'
 import type { AuthUser } from '@/types'
 
 interface AuthContextValue {
@@ -17,6 +17,7 @@ interface AuthContextValue {
   signUp: (input: Parameters<typeof register>[0]) => Promise<AuthUser>
   signOut: () => void
   updateProfile: (payload: Parameters<typeof updateMe>[0]) => Promise<AuthUser>
+  updatePassword: (payload: Parameters<typeof changePassword>[0]) => Promise<AuthUser>
   refreshUser: () => Promise<AuthUser | null>
 }
 
@@ -55,6 +56,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return next
   }, [])
 
+  const updatePassword = useCallback(async (payload: Parameters<typeof changePassword>[0]) => {
+    const next = await changePassword(payload)
+    setUser(next)
+    return next
+  }, [])
+
   const refreshUser = useCallback(async () => {
     try {
       const next = await fetchMe()
@@ -67,8 +74,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo(
-    () => ({ user, isLoading, signIn, signUp, signOut, updateProfile, refreshUser }),
-    [user, isLoading, signIn, signUp, signOut, updateProfile, refreshUser],
+    () => ({ user, isLoading, signIn, signUp, signOut, updateProfile, updatePassword, refreshUser }),
+    [user, isLoading, signIn, signUp, signOut, updateProfile, updatePassword, refreshUser],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

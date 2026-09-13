@@ -30,7 +30,9 @@ class UserForm
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
                     ->dehydrated(fn ($state) => filled($state))
-                    ->required(fn (string $operation) => $operation === 'create')
+                    ->required(fn (string $operation, $get): bool => $operation === 'create' && ! $get('is_legacy_member'))
+                    ->hidden(fn ($get): bool => (bool) $get('is_legacy_member'))
+                    ->helperText('Legacy-member imports receive a generated temporary password by email.')
                     ->maxLength(255),
                 Select::make('role')
                     ->options([
@@ -40,6 +42,18 @@ class UserForm
                     ->default('member')
                     ->required()
                     ->live(),
+                Toggle::make('is_legacy_member')
+                    ->label('Import an existing member')
+                    ->helperText('Marks the member active with this year\'s dues already paid, then emails a temporary password that must be changed at first sign-in.')
+                    ->visible(fn ($get): bool => $get('role') === 'member')
+                    ->live(),
+                Select::make('legacy_membership_level_id')
+                    ->label('Paid membership level')
+                    ->options(fn (): array => MembershipLevel::active()->orderBy('sort_order')->pluck('name', 'id')->all())
+                    ->native(false)
+                    ->required(fn ($get): bool => (bool) $get('is_legacy_member'))
+                    ->visible(fn ($get): bool => (bool) $get('is_legacy_member'))
+                    ->helperText('Creates a paid subscription for the current year without using a payment gateway.'),
                 Select::make('roles')
                     ->relationship('roles', 'name')
                     ->multiple()

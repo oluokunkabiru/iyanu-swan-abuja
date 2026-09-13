@@ -29,8 +29,8 @@ export default function Login() {
     setError(null)
     setSubmitting(true)
     try {
-      await signIn(email, password)
-      navigate(from, { replace: true })
+      const user = await signIn(email, password)
+      navigate(user.mustChangePassword ? '/change-password' : from, { replace: true })
     } catch {
       setError('Those details did not match an active account. Check your email and password.')
     } finally {
