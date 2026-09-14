@@ -68,21 +68,28 @@ class CpanelEmailProvisioner
             ->timeout(15)
             ->withHeaders([
                 'Authorization' => 'cpanel '.config('services.cpanel.username').':'.config('services.cpanel.api_token'),
-            ])->get(sprintf(
-                'https://%s:%d/execute/Email/add_pop',
-                config('services.cpanel.host'),
-                config('services.cpanel.port'),
-            ), [
-                'email' => $localPart,
-                'domain' => $domain,
-                'password' => $password,
-                'quota' => config('services.cpanel.quota_mb'),
-            ]);
+            ])
+            ->asForm()
+            ->post(
+                sprintf(
+                    'https://%s:%d/execute/Email/add_pop',
+                    config('services.cpanel.host'),
+                    config('services.cpanel.port'),
+                ),
+                [
+                    'email' => $localPart,
+                    'domain' => $domain,
+                    'password' => $password,
+                    'quota' => config('services.cpanel.quota_mb'),
+                ],
+            );
 
         $payload = $response->json();
-        $result = is_array($payload) && is_array($payload['result'] ?? null) ? $payload['result'] : [];
+        $result = is_array($payload)
+            ? (is_array($payload['result'] ?? null) ? $payload['result'] : $payload)
+            : [];
         $status = (int) ($result['status'] ?? 0);
-        $errors = $result['errors'] ?? (is_array($payload) ? ($payload['errors'] ?? []) : []);
+        $errors = $result['errors'] ?? [];
         $message = is_array($errors) ? implode(' ', $errors) : (string) $errors;
 
         if (! $response->successful() || $status !== 1) {

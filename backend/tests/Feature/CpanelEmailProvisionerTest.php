@@ -46,7 +46,14 @@ class CpanelEmailProvisionerTest extends TestCase
         $this->configureCpanel();
 
         Http::fake([
-            '*/execute/Email/add_pop*' => Http::response(['result' => ['status' => 1, 'errors' => null]]),
+            '*/execute/Email/add_pop*' => Http::response([
+                'metadata' => [],
+                'messages' => ['OK', '', 'OK'],
+                'status' => 1,
+                'warnings' => null,
+                'errors' => null,
+                'data' => 'jane.doe+swanabujachapter.org',
+            ]),
         ]);
 
         $user = User::factory()->make(['name' => 'Jane Doe']);
@@ -57,7 +64,9 @@ class CpanelEmailProvisionerTest extends TestCase
         $this->assertNotEmpty($mailbox->password);
 
         Http::assertSent(function ($request) {
-            return $request['email'] === 'jane.doe' && $request['domain'] === 'swanabujachapter.org';
+            return $request->method() === 'POST'
+                && $request['email'] === 'jane.doe'
+                && $request['domain'] === 'swanabujachapter.org';
         });
     }
 
