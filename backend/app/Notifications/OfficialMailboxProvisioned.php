@@ -35,8 +35,8 @@ class OfficialMailboxProvisioned extends Notification
             ->line("Address: {$this->mailbox->address}")
             ->line("Temporary password: {$this->mailbox->password}")
             ->line('Web: select “Open your official mailbox” below, then sign in with the address and temporary password above.')
-            ->line('Android (recommended: IMAP): use your full email address as both the email address and username; use the temporary password above; incoming IMAP server: '.$this->mailboxHost().', port 993, SSL/TLS; outgoing SMTP server: '.$this->mailboxHost().', port 465, SSL/TLS, with authentication required.')
-            ->line('Android POP alternative: use the same email address, username, password, and SMTP settings; incoming POP server: '.$this->mailboxHost().', port 995, SSL/TLS.')
+            ->line('Android phone: in Gmail or your Email app, choose Add account, then Other and IMAP. Enter your full email address and the temporary password above. If it asks for a server, enter '.$this->mailboxHost().' and choose port 993 with SSL/TLS.')
+            ->line('If IMAP is not available, choose POP instead and use the same details with port 995 and SSL/TLS.')
             ->line('Change this temporary password immediately after signing in.')
             ->action('Open your official mailbox', $this->mailboxLoginUrl())
             ->line('If you did not expect this email, please contact the chapter office.');

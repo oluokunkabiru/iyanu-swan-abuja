@@ -46,7 +46,7 @@ class OfficialMailboxRetryTest extends TestCase
             return $mail->actionText === 'Open your official mailbox'
                 && $mail->actionUrl === 'https://server.example.com:2096'
                 && in_array('Temporary password: '.$mailbox->password, $mail->introLines, true)
-                && in_array('Android (recommended: IMAP): use your full email address as both the email address and username; use the temporary password above; incoming IMAP server: server.example.com, port 993, SSL/TLS; outgoing SMTP server: server.example.com, port 465, SSL/TLS, with authentication required.', $mail->introLines, true);
+                && in_array('Android phone: in Gmail or your Email app, choose Add account, then Other and IMAP. Enter your full email address and the temporary password above. If it asks for a server, enter server.example.com and choose port 993 with SSL/TLS.', $mail->introLines, true);
         });
     }
 
