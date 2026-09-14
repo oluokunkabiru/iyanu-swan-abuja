@@ -43,7 +43,10 @@ class MembershipActivated extends Notification
             $mail->line("We've also set up your official {$chapterName} email address:")
                 ->line("Address: {$this->officialMailbox->address}")
                 ->line("Temporary password: {$this->officialMailbox->password}")
-                ->line('Use the button below to sign in to your official mailbox, then change this password as soon as possible.')
+                ->line('Web: select “Open your official mailbox” below, then sign in with the address and temporary password above.')
+                ->line('Android (recommended: IMAP): use your full email address as both the email address and username; use the temporary password above; incoming IMAP server: '.$this->mailboxHost().', port 993, SSL/TLS; outgoing SMTP server: '.$this->mailboxHost().', port 465, SSL/TLS, with authentication required.')
+                ->line('Android POP alternative: use the same email address, username, password, and SMTP settings; incoming POP server: '.$this->mailboxHost().', port 995, SSL/TLS.')
+                ->line('Change this temporary password immediately after signing in.')
                 ->action('Open your official mailbox', $this->mailboxLoginUrl());
         } else {
             $mail->action('Go to your dashboard', rtrim(config('app.frontend_url'), '/').'/members');
@@ -60,5 +63,10 @@ class MembershipActivated extends Notification
         return filled($configuredUrl)
             ? rtrim((string) $configuredUrl, '/')
             : 'https://'.config('services.cpanel.host').':2096';
+    }
+
+    private function mailboxHost(): string
+    {
+        return (string) config('services.cpanel.host');
     }
 }
