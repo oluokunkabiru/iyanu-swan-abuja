@@ -80,6 +80,7 @@ export async function changePassword(payload: {
   password: string
   passwordConfirmation: string
 }): Promise<AuthUser> {
+  await ensureCsrfCookie()
   const { data } = await api.put<AuthUser>('/me/password', {
     current_password: payload.currentPassword,
     password: payload.password,
