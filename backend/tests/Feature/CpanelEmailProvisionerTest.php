@@ -108,4 +108,20 @@ class CpanelEmailProvisionerTest extends TestCase
 
         app(CpanelEmailProvisioner::class)->provisionFor($user);
     }
+
+    public function test_reports_an_unexpected_uapi_response_when_cpanel_returns_http_success_without_result_status(): void
+    {
+        $this->configureCpanel();
+
+        Http::fake([
+            '*/execute/Email/add_pop*' => Http::response(['message' => 'Unexpected response']),
+        ]);
+
+        $user = User::factory()->make(['name' => 'Jane Doe']);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unexpected cPanel UAPI response (HTTP 200)');
+
+        app(CpanelEmailProvisioner::class)->provisionFor($user);
+    }
 }

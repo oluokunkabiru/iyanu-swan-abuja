@@ -13,6 +13,7 @@ class ViewUser extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            UserResource::retryOfficialMailboxAction(),
             EditAction::make(),
         ];
     }

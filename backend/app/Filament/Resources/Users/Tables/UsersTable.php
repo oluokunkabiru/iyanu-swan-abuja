@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Filament\Resources\Users\UserResource;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -38,6 +39,7 @@ class UsersTable
             ])
             ->recordActions([
                 ViewAction::make(),
+                UserResource::retryOfficialMailboxAction(),
                 EditAction::make(),
                 DeleteAction::make(),
             ])

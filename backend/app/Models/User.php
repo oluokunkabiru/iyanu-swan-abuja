@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Notifications\MembershipActivated;
+use App\Notifications\OfficialMailboxProvisioned;
 use App\Notifications\VerifyEmail;
 use App\Services\Email\CpanelEmailProvisioner;
 use App\Services\Email\ProvisionedMailbox;
@@ -136,31 +137,48 @@ class User extends Authenticatable implements FilamentUser, JWTSubject, MustVeri
      */
     private function provisionOfficialMailbox(): ?ProvisionedMailbox
     {
-        if (filled($this->official_email)) {
-            return null;
-        }
-
-        if (! NotificationSetting::current()->cpanel_email_provisioning_enabled) {
-            return null;
-        }
-
-        $provisioner = app(CpanelEmailProvisioner::class);
-
-        if (! $provisioner->isConfigured()) {
-            return null;
-        }
-
         try {
-            $mailbox = $provisioner->provisionFor($this);
+            return $this->retryOfficialMailboxProvisioning();
         } catch (Throwable $e) {
             report($e);
 
             return null;
         }
+    }
+
+    /**
+     * @throws \RuntimeException when the member is not eligible or cPanel rejects the request
+     */
+    public function retryOfficialMailboxProvisioning(): ProvisionedMailbox
+    {
+        if ($this->role !== 'member' || $this->memberProfile?->membership_status !== 'active') {
+            throw new \RuntimeException('Only active members can receive an official mailbox.');
+        }
+
+        if (filled($this->official_email)) {
+            throw new \RuntimeException('This member already has an official email address.');
+        }
+
+        if (! NotificationSetting::current()->cpanel_email_provisioning_enabled) {
+            throw new \RuntimeException('Official mailbox provisioning is disabled in Notification Settings.');
+        }
+
+        $provisioner = app(CpanelEmailProvisioner::class);
+
+        if (! $provisioner->isConfigured()) {
+            throw new \RuntimeException('cPanel mailbox provisioning is not configured.');
+        }
+
+        $mailbox = $provisioner->provisionFor($this);
 
         $this->update(['official_email' => $mailbox->address]);
 
         return $mailbox;
+    }
+
+    public function notifyOfficialMailboxProvisioned(ProvisionedMailbox $mailbox): void
+    {
+        $this->notify(new OfficialMailboxProvisioned($mailbox));
     }
 
     /**

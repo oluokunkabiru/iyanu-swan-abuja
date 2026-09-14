@@ -4,6 +4,7 @@ namespace App\Services\Email;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -63,29 +64,40 @@ class CpanelEmailProvisioner
      */
     private function createMailbox(string $localPart, string $domain, string $password): array
     {
-        $response = Http::withHeaders([
-            'Authorization' => 'cpanel '.config('services.cpanel.username').':'.config('services.cpanel.api_token'),
-        ])->get(sprintf(
-            'https://%s:%d/execute/Email/add_pop',
-            config('services.cpanel.host'),
-            config('services.cpanel.port'),
-        ), [
-            'email' => $localPart,
-            'domain' => $domain,
-            'password' => $password,
-            'quota' => config('services.cpanel.quota_mb'),
-        ]);
+        $response = Http::connectTimeout(5)
+            ->timeout(15)
+            ->withHeaders([
+                'Authorization' => 'cpanel '.config('services.cpanel.username').':'.config('services.cpanel.api_token'),
+            ])->get(sprintf(
+                'https://%s:%d/execute/Email/add_pop',
+                config('services.cpanel.host'),
+                config('services.cpanel.port'),
+            ), [
+                'email' => $localPart,
+                'domain' => $domain,
+                'password' => $password,
+                'quota' => config('services.cpanel.quota_mb'),
+            ]);
 
-        $result = $response->json('result') ?? [];
+        $payload = $response->json();
+        $result = is_array($payload) && is_array($payload['result'] ?? null) ? $payload['result'] : [];
         $status = (int) ($result['status'] ?? 0);
-        $errors = $result['errors'] ?? [];
+        $errors = $result['errors'] ?? (is_array($payload) ? ($payload['errors'] ?? []) : []);
         $message = is_array($errors) ? implode(' ', $errors) : (string) $errors;
 
         if (! $response->successful() || $status !== 1) {
+            if ($message === '') {
+                Log::warning('cPanel mailbox provisioning returned an unexpected response.', [
+                    'http_status' => $response->status(),
+                    'content_type' => $response->header('Content-Type'),
+                    'response_keys' => is_array($payload) ? array_keys($payload) : [],
+                ]);
+            }
+
             return [
                 'success' => false,
                 'isCollision' => str_contains(strtolower($message), 'already exists'),
-                'message' => $message !== '' ? $message : "HTTP {$response->status()}",
+                'message' => $message !== '' ? $message : "Unexpected cPanel UAPI response (HTTP {$response->status()})",
             ];
         }
 
