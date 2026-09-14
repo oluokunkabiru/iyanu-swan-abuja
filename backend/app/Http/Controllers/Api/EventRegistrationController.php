@@ -66,20 +66,10 @@ class EventRegistrationController extends Controller
         return response()->json([...$registration->toArray(), 'authorizationUrl' => $authorizationUrl], 201);
     }
 
-    /**
-     * Public, unauthenticated ticket verification — the link embedded in
-     * the confirmation email/QR code. Deliberately no login gate (the
-     * reference is an unguessable bearer token, the same trust model this
-     * app already uses for payment references) so door staff can scan and
-     * check a ticket without needing an admin account on hand. The first
-     * successful scan of a paid ticket marks it checked in; later scans
-     * report that it was already checked in rather than re-marking it.
-     */
+    /** Public, read-only ticket view for the confirmation email and QR code. */
     public function verifyTicket(string $reference): JsonResponse
     {
-        $registration = EventRegistration::with(['event', 'ticketType'])
-            ->where('reference', $reference)
-            ->first();
+        $registration = $this->registrationForReference($reference);
 
         if (! $registration) {
             return response()->json(['valid' => false, 'reason' => 'not_found'], 404);
@@ -94,21 +84,55 @@ class EventRegistrationController extends Controller
             ]);
         }
 
-        $wasAlreadyCheckedIn = $registration->checked_in_at !== null;
+        return response()->json($this->ticketPayload($registration));
+    }
 
-        if (! $wasAlreadyCheckedIn) {
-            $registration->update(['checked_in_at' => now()]);
+    /** Marks a paid ticket as used at the door. Admin access is required. */
+    public function checkInTicket(Request $request, string $reference): JsonResponse
+    {
+        if ($request->user()?->role !== 'admin') {
+            abort(403);
         }
 
-        return response()->json([
+        $registration = $this->registrationForReference($reference);
+
+        if (! $registration) {
+            return response()->json(['valid' => false, 'reason' => 'not_found'], 404);
+        }
+
+        if ($registration->payment_status !== 'paid') {
+            return response()->json(['valid' => false, 'reason' => 'not_paid'], 422);
+        }
+
+        EventRegistration::query()
+            ->whereKey($registration->id)
+            ->whereNull('checked_in_at')
+            ->update(['checked_in_at' => now()]);
+
+        return response()->json($this->ticketPayload($registration->fresh(['event', 'ticketType'])));
+    }
+
+    private function registrationForReference(string $reference): ?EventRegistration
+    {
+        return EventRegistration::with(['event', 'ticketType'])
+            ->where('reference', $reference)
+            ->first();
+    }
+
+    /**
+     * @return array{valid: true, checkedIn: bool, checkedInAt: ?string, name: string, ticketLabel: ?string, eventTitle: string, venue: ?string, startsAt: string}
+     */
+    private function ticketPayload(EventRegistration $registration): array
+    {
+        return [
             'valid' => true,
-            'alreadyCheckedIn' => $wasAlreadyCheckedIn,
-            'checkedInAt' => $registration->checked_in_at->toIso8601String(),
+            'checkedIn' => $registration->checked_in_at !== null,
+            'checkedInAt' => $registration->checked_in_at?->toIso8601String(),
             'name' => $registration->name,
             'ticketLabel' => $registration->ticketType?->label,
             'eventTitle' => $registration->event->title,
             'venue' => $registration->event->location,
             'startsAt' => $registration->event->starts_at->toIso8601String(),
-        ]);
+        ];
     }
 }

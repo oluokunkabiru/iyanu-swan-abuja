@@ -1,8 +1,10 @@
 import { CheckCircle2, Clock3, XCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { verifyTicket } from '@/api/content'
+import { checkInTicket, verifyTicket } from '@/api/content'
 import { Section } from '@/components/common/Primitives'
+import { Button } from '@/components/ui/button'
+import { useAuth } from '@/context/AuthContext'
 import { formatDate } from '@/lib/format'
 import type { TicketVerificationResult } from '@/types'
 
@@ -12,6 +14,9 @@ export default function TicketVerify() {
   const { reference } = useParams<{ reference: string }>()
   const [status, setStatus] = useState<Status>('checking')
   const [result, setResult] = useState<TicketVerificationResult | null>(null)
+  const [isCheckingIn, setIsCheckingIn] = useState(false)
+  const [checkInError, setCheckInError] = useState<string | null>(null)
+  const { user } = useAuth()
 
   useEffect(() => {
     if (!reference) {
@@ -49,11 +54,26 @@ export default function TicketVerify() {
         heading: result.reason === 'not_paid' ? 'NOT VALID — payment not completed' : 'Ticket not found',
       }
     }
-    if (result.alreadyCheckedIn) {
-      return { tone: 'warning' as const, Icon: Clock3, heading: 'Already checked in' }
+    if (result.checkedIn) {
+      return { tone: 'warning' as const, Icon: Clock3, heading: 'Checked in' }
     }
-    return { tone: 'valid' as const, Icon: CheckCircle2, heading: 'VALID — checked in' }
+    return { tone: 'valid' as const, Icon: CheckCircle2, heading: 'Ticket confirmed' }
   })()
+
+  async function handleCheckIn() {
+    if (!reference) return
+
+    setIsCheckingIn(true)
+    setCheckInError(null)
+
+    try {
+      setResult(await checkInTicket(reference))
+    } catch {
+      setCheckInError('Could not check in this ticket. Please confirm that you are signed in as an administrator and try again.')
+    } finally {
+      setIsCheckingIn(false)
+    }
+  }
 
   // This page exists for a door-staff glance check, where an unambiguous
   // pass/fail/warning signal is the whole point — not a brand surface. The
@@ -106,6 +126,16 @@ export default function TicketVerify() {
                 </div>
               )}
             </dl>
+          )}
+
+          {status === 'done' && result?.valid && user?.role === 'admin' && !result.checkedIn && (
+            <div className="mt-6 space-y-3 border-t border-current/20 pt-5">
+              <p className="text-sm font-medium">Administrator check-in</p>
+              <Button type="button" onClick={handleCheckIn} disabled={isCheckingIn}>
+                {isCheckingIn ? 'Checking in…' : 'Check in attendee'}
+              </Button>
+              {checkInError && <p role="alert" className="text-sm">{checkInError}</p>}
+            </div>
           )}
         </div>
       </div>

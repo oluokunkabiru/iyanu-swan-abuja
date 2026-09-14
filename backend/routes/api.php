@@ -77,6 +77,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/me/password', [AuthController::class, 'changePassword']);
 
     Route::middleware('password.changed')->group(function () {
+        Route::post('/tickets/{reference}/check-in', [EventRegistrationController::class, 'checkInTicket']);
         Route::put('/me', [AuthController::class, 'updateMe']);
         Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
             ->middleware('throttle:6,1');

@@ -79,8 +79,8 @@ export interface TicketTier {
 export interface TicketVerificationResult {
   valid: boolean
   reason?: 'not_found' | 'not_paid'
-  alreadyCheckedIn?: boolean
-  checkedInAt?: string
+  checkedIn?: boolean
+  checkedInAt?: string | null
   name?: string
   ticketLabel?: string
   eventTitle?: string

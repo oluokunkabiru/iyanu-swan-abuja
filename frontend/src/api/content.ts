@@ -66,6 +66,9 @@ export const verifyTicket = (reference: string) =>
       throw error
     })
 
+export const checkInTicket = (reference: string) =>
+  api.post<TicketVerificationResult>(`/tickets/${reference}/check-in`).then((r) => r.data)
+
 export const getNews = () => api.get<NewsPost[]>('/news').then((r) => r.data)
 
 export const getNewsPost = (slug: string) => api.get<NewsPost>(`/news/${slug}`).then((r) => r.data)

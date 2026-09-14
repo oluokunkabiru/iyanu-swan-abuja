@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Event;
 use App\Models\EventTicketType;
+use App\Models\User;
 use Tests\Concerns\UsesMysqlInTransaction;
 use Tests\TestCase;
 
@@ -44,7 +45,7 @@ class TicketVerificationTest extends TestCase
         return [$event, $registration];
     }
 
-    public function test_verifying_a_paid_ticket_marks_it_checked_in(): void
+    public function test_viewing_a_paid_ticket_does_not_mark_it_checked_in(): void
     {
         [, $registration] = $this->createPaidRegistration();
 
@@ -52,24 +53,63 @@ class TicketVerificationTest extends TestCase
 
         $response->assertOk()->assertJson([
             'valid' => true,
-            'alreadyCheckedIn' => false,
+            'checkedIn' => false,
             'name' => 'Gala Attendee',
             'eventTitle' => 'Chapter Gala Night',
         ]);
 
+        $this->assertNull($registration->fresh()->checked_in_at);
+    }
+
+    public function test_an_authorized_admin_can_check_in_a_paid_ticket(): void
+    {
+        [, $registration] = $this->createPaidRegistration();
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAsApi($admin)
+            ->postJson("/api/tickets/{$registration->reference}/check-in");
+
+        $response->assertOk()->assertJson(['valid' => true, 'checkedIn' => true]);
         $this->assertNotNull($registration->fresh()->checked_in_at);
     }
 
-    public function test_verifying_an_already_checked_in_ticket_does_not_move_the_check_in_time(): void
+    public function test_member_cannot_check_in_a_ticket(): void
+    {
+        [, $registration] = $this->createPaidRegistration();
+        $member = User::factory()->create();
+
+        $this->actingAsApi($member)
+            ->postJson("/api/tickets/{$registration->reference}/check-in")
+            ->assertForbidden();
+
+        $this->assertNull($registration->fresh()->checked_in_at);
+    }
+
+    public function test_guest_cannot_check_in_a_ticket(): void
     {
         [, $registration] = $this->createPaidRegistration();
 
-        $this->getJson("/api/tickets/{$registration->reference}/verify")->assertOk();
+        $this->postJson("/api/tickets/{$registration->reference}/check-in")
+            ->assertUnauthorized();
+
+        $this->assertNull($registration->fresh()->checked_in_at);
+    }
+
+    public function test_checking_in_an_already_checked_in_ticket_does_not_move_the_check_in_time(): void
+    {
+        [, $registration] = $this->createPaidRegistration();
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAsApi($admin)
+            ->postJson("/api/tickets/{$registration->reference}/check-in")
+            ->assertOk();
         $firstCheckInTime = $registration->fresh()->checked_in_at;
 
-        $response = $this->getJson("/api/tickets/{$registration->reference}/verify");
+        $this->actingAsApi($admin)
+            ->postJson("/api/tickets/{$registration->reference}/check-in")
+            ->assertOk()
+            ->assertJson(['valid' => true, 'checkedIn' => true]);
 
-        $response->assertOk()->assertJson(['valid' => true, 'alreadyCheckedIn' => true]);
         $this->assertTrue($firstCheckInTime->equalTo($registration->fresh()->checked_in_at));
     }
 
