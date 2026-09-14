@@ -65,6 +65,7 @@ return [
         'api_token' => env('CPANEL_API_TOKEN'),
         'email_domain' => env('CPANEL_EMAIL_DOMAIN'),
         'quota_mb' => env('CPANEL_EMAIL_QUOTA_MB', 250),
+        'webmail_url' => env('CPANEL_WEBMAIL_URL'),
     ],
 
 ];

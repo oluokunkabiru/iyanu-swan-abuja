@@ -43,11 +43,22 @@ class MembershipActivated extends Notification
             $mail->line("We've also set up your official {$chapterName} email address:")
                 ->line("Address: {$this->officialMailbox->address}")
                 ->line("Temporary password: {$this->officialMailbox->password}")
-                ->line('Please sign in and change this password as soon as possible.');
+                ->line('Use the button below to sign in to your official mailbox, then change this password as soon as possible.')
+                ->action('Open your official mailbox', $this->mailboxLoginUrl());
+        } else {
+            $mail->action('Go to your dashboard', rtrim(config('app.frontend_url'), '/').'/members');
         }
 
         return $mail
-            ->action('Go to your dashboard', rtrim(config('app.frontend_url'), '/').'/members')
             ->line('Welcome aboard.');
+    }
+
+    private function mailboxLoginUrl(): string
+    {
+        $configuredUrl = config('services.cpanel.webmail_url');
+
+        return filled($configuredUrl)
+            ? rtrim((string) $configuredUrl, '/')
+            : 'https://'.config('services.cpanel.host').':2096';
     }
 }

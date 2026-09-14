@@ -34,7 +34,17 @@ class OfficialMailboxProvisioned extends Notification
             ->line("Your official {$chapterName} mailbox has been created.")
             ->line("Address: {$this->mailbox->address}")
             ->line("Temporary password: {$this->mailbox->password}")
-            ->line('Please sign in to the mailbox and change this password immediately.')
+            ->line('Use the button below to sign in to the mailbox and change this password immediately.')
+            ->action('Open your official mailbox', $this->mailboxLoginUrl())
             ->line('If you did not expect this email, please contact the chapter office.');
+    }
+
+    private function mailboxLoginUrl(): string
+    {
+        $configuredUrl = config('services.cpanel.webmail_url');
+
+        return filled($configuredUrl)
+            ? rtrim((string) $configuredUrl, '/')
+            : 'https://'.config('services.cpanel.host').':2096';
     }
 }

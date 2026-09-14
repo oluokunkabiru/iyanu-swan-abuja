@@ -296,7 +296,13 @@ class PaymentFlowTest extends TestCase
         $user->activateMembershipIfEligible();
 
         $this->assertSame('jane.doe@swanabujachapter.org', $user->fresh()->official_email);
-        Notification::assertSentTo($user, MembershipActivated::class);
+        Notification::assertSentTo($user, MembershipActivated::class, function (MembershipActivated $notification) use ($user): bool {
+            $mail = $notification->toMail($user);
+
+            return $mail->actionText === 'Open your official mailbox'
+                && $mail->actionUrl === 'https://server.example.com:2096'
+                && in_array('Address: jane.doe@swanabujachapter.org', $mail->introLines, true);
+        });
     }
 
     public function test_admin_can_switch_off_official_email_provisioning_even_when_cpanel_is_configured(): void

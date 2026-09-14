@@ -40,7 +40,13 @@ class OfficialMailboxRetryTest extends TestCase
         $member->notifyOfficialMailboxProvisioned($mailbox);
 
         $this->assertSame('jane.doe@swanabujachapter.org', $member->fresh()->official_email);
-        Notification::assertSentTo($member, OfficialMailboxProvisioned::class);
+        Notification::assertSentTo($member, OfficialMailboxProvisioned::class, function (OfficialMailboxProvisioned $notification) use ($mailbox, $member): bool {
+            $mail = $notification->toMail($member);
+
+            return $mail->actionText === 'Open your official mailbox'
+                && $mail->actionUrl === 'https://server.example.com:2096'
+                && in_array('Temporary password: '.$mailbox->password, $mail->introLines, true);
+        });
     }
 
     public function test_authorized_admin_can_retry_an_active_members_official_mailbox_from_the_users_table(): void
