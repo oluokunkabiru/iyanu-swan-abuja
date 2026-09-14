@@ -17,6 +17,29 @@ class LegacyMemberImportTest extends TestCase
 {
     use UsesMysqlInTransaction;
 
+    public function test_member_created_by_an_admin_must_change_their_password_on_first_sign_in(): void
+    {
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+        $admin = User::factory()->admin()->create();
+
+        Livewire::actingAs($admin)
+            ->test(CreateUser::class)
+            ->fillForm([
+                'name' => 'New Member',
+                'email' => 'new.member@example.com',
+                'password' => 'admin-set-password',
+                'role' => 'member',
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $member = User::query()->where('email', 'new.member@example.com')->firstOrFail();
+
+        $this->assertTrue($member->must_change_password);
+        $this->assertTrue(Hash::check('admin-set-password', $member->password));
+    }
+
     public function test_admin_can_import_an_existing_member_with_paid_current_year_dues(): void
     {
         Notification::fake();

@@ -32,7 +32,7 @@ class UserForm
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $operation, $get): bool => $operation === 'create' && ! $get('is_legacy_member'))
                     ->hidden(fn ($get): bool => (bool) $get('is_legacy_member'))
-                    ->helperText('Legacy-member imports receive a generated temporary password by email.')
+                    ->helperText('Members created here must change this password on their first sign-in. Legacy-member imports receive a generated temporary password by email.')
                     ->maxLength(255),
                 Select::make('role')
                     ->options([

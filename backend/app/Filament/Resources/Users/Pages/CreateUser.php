@@ -29,7 +29,10 @@ class CreateUser extends CreateRecord
         unset($data['is_legacy_member'], $data['legacy_membership_level_id']);
 
         if (! $isLegacyMember) {
-            return $data;
+            return [
+                ...$data,
+                'must_change_password' => $data['role'] === 'member',
+            ];
         }
 
         $this->temporaryPassword = Str::password(16);
