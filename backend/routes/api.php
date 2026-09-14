@@ -71,7 +71,7 @@ Route::get('/payments/verify/{reference}', [PaymentController::class, 'verify'])
 Route::post('/payments/webhooks/paystack', [PaymentController::class, 'webhookPaystack']);
 Route::post('/payments/webhooks/flutterwave', [PaymentController::class, 'webhookFlutterwave']);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/me/password', [AuthController::class, 'changePassword']);

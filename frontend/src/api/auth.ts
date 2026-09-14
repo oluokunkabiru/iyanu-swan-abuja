@@ -1,5 +1,12 @@
-import { api, ensureCsrfCookie } from '@/api/client'
+import { api } from '@/api/client'
 import type { AuthUser, CpdRecord, NotificationEmailPreference, SubscriptionRecord, TicketRecord } from '@/types'
+
+export interface AuthenticationResponse {
+  accessToken: string
+  tokenType: 'Bearer'
+  expiresIn: number
+  user: AuthUser
+}
 
 export async function register(payload: {
   name: string
@@ -11,9 +18,8 @@ export async function register(payload: {
   residentialAddress: string
   placeOfWork: string
   dateOfBirth?: string
-}): Promise<AuthUser> {
-  await ensureCsrfCookie()
-  const { data } = await api.post<AuthUser>('/register', {
+}): Promise<AuthenticationResponse> {
+  const { data } = await api.post<AuthenticationResponse>('/register', {
     name: payload.name,
     email: payload.email,
     password: payload.password,
@@ -27,9 +33,8 @@ export async function register(payload: {
   return data
 }
 
-export async function login(payload: { email: string; password: string }): Promise<AuthUser> {
-  await ensureCsrfCookie()
-  const { data } = await api.post<AuthUser>('/login', payload)
+export async function login(payload: { email: string; password: string }): Promise<AuthenticationResponse> {
+  const { data } = await api.post<AuthenticationResponse>('/login', payload)
   return data
 }
 
@@ -79,9 +84,8 @@ export async function changePassword(payload: {
   currentPassword: string
   password: string
   passwordConfirmation: string
-}): Promise<AuthUser> {
-  await ensureCsrfCookie()
-  const { data } = await api.put<AuthUser>('/me/password', {
+}): Promise<AuthenticationResponse> {
+  const { data } = await api.put<AuthenticationResponse>('/me/password', {
     current_password: payload.currentPassword,
     password: payload.password,
     password_confirmation: payload.passwordConfirmation,
@@ -125,7 +129,6 @@ export async function paySubscriptionDues(
   year: number,
   membershipLevelId: string,
 ): Promise<{ authorizationUrl: string }> {
-  await ensureCsrfCookie()
   const { data } = await api.post<{ authorizationUrl: string }>(`/me/subscriptions/${year}/pay`, {
     membership_level_id: membershipLevelId,
   })
@@ -136,7 +139,6 @@ export async function submitBankTransfer(
   year: number,
   payload: { membershipLevelId: string; reference: string; evidence: File },
 ): Promise<{ message: string }> {
-  await ensureCsrfCookie()
   const form = new FormData()
   form.append('membership_level_id', payload.membershipLevelId)
   form.append('reference', payload.reference)

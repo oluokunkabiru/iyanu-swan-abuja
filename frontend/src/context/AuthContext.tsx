@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react'
 import { changePassword, fetchMe, login, logout, register, updateMe } from '@/api/auth'
+import { hasAccessToken, setAccessToken } from '@/api/client'
 import type { AuthUser } from '@/types'
 
 interface AuthContextValue {
@@ -28,6 +29,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    if (!hasAccessToken()) {
+      setIsLoading(false)
+      return
+    }
+
     fetchMe()
       .then(setUser)
       .catch(() => setUser(null))
@@ -35,19 +41,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const next = await login({ email, password })
-    setUser(next)
-    return next
+    const response = await login({ email, password })
+    setAccessToken(response.accessToken)
+    setUser(response.user)
+    return response.user
   }, [])
 
   const signUp = useCallback(async (input: Parameters<typeof register>[0]) => {
-    const next = await register(input)
-    setUser(next)
-    return next
+    const response = await register(input)
+    setAccessToken(response.accessToken)
+    setUser(response.user)
+    return response.user
   }, [])
 
   const signOut = useCallback(() => {
-    logout().finally(() => setUser(null))
+    logout().finally(() => {
+      setAccessToken(null)
+      setUser(null)
+    })
   }, [])
 
   const updateProfile = useCallback(async (payload: Parameters<typeof updateMe>[0]) => {
@@ -57,9 +68,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const updatePassword = useCallback(async (payload: Parameters<typeof changePassword>[0]) => {
-    const next = await changePassword(payload)
-    setUser(next)
-    return next
+    const response = await changePassword(payload)
+    setAccessToken(response.accessToken)
+    setUser(response.user)
+    return response.user
   }, [])
 
   const refreshUser = useCallback(async () => {

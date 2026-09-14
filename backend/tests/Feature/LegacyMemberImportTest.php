@@ -69,19 +69,19 @@ class LegacyMemberImportTest extends TestCase
             'must_change_password' => true,
         ]);
 
-        $this->actingAs($member)
+        $this->actingAsApi($member)
             ->getJson('/api/me/subscriptions')
             ->assertStatus(423)
             ->assertJsonPath('mustChangePassword', true);
 
-        $this->actingAs($member)
+        $this->actingAsApi($member)
             ->putJson('/api/me/password', [
                 'current_password' => 'temporary-password',
                 'password' => 'new-secure-password',
                 'password_confirmation' => 'new-secure-password',
             ])
             ->assertOk()
-            ->assertJsonPath('mustChangePassword', false);
+            ->assertJsonPath('user.mustChangePassword', false);
 
         $this->assertFalse($member->fresh()->must_change_password);
         $this->assertTrue(Hash::check('new-secure-password', $member->fresh()->password));

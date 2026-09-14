@@ -37,7 +37,7 @@ class MembershipLevelPaymentTest extends TestCase
         $user = User::factory()->create();
         $level = MembershipLevel::factory()->create(['subscription_amount' => 5_000, 'welfare_amount' => 12_000]);
 
-        $response = $this->actingAs($user)->post('/api/me/subscriptions/'.now()->year.'/bank-transfer', [
+        $response = $this->actingAsApi($user)->post('/api/me/subscriptions/'.now()->year.'/bank-transfer', [
             'membership_level_id' => $level->id,
             'reference' => 'GTB-REF-001',
             'evidence' => UploadedFile::fake()->image('receipt.jpg'),
@@ -66,7 +66,7 @@ class MembershipLevelPaymentTest extends TestCase
             'payment_gateway' => 'bank_transfer',
         ]);
 
-        $response = $this->actingAs($user)->post('/api/me/subscriptions/'.now()->year.'/bank-transfer', [
+        $response = $this->actingAsApi($user)->post('/api/me/subscriptions/'.now()->year.'/bank-transfer', [
             'membership_level_id' => $level->id,
             'reference' => 'GTB-REF-002',
             'evidence' => UploadedFile::fake()->image('receipt.jpg'),

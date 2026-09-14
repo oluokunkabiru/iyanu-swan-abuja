@@ -106,7 +106,7 @@ class PaymentFlowTest extends TestCase
         $user = User::factory()->create();
         $user->memberProfile()->create(['membership_status' => 'active']);
 
-        $this->actingAs($user)->putJson('/api/me', [
+        $this->actingAsApi($user)->putJson('/api/me', [
             'residential_address' => '4 New Layout, Kubwa, Abuja',
             'place_of_work' => 'ABC Chartered Accountants',
         ])->assertOk();
@@ -132,7 +132,7 @@ class PaymentFlowTest extends TestCase
         $user = User::factory()->create(['role' => 'member']);
         $level = MembershipLevel::factory()->create(['subscription_amount' => 5_000, 'welfare_amount' => 12_000]);
 
-        $response = $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+        $response = $this->actingAsApi($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
             'membership_level_id' => $level->id,
         ]);
 
@@ -163,7 +163,7 @@ class PaymentFlowTest extends TestCase
 
         $user = User::factory()->create(['role' => 'member']);
         $level = MembershipLevel::factory()->create();
-        $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+        $this->actingAsApi($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
             'membership_level_id' => $level->id,
         ])->assertOk();
 
@@ -193,7 +193,7 @@ class PaymentFlowTest extends TestCase
 
         $user = User::factory()->create(['role' => 'member']);
         $level = MembershipLevel::factory()->create();
-        $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+        $this->actingAsApi($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
             'membership_level_id' => $level->id,
         ])->assertOk();
 
@@ -222,7 +222,7 @@ class PaymentFlowTest extends TestCase
 
         $user = User::factory()->create(['role' => 'member']);
         $level = MembershipLevel::factory()->create();
-        $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+        $this->actingAsApi($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
             'membership_level_id' => $level->id,
         ])->assertOk();
 
@@ -255,7 +255,7 @@ class PaymentFlowTest extends TestCase
         $user = User::factory()->create(['role' => 'member']);
         $user->memberProfile()->create(['membership_status' => 'pending']);
         $level = MembershipLevel::factory()->create();
-        $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+        $this->actingAsApi($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
             'membership_level_id' => $level->id,
         ])->assertOk();
 
@@ -372,7 +372,7 @@ class PaymentFlowTest extends TestCase
         $user = User::factory()->create(['role' => 'member']);
         $user->memberProfile()->create(['membership_status' => 'active']);
         $level = MembershipLevel::factory()->create();
-        $this->actingAs($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+        $this->actingAsApi($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
             'membership_level_id' => $level->id,
         ])->assertOk();
 

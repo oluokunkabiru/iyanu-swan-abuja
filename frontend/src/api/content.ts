@@ -1,4 +1,4 @@
-import { api, ensureCsrfCookie } from '@/api/client'
+import { api } from '@/api/client'
 import type {
   Announcement,
   ChapterEvent,
@@ -49,7 +49,6 @@ export const registerForEvent = async (
     notes?: string
   },
 ) => {
-  await ensureCsrfCookie()
   return api
     .post<{ payment_status: 'paid' | 'pending'; reference: string; authorizationUrl?: string }>(
       `/events/${slug}/register`,
@@ -113,6 +112,5 @@ export const submitContact = async (payload: {
   subject?: string
   message: string
 }) => {
-  await ensureCsrfCookie()
   return api.post('/contact', payload).then((r) => r.data)
 }

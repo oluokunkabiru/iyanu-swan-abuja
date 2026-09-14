@@ -50,12 +50,12 @@ class AuthController extends Controller
 
         $user->sendEmailVerificationNotification();
 
-        Auth::login($user);
-        $request->session()->regenerate();
-
         $user->load('memberProfile');
 
-        return response()->json($this->userPayload($user), 201);
+        /** @var string $accessToken */
+        $accessToken = Auth::guard('api')->login($user);
+
+        return response()->json($this->authenticationPayload($user, $accessToken), 201);
     }
 
     /**
@@ -63,7 +63,7 @@ class AuthController extends Controller
      * called by the frontend page the link points to, not opened
      * directly, so this only ever needs to answer "did it work" as
      * JSON and leave the page/UX entirely to the frontend. Not behind
-     * auth:sanctum — the caller may not carry this app's session — so
+     * auth:api — the caller may not carry a valid JWT yet — so
      * identity comes from the id/hash pair alone, which the "signed"
      * middleware guarantees hasn't been tampered with.
      */
@@ -104,26 +104,25 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (! Auth::attempt($credentials)) {
+        /** @var string|false $accessToken */
+        $accessToken = Auth::guard('api')->attempt($credentials);
+
+        if (! $accessToken) {
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);
         }
 
-        $request->session()->regenerate();
-
         /** @var User $user */
-        $user = $request->user();
+        $user = Auth::guard('api')->user();
         $user->load('memberProfile');
 
-        return response()->json($this->userPayload($user));
+        return response()->json($this->authenticationPayload($user, $accessToken));
     }
 
-    public function logout(Request $request): JsonResponse
+    public function logout(): JsonResponse
     {
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        Auth::guard('api')->logout();
 
         return response()->json(['message' => 'Logged out']);
     }
@@ -149,13 +148,14 @@ class AuthController extends Controller
             'must_change_password' => false,
         ]);
 
-        if ($request->hasSession()) {
-            $request->session()->regenerate();
-        }
+        Auth::guard('api')->logout();
+
+        /** @var string $accessToken */
+        $accessToken = Auth::guard('api')->login($user);
 
         return response()->json([
             'message' => 'Password changed successfully.',
-            ...$this->userPayload($user->fresh('memberProfile')),
+            ...$this->authenticationPayload($user->fresh('memberProfile'), $accessToken),
         ]);
     }
 
@@ -268,6 +268,17 @@ class AuthController extends Controller
             'specialisation' => $profile?->specialisation,
             'yearAdmitted' => $profile?->year_admitted,
             'chapterRole' => $profile?->chapter_role,
+        ];
+    }
+
+    /** @return array{accessToken: string, tokenType: string, expiresIn: int, user: array<string, mixed>} */
+    private function authenticationPayload(User $user, string $accessToken): array
+    {
+        return [
+            'accessToken' => $accessToken,
+            'tokenType' => 'Bearer',
+            'expiresIn' => (int) config('jwt.ttl') * 60,
+            'user' => $this->userPayload($user),
         ];
     }
 }

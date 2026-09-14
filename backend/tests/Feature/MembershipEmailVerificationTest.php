@@ -122,7 +122,7 @@ class MembershipEmailVerificationTest extends TestCase
         $user = User::factory()->unverified()->create();
         $user->memberProfile()->create(['membership_status' => 'pending']);
 
-        $this->actingAs($user)->putJson('/api/me', [
+        $this->actingAsApi($user)->putJson('/api/me', [
             'personal_email' => 'personal@example.com',
         ])->assertStatus(422);
 
@@ -134,7 +134,7 @@ class MembershipEmailVerificationTest extends TestCase
         $user = User::factory()->create();
         $user->memberProfile()->create(['membership_status' => 'active']);
 
-        $this->actingAs($user)->putJson('/api/me', [
+        $this->actingAsApi($user)->putJson('/api/me', [
             'personal_email' => 'personal@example.com',
             'official_email' => 'official@example.com',
             'notification_email_preference' => 'all',
