@@ -226,9 +226,6 @@ export default function MembersProfile() {
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
             />
-            <p className="text-[0.78rem] text-muted-foreground">
-              Used only to send you a birthday greeting.
-            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="profile-place-of-work">Place of work</Label>

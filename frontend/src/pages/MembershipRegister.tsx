@@ -147,9 +147,6 @@ export default function MembershipRegister() {
                 <div className="space-y-2">
                   <Label htmlFor="dateOfBirth">Date of birth (optional)</Label>
                   <Input id="dateOfBirth" name="dateOfBirth" type="date" autoComplete="bday" />
-                  <p className="text-[0.78rem] text-muted-foreground">
-                    Used only to send you a birthday greeting.
-                  </p>
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="residentialAddress">Residential address</Label>
