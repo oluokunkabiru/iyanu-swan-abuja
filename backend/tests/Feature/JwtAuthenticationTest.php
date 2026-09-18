@@ -34,4 +34,19 @@ class JwtAuthenticationTest extends TestCase
     {
         $this->getJson('/api/me')->assertUnauthorized();
     }
+
+    public function test_member_can_log_in_with_their_official_email_and_swan_password(): void
+    {
+        $user = User::factory()->create([
+            'official_email' => 'member@swanabujachapter.org',
+            'password' => 'password123',
+        ]);
+
+        $this->postJson('/api/login', [
+            'email' => $user->official_email,
+            'password' => 'password123',
+        ])
+            ->assertOk()
+            ->assertJsonPath('user.id', (string) $user->id);
+    }
 }

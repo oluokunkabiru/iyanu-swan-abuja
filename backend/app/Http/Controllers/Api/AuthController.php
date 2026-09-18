@@ -108,18 +108,22 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        /** @var string|false $accessToken */
-        $accessToken = Auth::guard('api')->attempt($credentials);
+        /** @var User|null $user */
+        $user = User::query()
+            ->where('email', $credentials['email'])
+            ->first()
+            ?? User::query()->where('official_email', $credentials['email'])->first();
 
-        if (! $accessToken) {
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);
         }
 
-        /** @var User $user */
-        $user = Auth::guard('api')->user();
         $user->load('memberProfile');
+
+        /** @var string $accessToken */
+        $accessToken = Auth::guard('api')->login($user);
 
         return response()->json($this->authenticationPayload($user, $accessToken));
     }
