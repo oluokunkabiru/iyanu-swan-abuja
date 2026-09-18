@@ -14,6 +14,7 @@ export default function Login() {
   const [submitting, setSubmitting] = useState(false)
 
   const from = (location.state as { from?: string } | null)?.from ?? '/members'
+  const passwordReset = (location.state as { passwordReset?: boolean } | null)?.passwordReset ?? false
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -58,9 +59,18 @@ export default function Login() {
               <Input id="password" name="password" type="password" autoComplete="current-password" />
             </div>
 
+            <Link to="/forgot-password" className="block text-right text-[0.85rem] font-semibold text-plum-700 underline-offset-4 hover:underline dark:text-primary">
+              Forgot your password?
+            </Link>
+
             {error && (
               <p role="alert" className="border-l-2 border-destructive bg-destructive/8 px-4 py-3 text-[0.88rem] text-destructive">
                 {error}
+              </p>
+            )}
+            {passwordReset && (
+              <p role="status" className="border-l-2 border-primary bg-primary/8 px-4 py-3 text-[0.88rem] text-foreground">
+                Your password has been reset. You can now sign in.
               </p>
             )}
 

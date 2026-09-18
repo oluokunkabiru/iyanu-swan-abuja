@@ -38,6 +38,26 @@ export async function login(payload: { email: string; password: string }): Promi
   return data
 }
 
+export async function requestPasswordReset(email: string): Promise<{ message: string }> {
+  const { data } = await api.post<{ message: string }>('/forgot-password', { email })
+  return data
+}
+
+export async function resetPassword(payload: {
+  token: string
+  email: string
+  password: string
+  passwordConfirmation: string
+}): Promise<{ message: string }> {
+  const { data } = await api.post<{ message: string }>('/reset-password', {
+    token: payload.token,
+    email: payload.email,
+    password: payload.password,
+    password_confirmation: payload.passwordConfirmation,
+  })
+  return data
+}
+
 export async function logout(): Promise<void> {
   await api.post('/logout')
 }

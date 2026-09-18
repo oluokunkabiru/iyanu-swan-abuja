@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Notifications\MembershipActivated;
 use App\Notifications\OfficialMailboxProvisioned;
+use App\Notifications\PasswordReset;
 use App\Notifications\VerifyEmail;
 use App\Services\Email\CpanelEmailProvisioner;
 use App\Services\Email\ProvisionedMailbox;
@@ -92,6 +93,11 @@ class User extends Authenticatable implements FilamentUser, JWTSubject, MustVeri
     public function sendEmailVerificationNotification(): void
     {
         $this->notify(new VerifyEmail);
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new PasswordReset($token));
     }
 
     /**

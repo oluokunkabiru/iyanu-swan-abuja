@@ -146,6 +146,38 @@ class PaymentFlowTest extends TestCase
         ]);
     }
 
+    public function test_retrying_an_unpaid_subscription_generates_a_new_gateway_reference(): void
+    {
+        SiteSetting::current()->update(['active_payment_gateway' => 'paystack']);
+        Http::fake([
+            'api.paystack.co/transaction/initialize' => Http::response([
+                'status' => true,
+                'data' => ['authorization_url' => 'https://checkout.paystack.com/abc123'],
+            ]),
+        ]);
+
+        $user = User::factory()->create(['role' => 'member']);
+        $level = MembershipLevel::factory()->create(['subscription_amount' => 5_000, 'welfare_amount' => 12_000]);
+        $subscription = $user->subscriptions()->create([
+            'membership_level_id' => $level->id,
+            'year' => now()->year,
+            'subscription_amount' => $level->subscription_amount,
+            'welfare_amount' => $level->welfare_amount,
+            'status' => 'outstanding',
+            'reference' => 'SUB-OLD-REFERENCE',
+            'payment_gateway' => 'paystack',
+        ]);
+
+        $this->actingAsApi($user)->postJson('/api/me/subscriptions/'.now()->year.'/pay', [
+            'membership_level_id' => $level->id,
+        ])->assertOk();
+
+        $newReference = $subscription->fresh()->reference;
+
+        $this->assertNotSame('SUB-OLD-REFERENCE', $newReference);
+        Http::assertSent(fn ($request): bool => $request['reference'] === $newReference);
+    }
+
     public function test_verifying_a_subscription_reference_marks_it_paid_on_gateway_success(): void
     {
         SiteSetting::current()->update(['active_payment_gateway' => 'paystack']);

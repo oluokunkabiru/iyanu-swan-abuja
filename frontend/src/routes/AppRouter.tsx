@@ -15,6 +15,7 @@ import EventDetail from '@/pages/EventDetail'
 import Events from '@/pages/Events'
 import Faqs from '@/pages/Faqs'
 import Firms from '@/pages/Firms'
+import ForgotPassword from '@/pages/ForgotPassword'
 import Gallery from '@/pages/Gallery'
 import Governance from '@/pages/Governance'
 import Home from '@/pages/Home'
@@ -31,6 +32,7 @@ import PaymentCallback from '@/pages/PaymentCallback'
 import Practice from '@/pages/Practice'
 import Publications from '@/pages/Publications'
 import Resources from '@/pages/Resources'
+import ResetPassword from '@/pages/ResetPassword'
 import Students from '@/pages/Students'
 import TicketVerify from '@/pages/TicketVerify'
 import Trainings from '@/pages/Trainings'
@@ -85,6 +87,8 @@ export function AppRouter() {
 
         {/* Account */}
         <Route path="login" element={<Login />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password" element={<ResetPassword />} />
         <Route path="change-password" element={<ChangePassword />} />
         <Route path="payments/callback" element={<PaymentCallback />} />
         <Route path="email/verify/:id/:hash" element={<EmailVerified />} />

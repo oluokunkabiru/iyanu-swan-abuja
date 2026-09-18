@@ -54,7 +54,7 @@ class PaymentProcessor
     public function initializeForSubscription(Subscription $subscription, string $callbackUrl): string
     {
         $gateway = PaymentGatewayFactory::active();
-        $reference = $subscription->reference ?: 'SUB-'.Str::upper(Str::random(10));
+        $reference = 'SUB-'.Str::upper(Str::random(10));
         $amount = $subscription->subscription_amount + $subscription->welfare_amount;
 
         $url = $gateway->initialize(
