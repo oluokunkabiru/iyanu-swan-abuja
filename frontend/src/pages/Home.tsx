@@ -69,7 +69,7 @@ export default function Home() {
   const { data: news, isLoading: loadingNews } = useApiData(getNews, [] as NewsPost[])
   const { data: partners, isLoading: loadingPartners } = useApiData(getPartners, [] as Partner[])
 
-  const chairperson = executives.find((executive) => executive.isPrincipal)
+  const chairperson = executives.find((executive) => executive.isChairperson)
   const registrationSteps = settings?.registrationSteps ?? []
   const featuredEvents = upcomingEvents.filter((e) => e.isFeatured)
   const homepageEvents = (featuredEvents.length > 0 ? featuredEvents : upcomingEvents).slice(0, 3)

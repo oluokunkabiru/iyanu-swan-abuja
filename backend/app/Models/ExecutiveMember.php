@@ -19,6 +19,8 @@ class ExecutiveMember extends Model implements HasMedia
         'bio',
         'is_active',
         'is_principal',
+        'is_ex_officio',
+        'is_chairperson',
         'term_start_year',
         'term_end_year',
     ];
@@ -28,6 +30,8 @@ class ExecutiveMember extends Model implements HasMedia
         return [
             'is_active' => 'boolean',
             'is_principal' => 'boolean',
+            'is_ex_officio' => 'boolean',
+            'is_chairperson' => 'boolean',
             'term_start_year' => 'integer',
             'term_end_year' => 'integer',
         ];
@@ -36,17 +40,17 @@ class ExecutiveMember extends Model implements HasMedia
     protected static function booted(): void
     {
         static::saving(function (self $executiveMember): void {
-            if (! $executiveMember->is_principal) {
+            if (! $executiveMember->is_chairperson) {
                 return;
             }
 
-            $otherExecutiveMembers = static::query()->where('is_principal', true);
+            $otherExecutiveMembers = static::query()->where('is_chairperson', true);
 
             if ($executiveMember->exists) {
                 $otherExecutiveMembers->whereKeyNot($executiveMember->getKey());
             }
 
-            $otherExecutiveMembers->update(['is_principal' => false]);
+            $otherExecutiveMembers->update(['is_chairperson' => false]);
         });
     }
 

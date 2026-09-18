@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ExecutiveMember;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 
 class ExecutiveMemberController extends Controller
@@ -14,6 +15,10 @@ class ExecutiveMemberController extends Controller
             ExecutiveMember::query()
                 ->with('media')
                 ->where('is_active', true)
+                ->where(function (Builder $query): void {
+                    $query->where('is_ex_officio', false)
+                        ->orWhere('is_chairperson', true);
+                })
                 ->orderBy('name')
                 ->get()
                 ->map(fn (ExecutiveMember $member): array => $this->present($member))
@@ -45,6 +50,8 @@ class ExecutiveMemberController extends Controller
             'bio' => $member->bio ?? '',
             'photoUrl' => $member->photo_url,
             'isPrincipal' => $member->is_principal,
+            'isChairperson' => $member->is_chairperson,
+            'isExOfficio' => $member->is_ex_officio,
             'termStartYear' => $member->term_start_year,
             'termEndYear' => $member->term_end_year,
         ];

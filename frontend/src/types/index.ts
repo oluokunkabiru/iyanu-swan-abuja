@@ -64,6 +64,8 @@ export interface ExecutiveMember {
   bio: string
   photoUrl: string | null
   isPrincipal: boolean
+  isChairperson: boolean
+  isExOfficio: boolean
   termStartYear?: number | null
   termEndYear?: number | null
 }

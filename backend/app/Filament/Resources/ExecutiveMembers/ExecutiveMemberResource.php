@@ -57,8 +57,15 @@ class ExecutiveMemberResource extends Resource
                     ->default(true)
                     ->live(),
                 Toggle::make('is_principal')
+                    ->label('Principal officer')
+                    ->default(false),
+                Toggle::make('is_chairperson')
                     ->label('Show as the Chairperson on the homepage')
                     ->helperText('Only one executive can be selected. Selecting this member removes the selection from any other executive.')
+                    ->default(false),
+                Toggle::make('is_ex_officio')
+                    ->label('Ex officio')
+                    ->helperText('Keeps this executive active in the system but hides them from the standard public council list. The selected Chairperson remains visible.')
                     ->default(false),
                 TextInput::make('term_start_year')
                     ->label('Term start year')
@@ -85,7 +92,9 @@ class ExecutiveMemberResource extends Resource
                 TextColumn::make('position')->searchable(),
                 TextColumn::make('credential'),
                 IconColumn::make('is_active')->boolean(),
-                IconColumn::make('is_principal')->label('Homepage Chairperson')->boolean(),
+                IconColumn::make('is_principal')->label('Principal')->boolean(),
+                IconColumn::make('is_chairperson')->label('Homepage Chairperson')->boolean(),
+                IconColumn::make('is_ex_officio')->label('Ex officio')->boolean(),
             ])
             ->filters([
                 //
