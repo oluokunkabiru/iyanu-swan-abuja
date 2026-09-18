@@ -112,6 +112,7 @@ export interface ChapterEvent {
   isFeatured: boolean
   status: 'upcoming' | 'past'
   coverUrl: string | null
+  galleryImageUrls: string[]
   ticketTiers: TicketTier[]
   speakers: { name: string; role: string; photoUrl: string | null }[]
 }

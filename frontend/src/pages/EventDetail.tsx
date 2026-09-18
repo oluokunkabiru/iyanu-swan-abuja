@@ -129,6 +129,22 @@ export default function EventDetail() {
               dangerouslySetInnerHTML={{ __html: event.body }}
             />
 
+            {event.galleryImageUrls.length > 0 && (
+              <div className="mt-10">
+                <SectionHeading title="Event gallery" className="mb-6" />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {event.galleryImageUrls.map((imageUrl, index) => (
+                    <LazyImage
+                      key={imageUrl}
+                      src={imageUrl}
+                      alt={`${event.title} gallery image ${index + 1}`}
+                      className="aspect-[4/3] w-full border border-border object-cover"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
             {event.speakers.length > 0 && (
               <div className="mt-10">
                 <SectionHeading title="Speakers and chairs" className="mb-6" />

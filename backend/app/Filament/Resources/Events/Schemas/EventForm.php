@@ -51,6 +51,15 @@ class EventForm
                     ->disk('public')
                     ->image()
                     ->columnSpanFull(),
+                SpatieMediaLibraryFileUpload::make('gallery')
+                    ->label('Event gallery images')
+                    ->helperText('Upload as many images as needed. You can drag them into the order they should appear on the event page.')
+                    ->collection('gallery')
+                    ->disk('public')
+                    ->image()
+                    ->multiple()
+                    ->reorderable()
+                    ->columnSpanFull(),
                 TextInput::make('location')
                     ->maxLength(255),
                 TextInput::make('video_url')

@@ -7,6 +7,7 @@ use App\Models\Event;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class EventController extends Controller
 {
@@ -53,6 +54,10 @@ class EventController extends Controller
             'isFeatured' => $event->is_featured,
             'status' => $event->starts_at->isPast() ? 'past' : 'upcoming',
             'coverUrl' => $event->cover_url,
+            'galleryImageUrls' => $event->getMedia('gallery')
+                ->map(fn (Media $media): string => $media->getUrl())
+                ->values()
+                ->all(),
             'ticketTiers' => $event->ticketTypes->map(fn ($ticket): array => [
                 'id' => (string) $ticket->id,
                 'audience' => $ticket->audience ?? 'member',
