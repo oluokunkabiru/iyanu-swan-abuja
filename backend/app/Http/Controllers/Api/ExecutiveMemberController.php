@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ExecutiveMember;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 
 class ExecutiveMemberController extends Controller
@@ -15,14 +14,22 @@ class ExecutiveMemberController extends Controller
             ExecutiveMember::query()
                 ->with('media')
                 ->where('is_active', true)
-                ->where(function (Builder $query): void {
-                    $query->where('is_ex_officio', false)
-                        ->orWhere('is_chairperson', true);
-                })
+                ->where('is_ex_officio', false)
                 ->orderBy('name')
                 ->get()
                 ->map(fn (ExecutiveMember $member): array => $this->present($member))
         );
+    }
+
+    public function chairperson(): JsonResponse
+    {
+        $chairperson = ExecutiveMember::query()
+            ->with('media')
+            ->where('is_active', true)
+            ->where('is_chairperson', true)
+            ->first();
+
+        return response()->json($chairperson instanceof ExecutiveMember ? $this->present($chairperson) : null);
     }
 
     public function pastChairpersons(): JsonResponse

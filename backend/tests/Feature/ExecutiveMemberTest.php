@@ -31,7 +31,7 @@ class ExecutiveMemberTest extends TestCase
         $this->assertTrue($selectedChairperson->fresh()->is_chairperson);
     }
 
-    public function test_public_executive_list_excludes_ex_officio_members_except_the_selected_chairperson(): void
+    public function test_ex_officio_members_are_excluded_from_the_public_executive_list_and_the_chairperson_is_returned_separately(): void
     {
         $principalOfficer = ExecutiveMember::create([
             'name' => 'Principal Officer',
@@ -56,8 +56,12 @@ class ExecutiveMemberTest extends TestCase
         $this->getJson('/api/executives')
             ->assertOk()
             ->assertJsonFragment(['id' => (string) $principalOfficer->id])
-            ->assertJsonFragment(['id' => (string) $chairperson->id])
+            ->assertJsonMissing(['id' => (string) $chairperson->id])
             ->assertJsonMissing(['id' => (string) $exOfficioMember->id]);
+
+        $this->getJson('/api/chairperson')
+            ->assertOk()
+            ->assertJsonPath('id', (string) $chairperson->id);
 
         $this->assertTrue($exOfficioMember->fresh()->is_active);
         $this->assertTrue($principalOfficer->fresh()->is_principal);

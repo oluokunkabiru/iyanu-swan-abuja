@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, GraduationCap, Users, Wallet } from 'lucide-react'
 import {
   getCoreValues,
+  getChairperson,
   getEvents,
   getExecutives,
   getNews,
@@ -53,6 +54,10 @@ const desks = [
 export default function Home() {
   const [slides, setSlides] = useState(homeSlides)
   const { settings, isLoading: loadingSettings } = useSettings()
+  const { data: chairperson, isLoading: loadingChairperson } = useApiData(
+    getChairperson,
+    null as ExecutiveMember | null,
+  )
   const { data: executives, isLoading: loadingExecutives } = useApiData(
     getExecutives,
     [] as ExecutiveMember[],
@@ -69,7 +74,6 @@ export default function Home() {
   const { data: news, isLoading: loadingNews } = useApiData(getNews, [] as NewsPost[])
   const { data: partners, isLoading: loadingPartners } = useApiData(getPartners, [] as Partner[])
 
-  const chairperson = executives.find((executive) => executive.isChairperson)
   const registrationSteps = settings?.registrationSteps ?? []
   const featuredEvents = upcomingEvents.filter((e) => e.isFeatured)
   const homepageEvents = (featuredEvents.length > 0 ? featuredEvents : upcomingEvents).slice(0, 3)
@@ -94,7 +98,7 @@ export default function Home() {
 
       {/* The slider intentionally leads into the chapter chairperson's welcome. */}
       <Section>
-        {loadingExecutives || loadingSettings ? (
+        {loadingChairperson || loadingSettings ? (
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(17rem,0.72fr)_minmax(0,1.28fr)] lg:gap-16">
             <Skeleton className="aspect-[4/5] w-full max-w-sm" />
             <div className="space-y-4">
