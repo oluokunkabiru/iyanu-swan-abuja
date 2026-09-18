@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\MembershipLevel;
 use App\Models\User;
+use App\Notifications\PasswordResetConfirmed;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -151,6 +152,8 @@ class AuthController extends Controller
                     'remember_token' => Str::random(60),
                     'must_change_password' => false,
                 ])->save();
+
+                $user->notify(new PasswordResetConfirmed);
             },
         );
 

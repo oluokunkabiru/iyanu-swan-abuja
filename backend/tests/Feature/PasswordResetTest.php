@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Notifications\PasswordReset;
+use App\Notifications\PasswordResetConfirmed;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
@@ -45,6 +46,7 @@ class PasswordResetTest extends TestCase
 
     public function test_a_valid_password_reset_token_changes_the_password(): void
     {
+        Notification::fake();
         $user = User::factory()->create([
             'password' => 'old-password',
             'must_change_password' => true,
@@ -63,6 +65,13 @@ class PasswordResetTest extends TestCase
         $this->assertTrue(Hash::check('new-secure-password', $user->password));
         $this->assertFalse($user->must_change_password);
         $this->assertFalse(Password::broker()->tokenExists($user, $token));
+        Notification::assertSentTo($user, PasswordResetConfirmed::class, function (PasswordResetConfirmed $notification) use ($user): bool {
+            $mail = $notification->toMail($user);
+
+            return $mail->actionText === 'Secure my account'
+                && $mail->actionUrl === rtrim(config('app.frontend_url'), '/').'/forgot-password'
+                && in_array('If you did not make this change, use the button below immediately to reset your password again and secure your account. Then contact the chapter office.', $mail->introLines, true);
+        });
     }
 
     public function test_an_invalid_password_reset_token_is_rejected(): void
