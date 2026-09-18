@@ -56,13 +56,13 @@ class PasswordResetTest extends TestCase
         $this->postJson('/api/reset-password', [
             'token' => $token,
             'email' => $user->email,
-            'password' => 'new-secure-password',
-            'password_confirmation' => 'new-secure-password',
+            'password' => 'NewSecurePassword1!',
+            'password_confirmation' => 'NewSecurePassword1!',
         ])->assertOk()->assertJsonPath('message', 'Your password has been reset. You can now sign in.');
 
         $user->refresh();
 
-        $this->assertTrue(Hash::check('new-secure-password', $user->password));
+        $this->assertTrue(Hash::check('NewSecurePassword1!', $user->password));
         $this->assertFalse($user->must_change_password);
         $this->assertFalse(Password::broker()->tokenExists($user, $token));
         Notification::assertSentTo($user, PasswordResetConfirmed::class, function (PasswordResetConfirmed $notification) use ($user): bool {
@@ -81,8 +81,8 @@ class PasswordResetTest extends TestCase
         $this->postJson('/api/reset-password', [
             'token' => 'invalid-token',
             'email' => $user->email,
-            'password' => 'new-secure-password',
-            'password_confirmation' => 'new-secure-password',
+            'password' => 'NewSecurePassword1!',
+            'password_confirmation' => 'NewSecurePassword1!',
         ])->assertStatus(422);
 
         $this->assertTrue(Hash::check('old-password', $user->fresh()->password));

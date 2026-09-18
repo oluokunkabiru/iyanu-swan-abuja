@@ -38,6 +38,10 @@ class SiteSetting extends Model implements HasMedia
         'aims_objectives',
         'active_payment_gateway',
         'constitution_label',
+        'password_min_length',
+        'password_require_mixed_case',
+        'password_require_numbers',
+        'password_require_symbols',
     ];
 
     protected function casts(): array
@@ -50,6 +54,10 @@ class SiteSetting extends Model implements HasMedia
             'registration_steps' => 'array',
             'member_benefits' => 'array',
             'aims_objectives' => 'array',
+            'password_min_length' => 'integer',
+            'password_require_mixed_case' => 'boolean',
+            'password_require_numbers' => 'boolean',
+            'password_require_symbols' => 'boolean',
         ];
     }
 

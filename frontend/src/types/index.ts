@@ -27,6 +27,14 @@ export interface SiteSettings {
   registrationSteps?: RegistrationStep[]
   memberBenefits?: MemberBenefit[]
   aimsAndObjectives?: string[]
+  passwordPolicy: PasswordPolicy
+}
+
+export interface PasswordPolicy {
+  minLength: number
+  requireMixedCase: boolean
+  requireNumbers: boolean
+  requireSymbols: boolean
 }
 
 export interface HomeSlide {

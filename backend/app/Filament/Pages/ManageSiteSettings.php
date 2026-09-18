@@ -10,6 +10,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
@@ -152,6 +153,27 @@ class ManageSiteSettings extends Page
                             ->required()
                             ->default(PaymentGatewayFactory::options()[0] ?? 'paystack'),
                     ]),
+                Section::make('Password security')
+                    ->description('These requirements apply to new member passwords, password resets, password changes, and passwords entered while creating a user in this admin panel.')
+                    ->schema([
+                        TextInput::make('password_min_length')
+                            ->label('Minimum password length')
+                            ->numeric()
+                            ->minValue(8)
+                            ->maxValue(128)
+                            ->default(12)
+                            ->required(),
+                        Toggle::make('password_require_mixed_case')
+                            ->label('Require uppercase and lowercase letters')
+                            ->default(true),
+                        Toggle::make('password_require_numbers')
+                            ->label('Require a number')
+                            ->default(true),
+                        Toggle::make('password_require_symbols')
+                            ->label('Require a symbol, such as ! or @')
+                            ->default(true),
+                    ])
+                    ->columns(2),
             ])
             ->statePath('data')
             ->model(SiteSetting::current());

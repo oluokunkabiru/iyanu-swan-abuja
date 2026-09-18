@@ -28,7 +28,7 @@ class LegacyMemberImportTest extends TestCase
             ->fillForm([
                 'name' => 'New Member',
                 'email' => 'new.member@example.com',
-                'password' => 'admin-set-password',
+                'password' => 'AdminSetPassword1!',
                 'role' => 'member',
             ])
             ->call('create')
@@ -37,7 +37,7 @@ class LegacyMemberImportTest extends TestCase
         $member = User::query()->where('email', 'new.member@example.com')->firstOrFail();
 
         $this->assertTrue($member->must_change_password);
-        $this->assertTrue(Hash::check('admin-set-password', $member->password));
+        $this->assertTrue(Hash::check('AdminSetPassword1!', $member->password));
     }
 
     public function test_admin_can_import_an_existing_member_with_paid_current_year_dues(): void
@@ -100,13 +100,13 @@ class LegacyMemberImportTest extends TestCase
         $this->actingAsApi($member)
             ->putJson('/api/me/password', [
                 'current_password' => 'temporary-password',
-                'password' => 'new-secure-password',
-                'password_confirmation' => 'new-secure-password',
+                'password' => 'NewSecurePassword1!',
+                'password_confirmation' => 'NewSecurePassword1!',
             ])
             ->assertOk()
             ->assertJsonPath('user.mustChangePassword', false);
 
         $this->assertFalse($member->fresh()->must_change_password);
-        $this->assertTrue(Hash::check('new-secure-password', $member->fresh()->password));
+        $this->assertTrue(Hash::check('NewSecurePassword1!', $member->fresh()->password));
     }
 }

@@ -23,7 +23,8 @@ class MembershipEmailVerificationTest extends TestCase
         $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
             'name' => 'Jane Member',
             'email' => 'jane.member@example.com',
-            'password' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'membership_number' => 'ICAN/12345',
             'credential' => $level->name,
             'phone' => '08000000000',
@@ -68,7 +69,8 @@ class MembershipEmailVerificationTest extends TestCase
         $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
             'name' => 'Jane Member',
             'email' => 'jane.member@example.com',
-            'password' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'membership_number' => 'ICAN/12345',
             'credential' => $level->name,
             'phone' => '08000000000',

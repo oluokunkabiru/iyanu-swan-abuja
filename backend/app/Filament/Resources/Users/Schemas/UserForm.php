@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users\Schemas;
 
 use App\Models\MembershipLevel;
+use App\Services\PasswordPolicy;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
@@ -31,6 +32,9 @@ class UserForm
                     ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $operation, $get): bool => $operation === 'create' && ! $get('is_legacy_member'))
+                    ->rules(fn (string $operation, $get): array => app(PasswordPolicy::class)->rules(
+                        required: $operation === 'create' && ! $get('is_legacy_member'),
+                    ))
                     ->hidden(fn ($get): bool => (bool) $get('is_legacy_member'))
                     ->helperText('Members created here must change this password on their first sign-in. Legacy-member imports receive a generated temporary password by email.')
                     ->maxLength(255),

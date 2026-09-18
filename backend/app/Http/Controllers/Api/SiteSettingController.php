@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\SiteSetting;
+use App\Services\PasswordPolicy;
 use Illuminate\Http\JsonResponse;
 
 class SiteSettingController extends Controller
@@ -36,6 +37,7 @@ class SiteSettingController extends Controller
             'registrationSteps' => $settings->registration_steps ?? [],
             'memberBenefits' => $settings->member_benefits ?? [],
             'aimsAndObjectives' => $settings->aims_objectives ?? [],
+            'passwordPolicy' => app(PasswordPolicy::class)->details(),
         ]);
     }
 }

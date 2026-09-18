@@ -5,12 +5,16 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context/AuthContext'
+import { useSettings } from '@/context/SettingsContext'
+import { defaultPasswordPolicy, passwordMeetsPolicy, passwordRequirementText } from '@/lib/password'
 
 export default function ChangePassword() {
   const { user, isLoading, updatePassword } = useAuth()
+  const { settings } = useSettings()
   const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const passwordPolicy = settings?.passwordPolicy ?? defaultPasswordPolicy
 
   if (!isLoading && !user) {
     return <Navigate to="/login" replace />
@@ -37,6 +41,11 @@ export default function ChangePassword() {
       return
     }
 
+    if (!passwordMeetsPolicy(password, passwordPolicy)) {
+      setError(passwordRequirementText(passwordPolicy))
+      return
+    }
+
     setError(null)
     setSubmitting(true)
 
@@ -55,7 +64,7 @@ export default function ChangePassword() {
       <div className="mx-auto max-w-lg border border-border bg-card p-6 md:p-8">
         <h1 className="text-3xl">Choose a new password</h1>
         <p className="mt-3 text-[0.95rem] leading-relaxed text-muted-foreground">
-          For your security, replace the temporary password emailed to you before accessing your member account.
+          For your security, replace the temporary password emailed to you before accessing your member account. {passwordRequirementText(passwordPolicy)}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
@@ -65,11 +74,11 @@ export default function ChangePassword() {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">New password</Label>
-            <Input id="password" name="password" type="password" minLength={8} autoComplete="new-password" />
+            <Input id="password" name="password" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="passwordConfirmation">Confirm new password</Label>
-            <Input id="passwordConfirmation" name="passwordConfirmation" type="password" minLength={8} autoComplete="new-password" />
+            <Input id="passwordConfirmation" name="passwordConfirmation" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" />
           </div>
 
           {error && <p role="alert" className="border-l-2 border-destructive bg-destructive/8 px-4 py-3 text-[0.88rem] text-destructive">{error}</p>}

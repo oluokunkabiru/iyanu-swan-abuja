@@ -27,7 +27,8 @@ class PaymentFlowTest extends TestCase
         $response = $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
             'name' => 'Jane Member',
             'email' => 'jane.member@example.com',
-            'password' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'membership_number' => 'ICAN/12345',
             'credential' => $level->name,
             'phone' => '08000000000',
@@ -55,7 +56,8 @@ class PaymentFlowTest extends TestCase
         $response = $this->postJson('/api/register', [
             'name' => 'Jane Member',
             'email' => 'jane.member@example.com',
-            'password' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
         ]);
 
         $response->assertStatus(422)->assertJsonValidationErrors([
@@ -70,7 +72,8 @@ class PaymentFlowTest extends TestCase
         $response = $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
             'name' => 'Jane Member',
             'email' => 'jane.member@example.com',
-            'password' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'membership_number' => 'ICAN/12345',
             'credential' => $level->name,
             'phone' => '08000000000',
@@ -90,7 +93,8 @@ class PaymentFlowTest extends TestCase
         $response = $this->postJson('/api/register', [
             'name' => 'Jane Member',
             'email' => 'jane.member@example.com',
-            'password' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'membership_number' => 'ICAN/12345',
             'credential' => 'Retired Level',
             'phone' => '08000000000',
@@ -381,6 +385,12 @@ class PaymentFlowTest extends TestCase
     public function test_activating_membership_without_cpanel_configured_still_notifies_normally(): void
     {
         Notification::fake();
+        config([
+            'services.cpanel.host' => null,
+            'services.cpanel.username' => null,
+            'services.cpanel.api_token' => null,
+            'services.cpanel.email_domain' => null,
+        ]);
 
         $user = User::factory()->create(['name' => 'Jane Doe', 'role' => 'member']);
         $user->memberProfile()->create(['membership_status' => 'pending']);

@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useSettings } from '@/context/SettingsContext'
 import { useApiData } from '@/hooks/useApiData'
 import { formatNaira } from '@/lib/format'
+import { defaultPasswordPolicy, passwordMeetsPolicy, passwordRequirementText } from '@/lib/password'
 import type { MembershipLevel } from '@/types'
 
 export default function MembershipRegister() {
@@ -24,6 +25,7 @@ export default function MembershipRegister() {
 
   const { data: levels } = useApiData(getMembershipLevels, [] as MembershipLevel[])
   const registrationSteps = settings?.registrationSteps ?? []
+  const passwordPolicy = settings?.passwordPolicy ?? defaultPasswordPolicy
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -32,6 +34,7 @@ export default function MembershipRegister() {
     const name = String(form.get('name') ?? '').trim()
     const email = String(form.get('email') ?? '').trim()
     const password = String(form.get('password') ?? '')
+    const passwordConfirmation = String(form.get('passwordConfirmation') ?? '')
     const membershipNumber = String(form.get('membershipNumber') ?? '').trim()
     const phone = String(form.get('phone') ?? '').trim()
     const residentialAddress = String(form.get('residentialAddress') ?? '').trim()
@@ -41,14 +44,20 @@ export default function MembershipRegister() {
     if (
       !name ||
       !email ||
-      password.length < 8 ||
+      !passwordMeetsPolicy(password, passwordPolicy) ||
+      !passwordConfirmation ||
       !membershipNumber ||
       !credential ||
       !phone ||
       !residentialAddress ||
       !placeOfWork
     ) {
-      setError('Fill in every field — a password of at least 8 characters and your ICAN level are both required.')
+      setError(`Fill in every field — ${passwordRequirementText(passwordPolicy)} Your ICAN level is also required.`)
+      return
+    }
+
+    if (password !== passwordConfirmation) {
+      setError('Your password and confirmation do not match.')
       return
     }
 
@@ -58,6 +67,7 @@ export default function MembershipRegister() {
         name,
         email,
         password,
+        passwordConfirmation,
         membershipNumber,
         credential,
         phone,
@@ -123,7 +133,12 @@ export default function MembershipRegister() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Choose a password</Label>
-                  <Input id="password" name="password" type="password" autoComplete="new-password" placeholder="At least 8 characters" />
+                  <Input id="password" name="password" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" placeholder={`At least ${passwordPolicy.minLength} characters`} />
+                  <p className="text-[0.78rem] text-muted-foreground">{passwordRequirementText(passwordPolicy)}</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="passwordConfirmation">Confirm your password</Label>
+                  <Input id="passwordConfirmation" name="passwordConfirmation" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" placeholder="Type your password again" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="placeOfWork">Place of work</Label>

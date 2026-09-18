@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MembershipLevel;
 use App\Models\User;
 use App\Notifications\PasswordResetConfirmed;
+use App\Services\PasswordPolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class AuthController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => app(PasswordPolicy::class)->rules(confirmed: true),
             'membership_number' => ['required', 'string', 'max:255', 'unique:member_profiles,membership_number'],
             // "Credential" here is the member's ICAN level — one of the
             // chapter's admin-configured Membership Levels (e.g. ACA,
@@ -141,7 +142,7 @@ class AuthController extends Controller
         $data = $request->validate([
             'token' => ['required', 'string'],
             'email' => ['required', 'email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => app(PasswordPolicy::class)->rules(confirmed: true),
         ]);
 
         $status = Password::reset(
@@ -175,7 +176,7 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'current_password' => ['required', 'string'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => app(PasswordPolicy::class)->rules(confirmed: true),
         ]);
 
         /** @var User $user */

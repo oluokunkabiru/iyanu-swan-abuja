@@ -5,14 +5,18 @@ import { Section } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useSettings } from '@/context/SettingsContext'
+import { defaultPasswordPolicy, passwordMeetsPolicy, passwordRequirementText } from '@/lib/password'
 
 export default function ResetPassword() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const { settings } = useSettings()
   const token = searchParams.get('token') ?? ''
   const email = searchParams.get('email') ?? ''
+  const passwordPolicy = settings?.passwordPolicy ?? defaultPasswordPolicy
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -25,8 +29,8 @@ export default function ResetPassword() {
       return
     }
 
-    if (password.length < 8) {
-      setError('Your new password must be at least 8 characters.')
+    if (!passwordMeetsPolicy(password, passwordPolicy)) {
+      setError(passwordRequirementText(passwordPolicy))
       return
     }
 
@@ -53,7 +57,7 @@ export default function ResetPassword() {
       <div className="mx-auto max-w-lg border border-border bg-card p-6 md:p-8">
         <h1 className="text-3xl">Choose a new password</h1>
         <p className="mt-3 text-[0.95rem] leading-relaxed text-muted-foreground">
-          Choose a password you will remember. It must have at least 8 characters.
+          Choose a password you will remember. {passwordRequirementText(passwordPolicy)}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
@@ -63,11 +67,11 @@ export default function ResetPassword() {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">New password</Label>
-            <Input id="password" name="password" type="password" minLength={8} autoComplete="new-password" />
+            <Input id="password" name="password" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="passwordConfirmation">Confirm new password</Label>
-            <Input id="passwordConfirmation" name="passwordConfirmation" type="password" minLength={8} autoComplete="new-password" />
+            <Input id="passwordConfirmation" name="passwordConfirmation" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" />
           </div>
 
           {error && <p role="alert" className="border-l-2 border-destructive bg-destructive/8 px-4 py-3 text-[0.88rem] text-destructive">{error}</p>}

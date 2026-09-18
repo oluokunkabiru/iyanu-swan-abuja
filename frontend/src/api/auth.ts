@@ -12,6 +12,7 @@ export async function register(payload: {
   name: string
   email: string
   password: string
+  passwordConfirmation: string
   membershipNumber: string
   credential: string
   phone: string
@@ -23,6 +24,7 @@ export async function register(payload: {
     name: payload.name,
     email: payload.email,
     password: payload.password,
+    password_confirmation: payload.passwordConfirmation,
     membership_number: payload.membershipNumber,
     credential: payload.credential,
     phone: payload.phone,
