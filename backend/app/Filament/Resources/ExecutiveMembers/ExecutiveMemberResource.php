@@ -57,7 +57,8 @@ class ExecutiveMemberResource extends Resource
                     ->default(true)
                     ->live(),
                 Toggle::make('is_principal')
-                    ->label('Principal officer')
+                    ->label('Show as the Chairperson on the homepage')
+                    ->helperText('Only one executive can be selected. Selecting this member removes the selection from any other executive.')
                     ->default(false),
                 TextInput::make('term_start_year')
                     ->label('Term start year')
@@ -84,7 +85,7 @@ class ExecutiveMemberResource extends Resource
                 TextColumn::make('position')->searchable(),
                 TextColumn::make('credential'),
                 IconColumn::make('is_active')->boolean(),
-                IconColumn::make('is_principal')->label('Principal')->boolean(),
+                IconColumn::make('is_principal')->label('Homepage Chairperson')->boolean(),
             ])
             ->filters([
                 //

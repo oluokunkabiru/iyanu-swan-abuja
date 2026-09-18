@@ -33,6 +33,23 @@ class ExecutiveMember extends Model implements HasMedia
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (self $executiveMember): void {
+            if (! $executiveMember->is_principal) {
+                return;
+            }
+
+            $otherExecutiveMembers = static::query()->where('is_principal', true);
+
+            if ($executiveMember->exists) {
+                $otherExecutiveMembers->whereKeyNot($executiveMember->getKey());
+            }
+
+            $otherExecutiveMembers->update(['is_principal' => false]);
+        });
+    }
+
     public function getPhotoUrlAttribute(): ?string
     {
         return $this->getFirstMediaUrl('photo') ?: null;
