@@ -67,6 +67,11 @@ class ExecutiveMemberResource extends Resource
                     ->label('Ex officio')
                     ->helperText('Keeps this executive active in the system but hides them from the standard public council list. The selected Chairperson remains visible.')
                     ->default(false),
+                TextInput::make('sort_order')
+                    ->label('Display order')
+                    ->numeric()
+                    ->default(0)
+                    ->helperText('Lower numbers appear first on the public council list.'),
                 TextInput::make('term_start_year')
                     ->label('Term start year')
                     ->numeric()
@@ -85,12 +90,14 @@ class ExecutiveMemberResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('name')
+            ->defaultSort('sort_order')
+            ->reorderable('sort_order')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('photo')->collection('photo')->circular(),
                 TextColumn::make('name')->searchable(),
                 TextColumn::make('position')->searchable(),
                 TextColumn::make('credential'),
+                TextColumn::make('sort_order')->label('Order')->sortable(),
                 IconColumn::make('is_active')->boolean(),
                 IconColumn::make('is_principal')->label('Principal')->boolean(),
                 IconColumn::make('is_chairperson')->label('Homepage Chairperson')->boolean(),

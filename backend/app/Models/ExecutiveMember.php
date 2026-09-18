@@ -21,6 +21,7 @@ class ExecutiveMember extends Model implements HasMedia
         'is_principal',
         'is_ex_officio',
         'is_chairperson',
+        'sort_order',
         'term_start_year',
         'term_end_year',
     ];
@@ -32,6 +33,7 @@ class ExecutiveMember extends Model implements HasMedia
             'is_principal' => 'boolean',
             'is_ex_officio' => 'boolean',
             'is_chairperson' => 'boolean',
+            'sort_order' => 'integer',
             'term_start_year' => 'integer',
             'term_end_year' => 'integer',
         ];

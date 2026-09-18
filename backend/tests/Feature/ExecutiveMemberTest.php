@@ -66,4 +66,28 @@ class ExecutiveMemberTest extends TestCase
         $this->assertTrue($exOfficioMember->fresh()->is_active);
         $this->assertTrue($principalOfficer->fresh()->is_principal);
     }
+
+    public function test_public_executive_list_uses_the_admin_display_order(): void
+    {
+        $firstExecutive = ExecutiveMember::create([
+            'name' => 'First Executive',
+            'position' => 'Treasurer',
+            'is_active' => true,
+            'sort_order' => 10,
+        ]);
+        $secondExecutive = ExecutiveMember::create([
+            'name' => 'Second Executive',
+            'position' => 'Secretary',
+            'is_active' => true,
+            'sort_order' => 20,
+        ]);
+
+        $response = $this->getJson('/api/executives')->assertOk();
+        $executiveIds = collect($response->json())->pluck('id')->all();
+
+        $this->assertLessThan(
+            array_search((string) $secondExecutive->id, $executiveIds, true),
+            array_search((string) $firstExecutive->id, $executiveIds, true),
+        );
+    }
 }
