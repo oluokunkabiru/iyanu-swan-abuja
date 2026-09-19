@@ -117,6 +117,7 @@ export default function Governance() {
 
       {(loadingPastChairpersons || pastChairpersons.length > 0) && (
         <Section tone="tinted">
+          <div id="past-chairpersons" className="scroll-mt-24">
           <SectionHeading
             title="Past chairpersons"
             lede="Women who have led the chapter before."
@@ -147,6 +148,7 @@ export default function Governance() {
                   </li>
                 ))}
           </ul>
+          </div>
         </Section>
       )}
     </>

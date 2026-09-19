@@ -150,6 +150,7 @@ export const navigation: NavSection[] = [
         items: [
           { label: 'Members directory', to: '/directory', description: 'Search by sector and specialisation' },
           { label: 'Registered firms', to: '/directory/firms' },
+          { label: 'Past chairpersons', to: '/governance#past-chairpersons' },
           { label: 'Job centre', to: '/jobs' },
         ],
       },

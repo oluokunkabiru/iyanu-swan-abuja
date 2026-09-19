@@ -1,9 +1,18 @@
 import { Link } from 'react-router-dom'
 import { Mail, MapPin, Phone } from 'lucide-react'
 import { BrandLogo } from '@/components/common/BrandLogo'
+import { FacebookIcon, InstagramIcon, LinkedInIcon, XIcon, YouTubeIcon } from '@/components/icons/SocialIcons'
 import { Skeleton } from '@/components/ui/skeleton'
 import { footerLinks } from '@/data'
 import { useSettings } from '@/context/SettingsContext'
+
+const socialIcons = {
+  facebook: FacebookIcon,
+  twitter: XIcon,
+  instagram: InstagramIcon,
+  linkedin: LinkedInIcon,
+  youtube: YouTubeIcon,
+}
 
 export function Footer() {
   const { settings, isLoading: loadingSettings } = useSettings()
@@ -62,17 +71,10 @@ export function Footer() {
               </li>
             </ul>
 
-            <ul className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-[0.82rem]">
+            <ul className="mt-6 flex flex-wrap gap-2">
               {(settings?.socials ?? []).map((s) => (
                 <li key={s.label}>
-                  <a
-                    href={s.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="border-b border-plum-800 pb-0.5 hover:border-gold-500 hover:text-white"
-                  >
-                    {s.label}
-                  </a>
+                  <SocialLinkIcon network={s.network} label={s.label} url={s.url} />
                 </li>
               ))}
             </ul>
@@ -107,18 +109,36 @@ export function Footer() {
             )}{' '}
             — {year}. All rights reserved.
           </p>
-          <p>
-            The Society{' '}
-            <Link to="/about#ican" className="text-gold-300 underline-offset-4 hover:underline">
-              {loadingSettings ? (
-                <Skeleton className="inline-block h-3 w-56 align-middle bg-plum-800" />
-              ) : (
-                settings?.parentBody
-              )}
-            </Link>
-          </p>
+          <a href="#site-header" className="text-gold-300 underline-offset-4 hover:underline">
+            The Society of Women Accountants of Nigeria
+          </a>
         </div>
       </div>
     </footer>
+  )
+}
+
+function SocialLinkIcon({
+  network,
+  label,
+  url,
+}: {
+  network: keyof typeof socialIcons
+  label: string
+  url: string
+}) {
+  const Icon = socialIcons[network]
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={label}
+      title={label}
+      className="flex h-9 w-9 items-center justify-center rounded-sm border border-plum-800 text-plum-200 transition-colors hover:border-gold-500 hover:text-gold-300"
+    >
+      <Icon aria-hidden="true" className="h-4 w-4" />
+    </a>
   )
 }
