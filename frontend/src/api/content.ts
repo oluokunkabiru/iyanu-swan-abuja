@@ -101,7 +101,8 @@ export const getDirectoryMembers = () =>
 
 export const getFirms = () => api.get<Firm[]>('/directory/firms').then((r) => r.data)
 
-export const getJobs = () => api.get<JobListing[]>('/jobs').then((r) => r.data)
+export const getJobs = (status: 'open' | 'closed' = 'open') =>
+  api.get<JobListing[]>('/jobs', { params: { status } }).then((r) => r.data)
 
 export const getResources = () => api.get<ResourceItem[]>('/resources').then((r) => r.data)
 

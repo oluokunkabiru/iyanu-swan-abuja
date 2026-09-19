@@ -51,6 +51,34 @@ const desks = [
   },
 ]
 
+function PartnerLogo({ partner, duplicate = false }: { partner: Partner; duplicate?: boolean }) {
+  const content = partner.logoUrl ? (
+    <img
+      src={partner.logoUrl}
+      alt={duplicate ? '' : partner.name}
+      className="h-12 max-w-36 object-contain grayscale transition-all duration-300 hover:grayscale-0"
+    />
+  ) : (
+    <span className="font-heading text-base font-semibold text-muted-foreground transition-colors hover:text-foreground">
+      {partner.name}
+    </span>
+  )
+
+  return partner.url ? (
+    <a
+      href={partner.url}
+      target="_blank"
+      rel="noreferrer"
+      tabIndex={duplicate ? -1 : undefined}
+      className="flex h-16 min-w-40 items-center justify-center px-3"
+    >
+      {content}
+    </a>
+  ) : (
+    <span className="flex h-16 min-w-40 items-center justify-center px-3">{content}</span>
+  )
+}
+
 export default function Home() {
   const [slides, setSlides] = useState(homeSlides)
   const { settings, isLoading: loadingSettings } = useSettings()
@@ -417,28 +445,15 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
-            {partners.map((p) => {
-              const content = p.logoUrl ? (
-                <img
-                  src={p.logoUrl}
-                  alt={p.name}
-                  className="h-10 object-contain grayscale transition-all duration-300 hover:grayscale-0"
-                />
-              ) : (
-                <span className="font-heading text-lg font-semibold text-muted-foreground transition-colors hover:text-foreground">
-                  {p.name}
-                </span>
-              )
-
-              return p.url ? (
-                <a key={p.id} href={p.url} target="_blank" rel="noreferrer">
-                  {content}
-                </a>
-              ) : (
-                <span key={p.id}>{content}</span>
-              )
-            })}
+          <div className="overflow-hidden" aria-label="Affiliate and professional body links">
+            <div className="partner-logo-slider flex w-max items-center hover:[animation-play-state:paused]">
+              <div className="flex shrink-0 items-center gap-10 pr-10">
+                {partners.map((partner) => <PartnerLogo key={partner.id} partner={partner} />)}
+              </div>
+              <div className="flex shrink-0 items-center gap-10 pr-10" aria-hidden="true">
+                {partners.map((partner) => <PartnerLogo key={partner.id} partner={partner} duplicate />)}
+              </div>
+            </div>
           </div>
         )}
       </Section>

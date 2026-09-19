@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ArrowUpRight } from 'lucide-react'
 import { getJobs } from '@/api/content'
 import { PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
@@ -14,9 +15,17 @@ const levels: (JobListing['level'] | 'All')[] = ['All', 'Entry', 'Mid', 'Senior'
 export default function Jobs() {
   const [level, setLevel] = useState<(typeof levels)[number]>('All')
   const { data: jobs, isLoading } = useApiData(getJobs, [] as JobListing[])
+  const { data: closedJobs, isLoading: loadingClosedJobs } = useApiData(
+    () => getJobs('closed'),
+    [] as JobListing[],
+  )
   const visible = useMemo(
     () => (level === 'All' ? jobs : jobs.filter((j) => j.level === level)),
     [jobs, level],
+  )
+  const closedVisible = useMemo(
+    () => (level === 'All' ? closedJobs : closedJobs.filter((j) => j.level === level)),
+    [closedJobs, level],
   )
 
   return (
@@ -66,7 +75,13 @@ export default function Jobs() {
             <li key={job.id} className="py-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h2 className="text-[1.1rem] leading-snug">{job.title}</h2>
+                  <h2 className="text-[1.1rem] leading-snug">
+                    {job.applicationUrl ? (
+                      <a href={job.applicationUrl} target="_blank" rel="noreferrer" className="hover:text-plum-700 dark:hover:text-primary">
+                        {job.title}
+                      </a>
+                    ) : job.title}
+                  </h2>
                   <p className="mt-1 text-[0.88rem] text-accent-foreground">
                     {job.organisation} · {job.location}
                   </p>
@@ -83,11 +98,49 @@ export default function Jobs() {
               <p className="tnum mt-3 text-[0.8rem] text-muted-foreground">
                 Posted {formatShortDate(job.postedAt)} · closes {formatShortDate(job.closesAt)}
               </p>
+              {job.applicationUrl && (
+                <a
+                  href={job.applicationUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-4 inline-flex items-center gap-1 border-b border-plum-700 pb-0.5 text-[0.88rem] font-semibold text-plum-700 hover:text-foreground dark:border-primary dark:text-primary dark:hover:text-foreground"
+                >
+                  View application <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
+                </a>
+              )}
             </li>
           ))}
         </ul>
         )}
       </Section>
+
+      {!loadingClosedJobs && closedVisible.length > 0 && (
+        <Section tone="tinted">
+          <SectionHeading
+            title="Closed roles"
+            lede={`${closedVisible.length} past listing${closedVisible.length === 1 ? '' : 's'}.`}
+            className="mb-6"
+          />
+          <ul className="divide-y divide-border border-y border-border">
+            {closedVisible.map((job) => (
+              <li key={job.id} className="py-5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h2 className="text-[1.1rem] leading-snug">{job.title}</h2>
+                    <p className="mt-1 text-[0.88rem] text-accent-foreground">
+                      {job.organisation} · {job.location}
+                    </p>
+                  </div>
+                  <StatusTag tone="neutral">Closed</StatusTag>
+                </div>
+                <p className="tnum mt-3 text-[0.8rem] text-muted-foreground">
+                  Closed {formatShortDate(job.closesAt)}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
 
       <Section tone="tinted">
         <SectionHeading

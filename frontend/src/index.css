@@ -223,7 +223,17 @@
   }
 }
 
+@keyframes partner-logo-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 /* One orchestrated entrance, used only on the home hero. */
 .hero-rise {
   animation: swan-rise 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.partner-logo-slider {
+  animation: partner-logo-scroll 32s linear infinite;
 }
