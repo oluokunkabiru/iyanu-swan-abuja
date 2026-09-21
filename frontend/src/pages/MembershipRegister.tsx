@@ -145,6 +145,25 @@ export default function MembershipRegister() {
                   <Input id="phone" name="phone" type="tel" autoComplete="tel" placeholder="0800 000 0000" />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="placeOfWork">Place of work</Label>
+                  <Input id="placeOfWork" name="placeOfWork" autoComplete="organization" placeholder="Employer or firm name" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dateOfBirth">Date of birth (optional)</Label>
+                  <Input id="dateOfBirth" name="dateOfBirth" type="date" autoComplete="bday" />
+                </div>
+
+                  <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="residentialAddress">Residential address</Label>
+                  <Textarea
+                    id="residentialAddress"
+                    name="residentialAddress"
+                    autoComplete="street-address"
+                    placeholder="Street, city and state"
+                    rows={2}
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="password">Choose a password</Label>
                   <Input id="password" name="password" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" placeholder={`At least ${passwordPolicy.minLength} characters`} value={password} onChange={(event) => setPassword(event.target.value)} />
                   <p className="text-[0.78rem] text-muted-foreground">{passwordRequirementText(passwordPolicy)}</p>
@@ -158,24 +177,8 @@ export default function MembershipRegister() {
                     </p>
                   )}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="placeOfWork">Place of work</Label>
-                  <Input id="placeOfWork" name="placeOfWork" autoComplete="organization" placeholder="Employer or firm name" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="dateOfBirth">Date of birth (optional)</Label>
-                  <Input id="dateOfBirth" name="dateOfBirth" type="date" autoComplete="bday" />
-                </div>
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="residentialAddress">Residential address</Label>
-                  <Textarea
-                    id="residentialAddress"
-                    name="residentialAddress"
-                    autoComplete="street-address"
-                    placeholder="Street, city and state"
-                    rows={2}
-                  />
-                </div>
+                
+              
               </div>
 
 
