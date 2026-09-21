@@ -56,7 +56,7 @@ function PartnerLogo({ partner, duplicate = false }: { partner: Partner; duplica
     <img
       src={partner.logoUrl}
       alt={duplicate ? '' : partner.name}
-      className="h-12 max-w-36 object-contain grayscale transition-all duration-300 hover:grayscale-0"
+      className="h-12 max-w-36 object-contain"
     />
   ) : (
     <span className="font-heading text-base font-semibold text-muted-foreground transition-colors hover:text-foreground">
