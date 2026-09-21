@@ -34,6 +34,7 @@ class AuthController extends Controller
             'phone' => ['required', 'string', 'max:50'],
             'residential_address' => ['required', 'string', 'max:1000'],
             'place_of_work' => ['required', 'string', 'max:255'],
+            'specialisation' => ['nullable', 'string', 'max:255'],
             'date_of_birth' => ['nullable', 'date', 'before:today'],
         ]);
 
@@ -57,6 +58,7 @@ class AuthController extends Controller
             'phone' => $data['phone'],
             'residential_address' => $data['residential_address'],
             'place_of_work' => $data['place_of_work'],
+            'specialisation' => $data['specialisation'] ?? null,
             'date_of_birth' => $data['date_of_birth'] ?? null,
             'membership_status' => 'pending',
         ]);

@@ -41,6 +41,7 @@ export default function MembershipRegister() {
     const phone = String(form.get('phone') ?? '').trim()
     const residentialAddress = String(form.get('residentialAddress') ?? '').trim()
     const placeOfWork = String(form.get('placeOfWork') ?? '').trim()
+    const professionalInterest = String(form.get('professionalInterest') ?? '').trim()
     const dateOfBirth = String(form.get('dateOfBirth') ?? '').trim()
 
     if (
@@ -78,6 +79,7 @@ export default function MembershipRegister() {
         phone,
         residentialAddress,
         placeOfWork,
+        professionalInterest: professionalInterest || undefined,
         dateOfBirth: dateOfBirth || undefined,
       })
       navigate('/members')
@@ -147,6 +149,10 @@ export default function MembershipRegister() {
                 <div className="space-y-2">
                   <Label htmlFor="placeOfWork">Place of work</Label>
                   <Input id="placeOfWork" name="placeOfWork" autoComplete="organization" placeholder="Employer or firm name" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="professionalInterest">Area of professional interest (optional)</Label>
+                  <Input id="professionalInterest" name="professionalInterest" placeholder="For example: Audit, Tax or Public Sector" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="dateOfBirth">Date of birth (optional)</Label>

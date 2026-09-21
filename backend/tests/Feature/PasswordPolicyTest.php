@@ -28,6 +28,7 @@ class PasswordPolicyTest extends TestCase
             'phone' => '08000000000',
             'residential_address' => '12 Chapter Close, Abuja',
             'place_of_work' => 'Federal Ministry of Finance',
+            'specialisation' => 'Audit',
         ])->assertUnprocessable()->assertJsonValidationErrors(['password']);
     }
 

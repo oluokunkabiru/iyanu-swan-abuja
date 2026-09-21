@@ -20,6 +20,7 @@ export async function register(payload: {
   phone: string
   residentialAddress: string
   placeOfWork: string
+  professionalInterest?: string
   dateOfBirth?: string
 }): Promise<AuthenticationResponse> {
   const { data } = await api.post<AuthenticationResponse>('/register', {
@@ -34,6 +35,7 @@ export async function register(payload: {
     phone: payload.phone,
     residential_address: payload.residentialAddress,
     place_of_work: payload.placeOfWork,
+    specialisation: payload.professionalInterest,
     date_of_birth: payload.dateOfBirth,
   })
   return data

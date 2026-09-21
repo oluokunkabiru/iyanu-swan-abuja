@@ -36,6 +36,7 @@ class PaymentFlowTest extends TestCase
             'phone' => '08000000000',
             'residential_address' => '12 Chapter Close, Abuja',
             'place_of_work' => 'Federal Ministry of Finance',
+            'specialisation' => 'Audit',
         ]);
 
         $response->assertCreated()->assertJsonPath('user.firstName', 'Jane');
@@ -57,6 +58,7 @@ class PaymentFlowTest extends TestCase
             'phone' => '08000000000',
             'residential_address' => '12 Chapter Close, Abuja',
             'place_of_work' => 'Federal Ministry of Finance',
+            'specialisation' => 'Audit',
         ]);
     }
 
@@ -112,6 +114,7 @@ class PaymentFlowTest extends TestCase
             'phone' => '08000000000',
             'residential_address' => '12 Chapter Close, Abuja',
             'place_of_work' => 'Federal Ministry of Finance',
+            'specialisation' => 'Audit',
         ]);
 
         $response->assertStatus(422)->assertJsonValidationErrors(['credential']);
