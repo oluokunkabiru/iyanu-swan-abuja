@@ -19,7 +19,8 @@ class PasswordPolicyTest extends TestCase
         $level = MembershipLevel::factory()->create();
 
         $this->postJson('/api/register', [
-            'name' => 'Jane Member',
+            'last_name' => 'Member',
+            'first_name' => 'Jane',
             'email' => 'jane.member@example.com',
             'password' => 'password123',
             'membership_number' => 'ICAN/12345',

@@ -21,7 +21,9 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'middle_name' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => app(PasswordPolicy::class)->rules(confirmed: true),
             'membership_number' => ['required', 'string', 'max:255', 'unique:member_profiles,membership_number'],
@@ -36,7 +38,14 @@ class AuthController extends Controller
         ]);
 
         $user = User::create([
-            'name' => $data['name'],
+            'name' => Str::squish(implode(' ', [
+                $data['first_name'],
+                $data['middle_name'] ?? '',
+                $data['last_name'],
+            ])),
+            'last_name' => $data['last_name'],
+            'first_name' => $data['first_name'],
+            'middle_name' => $data['middle_name'] ?? null,
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'role' => 'member',
@@ -295,6 +304,7 @@ class AuthController extends Controller
         return [
             'id' => (string) $user->id,
             'name' => $user->name,
+            'firstName' => $user->first_name ?? Str::before($user->name, ' '),
             'email' => $user->email,
             'emailVerified' => $user->hasVerifiedEmail(),
             'personalEmail' => $user->personal_email,

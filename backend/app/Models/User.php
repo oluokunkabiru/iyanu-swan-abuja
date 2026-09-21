@@ -23,7 +23,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
 use Throwable;
 
-#[Fillable(['name', 'email', 'personal_email', 'official_email', 'notification_email_preference', 'password', 'must_change_password', 'role'])]
+#[Fillable(['name', 'last_name', 'first_name', 'middle_name', 'email', 'personal_email', 'official_email', 'notification_email_preference', 'password', 'must_change_password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser, JWTSubject, MustVerifyEmail
 {

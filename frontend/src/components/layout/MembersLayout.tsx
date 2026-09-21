@@ -18,7 +18,7 @@ export function MembersLayout() {
     <>
       <PageHeader
         breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Members area' }]}
-        title={user ? `Good to see you, ${user.name.split(' ')[0]}` : 'Members area'}
+        title={user ? `Good to see you, ${user.firstName}` : 'Members area'}
         intro={
           user
             ? `${user.membershipNumber} · member since ${new Date(user.joinedAt).getFullYear()}`

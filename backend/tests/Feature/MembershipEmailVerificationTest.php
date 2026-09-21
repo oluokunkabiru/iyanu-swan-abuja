@@ -21,7 +21,8 @@ class MembershipEmailVerificationTest extends TestCase
         $level = MembershipLevel::factory()->create();
 
         $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
-            'name' => 'Jane Member',
+            'last_name' => 'Member',
+            'first_name' => 'Jane',
             'email' => 'jane.member@example.com',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
@@ -67,7 +68,8 @@ class MembershipEmailVerificationTest extends TestCase
         $level = MembershipLevel::factory()->create();
 
         $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
-            'name' => 'Jane Member',
+            'last_name' => 'Member',
+            'first_name' => 'Jane',
             'email' => 'jane.member@example.com',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',

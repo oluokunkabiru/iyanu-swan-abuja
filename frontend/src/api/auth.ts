@@ -9,7 +9,9 @@ export interface AuthenticationResponse {
 }
 
 export async function register(payload: {
-  name: string
+  lastName: string
+  firstName: string
+  middleName?: string
   email: string
   password: string
   passwordConfirmation: string
@@ -21,7 +23,9 @@ export async function register(payload: {
   dateOfBirth?: string
 }): Promise<AuthenticationResponse> {
   const { data } = await api.post<AuthenticationResponse>('/register', {
-    name: payload.name,
+    last_name: payload.lastName,
+    first_name: payload.firstName,
+    middle_name: payload.middleName,
     email: payload.email,
     password: payload.password,
     password_confirmation: payload.passwordConfirmation,

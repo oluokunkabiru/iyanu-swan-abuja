@@ -22,6 +22,8 @@ export default function MembershipRegister() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [credential, setCredential] = useState('')
+  const [password, setPassword] = useState('')
+  const [passwordConfirmation, setPasswordConfirmation] = useState('')
 
   const { data: levels } = useApiData(getMembershipLevels, [] as MembershipLevel[])
   const registrationSteps = settings?.registrationSteps ?? []
@@ -31,10 +33,10 @@ export default function MembershipRegister() {
     e.preventDefault()
     setError(null)
     const form = new FormData(e.currentTarget)
-    const name = String(form.get('name') ?? '').trim()
+    const lastName = String(form.get('lastName') ?? '').trim()
+    const firstName = String(form.get('firstName') ?? '').trim()
+    const middleName = String(form.get('middleName') ?? '').trim()
     const email = String(form.get('email') ?? '').trim()
-    const password = String(form.get('password') ?? '')
-    const passwordConfirmation = String(form.get('passwordConfirmation') ?? '')
     const membershipNumber = String(form.get('membershipNumber') ?? '').trim()
     const phone = String(form.get('phone') ?? '').trim()
     const residentialAddress = String(form.get('residentialAddress') ?? '').trim()
@@ -42,7 +44,8 @@ export default function MembershipRegister() {
     const dateOfBirth = String(form.get('dateOfBirth') ?? '').trim()
 
     if (
-      !name ||
+      !lastName ||
+      !firstName ||
       !email ||
       !passwordMeetsPolicy(password, passwordPolicy) ||
       !passwordConfirmation ||
@@ -64,7 +67,9 @@ export default function MembershipRegister() {
     setSubmitting(true)
     try {
       await signUp({
-        name,
+        lastName,
+        firstName,
+        middleName: middleName || undefined,
         email,
         password,
         passwordConfirmation,
@@ -101,8 +106,16 @@ export default function MembershipRegister() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full name</Label>
-                  <Input id="name" name="name" autoComplete="name" placeholder="As it appears on your ICAN record" />
+                  <Label htmlFor="lastName">Last name</Label>
+                  <Input id="lastName" name="lastName" autoComplete="family-name" placeholder="Surname as it appears on your ICAN record" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First name</Label>
+                  <Input id="firstName" name="firstName" autoComplete="given-name" placeholder="First name as it appears on your ICAN record" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="middleName">Middle name (optional)</Label>
+                  <Input id="middleName" name="middleName" autoComplete="additional-name" placeholder="Middle name, if applicable" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="membershipNumber">ICAN membership number</Label>
@@ -133,12 +146,17 @@ export default function MembershipRegister() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Choose a password</Label>
-                  <Input id="password" name="password" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" placeholder={`At least ${passwordPolicy.minLength} characters`} />
+                  <Input id="password" name="password" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" placeholder={`At least ${passwordPolicy.minLength} characters`} value={password} onChange={(event) => setPassword(event.target.value)} />
                   <p className="text-[0.78rem] text-muted-foreground">{passwordRequirementText(passwordPolicy)}</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="passwordConfirmation">Confirm your password</Label>
-                  <Input id="passwordConfirmation" name="passwordConfirmation" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" placeholder="Type your password again" />
+                  <Input id="passwordConfirmation" name="passwordConfirmation" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" placeholder="Type your password again" value={passwordConfirmation} onChange={(event) => setPasswordConfirmation(event.target.value)} aria-describedby={passwordConfirmation && password !== passwordConfirmation ? 'password-confirmation-error' : undefined} />
+                  {passwordConfirmation && password !== passwordConfirmation && (
+                    <p id="password-confirmation-error" className="text-[0.78rem] text-destructive">
+                      Your password and confirmation do not match.
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="placeOfWork">Place of work</Label>

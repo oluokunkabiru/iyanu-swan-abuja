@@ -25,7 +25,9 @@ class PaymentFlowTest extends TestCase
         $level = MembershipLevel::factory()->create();
 
         $response = $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
-            'name' => 'Jane Member',
+            'last_name' => 'Member',
+            'first_name' => 'Jane',
+            'middle_name' => 'Ada',
             'email' => 'jane.member@example.com',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
@@ -36,11 +38,18 @@ class PaymentFlowTest extends TestCase
             'place_of_work' => 'Federal Ministry of Finance',
         ]);
 
-        $response->assertCreated();
+        $response->assertCreated()->assertJsonPath('user.firstName', 'Jane');
 
         $user = User::where('email', 'jane.member@example.com')->firstOrFail();
 
         $this->assertDatabaseMissing('subscriptions', ['user_id' => $user->id]);
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'name' => 'Jane Ada Member',
+            'last_name' => 'Member',
+            'first_name' => 'Jane',
+            'middle_name' => 'Ada',
+        ]);
         $this->assertDatabaseHas('member_profiles', [
             'user_id' => $user->id,
             'membership_number' => 'ICAN/12345',
@@ -54,7 +63,8 @@ class PaymentFlowTest extends TestCase
     public function test_registering_requires_the_ican_and_contact_details(): void
     {
         $response = $this->postJson('/api/register', [
-            'name' => 'Jane Member',
+            'last_name' => 'Member',
+            'first_name' => 'Jane',
             'email' => 'jane.member@example.com',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
@@ -70,7 +80,8 @@ class PaymentFlowTest extends TestCase
         $level = MembershipLevel::factory()->create(['name' => 'AATWA (Associate Accounting Technician)']);
 
         $response = $this->withHeader('referer', 'http://localhost:5176')->postJson('/api/register', [
-            'name' => 'Jane Member',
+            'last_name' => 'Member',
+            'first_name' => 'Jane',
             'email' => 'jane.member@example.com',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
@@ -91,7 +102,8 @@ class PaymentFlowTest extends TestCase
         MembershipLevel::factory()->create(['name' => 'Retired Level', 'is_active' => false]);
 
         $response = $this->postJson('/api/register', [
-            'name' => 'Jane Member',
+            'last_name' => 'Member',
+            'first_name' => 'Jane',
             'email' => 'jane.member@example.com',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',

@@ -323,6 +323,7 @@ export type NotificationEmailPreference = 'registered' | 'personal' | 'official'
 export interface AuthUser {
   id: string
   name: string
+  firstName: string
   email: string
   emailVerified: boolean
   personalEmail: string | null
