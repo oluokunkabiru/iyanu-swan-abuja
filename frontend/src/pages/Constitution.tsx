@@ -16,29 +16,44 @@ export default function Constitution() {
       />
 
       <Section>
-        <SectionHeading title="Download" className="mb-6" />
+        <SectionHeading title="Read the constitution" className="mb-6" />
 
         {isLoading ? (
-          <Skeleton className="h-32 rounded-xl" />
+          <div className="space-y-6">
+            <Skeleton className="h-32 rounded-xl" />
+            <Skeleton className="h-[75vh] rounded-xl" />
+          </div>
         ) : settings?.constitutionUrl ? (
-          <div className="flex flex-col items-start gap-4 rounded-xl border border-border bg-card p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
-                <FileText className="h-6 w-6" />
-              </span>
-              <div>
-                <p className="font-medium">Chapter constitution</p>
-                <p className="mt-0.5 text-[0.82rem] text-muted-foreground">
-                  {settings.constitutionLabel ?? 'PDF document'}
-                </p>
+          <div className="space-y-6">
+            <div className="flex flex-col items-start gap-4 rounded-xl border border-border bg-card p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-4">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                  <FileText className="h-6 w-6" />
+                </span>
+                <div>
+                  <p className="font-medium">Chapter constitution</p>
+                  <p className="mt-0.5 text-[0.82rem] text-muted-foreground">
+                    {settings.constitutionLabel ?? 'PDF document'}
+                  </p>
+                </div>
               </div>
+              <Button asChild>
+                <a href={settings.constitutionUrl} target="_blank" rel="noreferrer">
+                  View/Download the Constitution
+                  <Download aria-hidden="true" className="h-4 w-4" />
+                </a>
+              </Button>
             </div>
-            <Button asChild>
+
+            <iframe
+              title="Chapter constitution PDF preview"
+              src={settings.constitutionUrl}
+              className="h-[75vh] w-full rounded-xl border border-border bg-card"
+            >
               <a href={settings.constitutionUrl} target="_blank" rel="noreferrer">
-                Download the constitution
-                <Download aria-hidden="true" className="h-4 w-4" />
+                View/Download the Constitution
               </a>
-            </Button>
+            </iframe>
           </div>
         ) : (
           <EmptyState
