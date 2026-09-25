@@ -115,9 +115,8 @@ export default function Governance() {
         </ul>
       </Section>
 
-      {(loadingPastChairpersons || pastChairpersons.length > 0) && (
-        <Section tone="tinted">
-          <div id="past-chairpersons" className="scroll-mt-24">
+      <Section tone="tinted">
+        <div id="past-chairpersons" className="scroll-mt-24">
           <SectionHeading
             title="Past chairpersons"
             lede="Women who have led the chapter before."
@@ -126,7 +125,8 @@ export default function Governance() {
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {loadingPastChairpersons
               ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-24" />)
-              : pastChairpersons.map((exec) => (
+              : pastChairpersons.length > 0
+                ? pastChairpersons.map((exec) => (
                   <li key={exec.id} className="flex gap-4 border border-border bg-card p-5">
                     {exec.photoUrl && (
                       <LazyImage
@@ -146,11 +146,15 @@ export default function Governance() {
                       </p>
                     </div>
                   </li>
-                ))}
+                ))
+                : (
+                  <li className="border border-dashed border-border bg-card px-5 py-8 text-sm text-muted-foreground sm:col-span-2 lg:col-span-3">
+                    Past chairperson records will appear here as the chapter archive is added.
+                  </li>
+                )}
           </ul>
-          </div>
-        </Section>
-      )}
+        </div>
+      </Section>
     </>
   )
 }

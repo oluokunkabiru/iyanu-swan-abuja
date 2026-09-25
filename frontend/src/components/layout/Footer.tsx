@@ -109,7 +109,14 @@ export function Footer() {
             )}{' '}
             — {year}. All rights reserved.
           </p>
-          <a href="#site-header" className="text-gold-300 underline-offset-4 hover:underline">
+          <a
+            href="#site-header"
+            onClick={(event) => {
+              event.preventDefault()
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }}
+            className="text-gold-300 underline-offset-4 hover:underline"
+          >
             The Society of Women Accountants of Nigeria
           </a>
         </div>
