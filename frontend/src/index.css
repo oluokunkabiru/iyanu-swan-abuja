@@ -7,8 +7,8 @@
 /* ---------------------------------------------------------------------------
    Brand tokens.
    These defaults mirror .env exactly, so the page paints correctly even before
-   applyBrand() runs. Three source colours are intentionally the whole palette;
-   softer surfaces use opacity and colour mixing, never additional hues.
+   applyBrand() runs. Brand surfaces use the three source colours; semantic
+   feedback colours remain distinct so errors and successes are unambiguous.
 --------------------------------------------------------------------------- */
 :root {
   --brand-primary: #000066;
@@ -31,7 +31,7 @@
   --muted-foreground: color-mix(in srgb, var(--brand-primary) 64%, var(--brand-tertiary));
   --accent: color-mix(in srgb, var(--brand-secondary) 18%, var(--brand-tertiary));
   --accent-foreground: var(--brand-primary);
-  --destructive: var(--brand-primary);
+  --destructive: #dc2626;
   --success: var(--brand-primary);
   --border: color-mix(in srgb, var(--brand-primary) 15%, var(--brand-tertiary));
   --rule: color-mix(in srgb, var(--brand-primary) 18%, var(--brand-tertiary));
@@ -72,7 +72,7 @@
   --muted-foreground: color-mix(in srgb, var(--brand-tertiary) 68%, var(--brand-primary));
   --accent: var(--brand-secondary);
   --accent-foreground: var(--brand-primary);
-  --destructive: var(--brand-secondary);
+  --destructive: #f87171;
   --success: var(--brand-secondary);
   --border: color-mix(in srgb, var(--brand-tertiary) 18%, var(--brand-primary));
   --rule: color-mix(in srgb, var(--brand-tertiary) 20%, var(--brand-primary));
