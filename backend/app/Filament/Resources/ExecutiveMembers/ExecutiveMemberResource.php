@@ -65,7 +65,7 @@ class ExecutiveMemberResource extends Resource
                     ->default(false),
                 Toggle::make('is_ex_officio')
                     ->label('Ex officio')
-                    ->helperText('Keeps this executive active in the system but hides them from the standard public council list. The selected Chairperson remains visible.')
+                    ->helperText('Hides this executive from the standard public council list. A Chairperson marked ex officio appears under Past Chairpersons.')
                     ->default(false),
                 TextInput::make('sort_order')
                     ->label('Display order')
