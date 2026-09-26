@@ -117,7 +117,8 @@ export function Footer() {
             }}
             className="text-gold-300 underline-offset-4 hover:underline"
           >
-            The Society of Women Accountants of Nigeria
+            {/* The Society of Women Accountants of Nigeria */}
+            The Society of Women Accountants of Nigeria, Abuja Chapter
           </a>
         </div>
       </div>
