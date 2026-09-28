@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { getJobs } from '@/api/content'
 import { PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import { formatShortDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { JobListing } from '@/types'
@@ -70,9 +72,15 @@ export default function Jobs() {
           </div>
         )}
         {!isLoading && (
-        <ul className="mt-8 divide-y divide-border border-y border-border">
+        <motion.ul
+          className="mt-8 divide-y divide-border border-y border-border"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
           {visible.map((job) => (
-            <li key={job.id} className="py-5">
+            <motion.li key={job.id} className="py-5" variants={itemVariants}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h2 className="text-[1.1rem] leading-snug">
@@ -108,9 +116,9 @@ export default function Jobs() {
                   View application <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
                 </a>
               )}
-            </li>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
         )}
       </Section>
 

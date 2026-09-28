@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { requestPasswordReset } from '@/api/auth'
 import { Section } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { pageVariants } from '@/lib/animations'
 
 export default function ForgotPassword() {
   const [message, setMessage] = useState<string | null>(null)
@@ -35,7 +37,12 @@ export default function ForgotPassword() {
 
   return (
     <Section>
-      <div className="mx-auto max-w-lg border border-border bg-card p-6 md:p-8">
+      <motion.div
+        className="mx-auto max-w-lg border border-border bg-card p-6 md:p-8"
+        initial="initial"
+        animate="animate"
+        variants={pageVariants}
+      >
         <h1 className="text-3xl">Reset your password</h1>
         <p className="mt-3 text-[0.95rem] leading-relaxed text-muted-foreground">
           Enter the email address you use for your membership account. We will send you a secure link to choose a new password.
@@ -61,7 +68,7 @@ export default function ForgotPassword() {
             Sign in
           </Link>
         </p>
-      </div>
+      </motion.div>
     </Section>
   )
 }

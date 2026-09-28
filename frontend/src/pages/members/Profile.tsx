@@ -72,7 +72,7 @@ export default function MembersProfile() {
         phone,
         residentialAddress,
         placeOfWork,
-        dateOfBirth: dateOfBirth || undefined,
+        dateOfBirth,
         isDirectoryListed,
         photo: photo ?? undefined,
       })
@@ -91,6 +91,7 @@ export default function MembersProfile() {
         personalEmail,
         officialEmail,
         notificationEmailPreference: notificationPreference,
+        dateOfBirth,
       })
       setSavedEmails(true)
     } finally {
@@ -223,6 +224,7 @@ export default function MembersProfile() {
             <Input
               id="profile-dob"
               type="date"
+              required
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
             />

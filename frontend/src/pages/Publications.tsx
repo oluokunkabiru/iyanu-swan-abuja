@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { getPublications } from '@/api/content'
 import { DocumentRow } from '@/components/common/Cards'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { Publication } from '@/types'
 
@@ -62,11 +64,19 @@ export default function Publications() {
             ))}
           </div>
         ) : (
-          <ul className="mt-8 divide-y divide-border border-y border-border">
+          <motion.ul
+            className="mt-8 divide-y divide-border border-y border-border"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {visible.map((p) => (
-              <DocumentRow key={p.id} item={p} />
+              <motion.li key={p.id} variants={itemVariants}>
+                <DocumentRow item={p} />
+              </motion.li>
             ))}
-          </ul>
+          </motion.ul>
         )}
       </Section>
     </>

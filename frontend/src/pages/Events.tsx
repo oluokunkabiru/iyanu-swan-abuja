@@ -1,9 +1,11 @@
 import { useSearchParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { getEvents } from '@/api/content'
 import { EventCard } from '@/components/common/Cards'
 import { EmptyState, PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import type { ChapterEvent } from '@/types'
 import { cn } from '@/lib/utils'
 
@@ -76,11 +78,19 @@ export default function Events() {
             />
           </div>
         ) : (
-          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <motion.div
+            className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {events.map((e) => (
-              <EventCard key={e.id} event={e} />
+              <motion.div key={e.id} variants={itemVariants}>
+                <EventCard event={e} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </Section>
     </>

@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 import { getGallery } from '@/api/content'
 import { LazyImage } from '@/components/common/LazyImage'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { GalleryImage } from '@/types'
 
@@ -50,9 +52,15 @@ export default function Gallery() {
             ))}
           </div>
         ) : (
-          <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.ul
+            className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {visible.map((img) => (
-              <li key={img.id} className="border border-border bg-card">
+              <motion.li key={img.id} className="border border-border bg-card" variants={itemVariants}>
                 <LazyImage
                   src={img.imageUrl}
                   alt={img.caption}
@@ -64,9 +72,9 @@ export default function Gallery() {
                     {img.album} · {img.year}
                   </p>
                 </div>
-              </li>
+              </motion.li>
             ))}
-          </ul>
+          </motion.ul>
         )}
       </Section>
     </>

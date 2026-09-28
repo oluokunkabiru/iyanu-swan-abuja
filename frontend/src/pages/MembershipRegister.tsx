@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Check } from 'lucide-react'
 import { getMembershipLevels } from '@/api/content'
+import { PasswordRequirements } from '@/components/common/PasswordRequirements'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -54,7 +55,8 @@ export default function MembershipRegister() {
       !credential ||
       !phone ||
       !residentialAddress ||
-      !placeOfWork
+      !placeOfWork ||
+      !dateOfBirth
     ) {
       setError(`Fill in every field — ${passwordRequirementText(passwordPolicy)} Your ICAN level is also required.`)
       return
@@ -80,7 +82,7 @@ export default function MembershipRegister() {
         residentialAddress,
         placeOfWork,
         professionalInterest: professionalInterest || undefined,
-        dateOfBirth: dateOfBirth || undefined,
+        dateOfBirth,
       })
       navigate('/members')
     } catch {
@@ -155,8 +157,8 @@ export default function MembershipRegister() {
                   <Input id="professionalInterest" name="professionalInterest" placeholder="For example: Audit, Tax or Public Sector" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="dateOfBirth">Date of birth (optional)</Label>
-                  <Input id="dateOfBirth" name="dateOfBirth" type="date" autoComplete="bday" />
+                  <Label htmlFor="dateOfBirth">Date of birth</Label>
+                  <Input id="dateOfBirth" name="dateOfBirth" type="date" autoComplete="bday" required />
                 </div>
 
                   <div className="space-y-2 sm:col-span-2">
@@ -171,8 +173,10 @@ export default function MembershipRegister() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Choose a password</Label>
-                  <Input id="password" name="password" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" placeholder={`At least ${passwordPolicy.minLength} characters`} value={password} onChange={(event) => setPassword(event.target.value)} />
-                  <p className="text-[0.78rem] text-muted-foreground">{passwordRequirementText(passwordPolicy)}</p>
+                  <Input id="password" name="password" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" placeholder={`At least ${passwordPolicy.minLength} characters`} value={password} onChange={(event) => setPassword(event.target.value)} aria-describedby="password-requirements" />
+                  <div id="password-requirements">
+                    <PasswordRequirements password={password} policy={passwordPolicy} />
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="passwordConfirmation">Confirm your password</Label>

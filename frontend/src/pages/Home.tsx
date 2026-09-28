@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, GraduationCap, Users, Wallet } from 'lucide-react'
+import { motion } from 'framer-motion'
 import {
   getCoreValues,
   getChairperson,
@@ -22,6 +23,7 @@ import { useSettings } from '@/context/SettingsContext'
 import { homeSlides } from '@/data'
 import { useApiData } from '@/hooks/useApiData'
 import { formatDate } from '@/lib/format'
+import { itemVariants, containerVariants } from '@/lib/animations'
 import type { ChapterEvent, CoreValue, ExecutiveMember, NewsPost, Partner, Publication } from '@/types'
 
 const desks = [
@@ -227,28 +229,35 @@ export default function Home() {
 
       {/* Quick desks */}
       <section className="border-b border-border bg-card">
-        <div className="mx-auto grid max-w-6xl gap-px bg-border px-4 md:grid-cols-2 lg:grid-cols-4">
+        <motion.div
+          className="mx-auto grid max-w-6xl gap-px bg-border px-4 md:grid-cols-2 lg:grid-cols-4"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
           {desks.map((desk) => (
-            <Link
-              key={desk.title}
-              to={desk.to}
-              className="group bg-card p-6 transition-colors hover:bg-secondary"
-            >
-              <desk.icon aria-hidden="true" className="h-6 w-6 text-primary" />
-              <h2 className="mt-4 text-[1.05rem]">{desk.title}</h2>
-              <p className="mt-1.5 text-[0.85rem] leading-relaxed text-muted-foreground">
-                {desk.body}
-              </p>
-              <span className="mt-3 inline-flex items-center gap-1.5 text-[0.82rem] font-semibold text-plum-700 dark:text-primary">
-                Open
-                <ArrowRight
-                  aria-hidden="true"
-                  className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
-                />
-              </span>
-            </Link>
+            <motion.div key={desk.title} variants={itemVariants}>
+              <Link
+                to={desk.to}
+                className="group bg-card p-6 transition-colors hover:bg-secondary"
+              >
+                <desk.icon aria-hidden="true" className="h-6 w-6 text-primary" />
+                <h2 className="mt-4 text-[1.05rem]">{desk.title}</h2>
+                <p className="mt-1.5 text-[0.85rem] leading-relaxed text-muted-foreground">
+                  {desk.body}
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1.5 text-[0.82rem] font-semibold text-plum-700 dark:text-primary">
+                  Open
+                  <ArrowRight
+                    aria-hidden="true"
+                    className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                  />
+                </span>
+              </Link>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
       {/* Chapter figures */}
       <Section>
@@ -259,11 +268,19 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <motion.div
+            className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {(settings?.chapterStats ?? []).map((s) => (
-              <Stat key={s.label} value={s.value} label={s.label} note={s.note} />
+              <motion.div key={s.label} variants={itemVariants}>
+                <Stat value={s.value} label={s.label} note={s.note} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </Section>
 
@@ -325,11 +342,21 @@ export default function Home() {
           }
           className="mb-8"
         />
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <motion.div
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
           {loadingEvents
             ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64" />)
-            : homepageEvents.map((e) => <EventCard key={e.id} event={e} />)}
-        </div>
+            : homepageEvents.map((e) => (
+                <motion.div key={e.id} variants={itemVariants}>
+                  <EventCard event={e} />
+                </motion.div>
+              ))}
+        </motion.div>
       </Section>
 
       {/* Registration — a genuine three-step sequence, so numbered. */}
@@ -389,11 +416,17 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+          <motion.ul
+            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {executives
               .filter((e) => e.isPrincipal)
               .map((exec) => (
-                <li key={exec.id} className="border border-border bg-card">
+                <motion.li key={exec.id} className="border border-border bg-card" variants={itemVariants}>
                   {exec.photoUrl && (
                     <LazyImage
                       src={exec.photoUrl}
@@ -407,9 +440,9 @@ export default function Home() {
                     </h3>
                     <p className="mt-1 text-[0.8rem] text-accent-foreground">{exec.position}</p>
                   </div>
-                </li>
+                </motion.li>
               ))}
-          </ul>
+          </motion.ul>
         )}
       </Section>
 
@@ -424,11 +457,21 @@ export default function Home() {
           }
           className="mb-8"
         />
-        <div className="grid gap-6 lg:grid-cols-3">
+        <motion.div
+          className="grid gap-6 lg:grid-cols-3"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
           {loadingNews
             ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64" />)
-            : news.slice(0, 3).map((post) => <NewsCard key={post.id} post={post} />)}
-        </div>
+            : news.slice(0, 3).map((post) => (
+                <motion.div key={post.id} variants={itemVariants}>
+                  <NewsCard post={post} />
+                </motion.div>
+              ))}
+        </motion.div>
       </Section>
 
       {/* Affiliates */}

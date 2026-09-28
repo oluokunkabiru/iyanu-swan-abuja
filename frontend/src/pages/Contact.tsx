@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Mail, MapPin, Phone } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { submitContact } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
@@ -7,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useSettings } from '@/context/SettingsContext'
+import { pageVariants, containerVariants, itemVariants } from '@/lib/animations'
 
 const routes = [
   { office: 'General Secretary', handles: 'Correspondence, meetings, committee service and anything not listed below.' },
@@ -60,7 +62,13 @@ export default function Contact() {
       />
 
       <Section>
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+        <motion.div
+          className="grid gap-12 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
           <div>
             <SectionHeading title="Send a message" className="mb-6" />
 
@@ -149,7 +157,7 @@ export default function Contact() {
               </dl>
             </div>
           </aside>
-        </div>
+        </motion.div>
       </Section>
     </>
   )

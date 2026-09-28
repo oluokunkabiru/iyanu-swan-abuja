@@ -1,9 +1,11 @@
 import { Link, useParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { getCommittee, getCommittees } from '@/api/content'
 import { EmptyState, PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import type { Committee } from '@/types'
 
 export default function Committees() {
@@ -30,9 +32,15 @@ export default function Committees() {
             ))}
           </div>
         ) : (
-          <ul className="grid gap-px bg-border md:grid-cols-2">
+          <motion.ul
+            className="grid gap-px bg-border md:grid-cols-2"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {committees.map((c) => (
-              <li key={c.id} className="bg-card p-6">
+              <motion.li key={c.id} className="bg-card p-6" variants={itemVariants}>
                 <h2 className="text-[1.1rem]">
                   <Link to={`/committees/${c.slug}`} className="hover:text-plum-700 dark:hover:text-primary">
                     {c.name}
@@ -41,9 +49,9 @@ export default function Committees() {
                 <p className="mt-1 text-[0.8rem] font-semibold text-accent-foreground">Chair: {c.chair}</p>
                 <p className="mt-3 text-[0.9rem] leading-relaxed text-muted-foreground">{c.remit}</p>
                 <p className="mt-4 text-[0.8rem] text-muted-foreground">Meets {c.meetingCadence.toLowerCase()}</p>
-              </li>
+              </motion.li>
             ))}
-          </ul>
+          </motion.ul>
         )}
       </Section>
 

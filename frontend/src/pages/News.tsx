@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { getNews } from '@/api/content'
 import { NewsCard } from '@/components/common/Cards'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { NewsPost } from '@/types'
 
@@ -59,11 +61,19 @@ export default function News() {
             )}
 
             {rest.length > 0 && (
-              <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <motion.div
+                className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+                initial="initial"
+                whileInView="animate"
+                viewport={{ once: true, amount: 0.2 }}
+                variants={containerVariants}
+              >
                 {rest.map((post) => (
-                  <NewsCard key={post.id} post={post} />
+                  <motion.div key={post.id} variants={itemVariants}>
+                    <NewsCard post={post} />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
 
             {visible.length === 0 && (

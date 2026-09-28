@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { Section } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context/AuthContext'
+import { pageVariants } from '@/lib/animations'
 
 export default function Login() {
   const { signIn } = useAuth()
@@ -41,7 +43,12 @@ export default function Login() {
 
   return (
     <Section>
-      <div className="mx-auto grid max-w-4xl gap-10 md:grid-cols-2">
+      <motion.div
+        className="mx-auto grid max-w-4xl gap-10 md:grid-cols-2"
+        initial="initial"
+        animate="animate"
+        variants={pageVariants}
+      >
         <div>
           <h1 className="text-3xl">Sign in</h1>
           <p className="mt-3 max-w-[45ch] text-[0.95rem] leading-relaxed text-muted-foreground">
@@ -93,8 +100,6 @@ export default function Login() {
             Your CPD tracker, subscription and welfare dues history, event tickets and profile —
             all matched to your chapter membership record.
           </p>
-        </aside>
-      </div>
-    </Section>
+        </aside>\n      </motion.div>\n    </Section>
   )
 }

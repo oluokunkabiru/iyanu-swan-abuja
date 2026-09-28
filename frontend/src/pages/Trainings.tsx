@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 import { getTrainings } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { TrainingRow } from '@/components/common/Cards'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { Training } from '@/types'
 
@@ -95,7 +97,13 @@ export default function Trainings() {
             ))}
           </div>
         ) : (
-          <div className="mt-8 overflow-x-auto">
+          <motion.div
+            className="mt-8 overflow-x-auto"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             <table className="w-full min-w-[44rem] text-left">
               <caption className="sr-only">Training sessions</caption>
               <thead>

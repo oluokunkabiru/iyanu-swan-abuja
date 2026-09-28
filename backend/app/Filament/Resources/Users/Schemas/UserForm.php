@@ -93,6 +93,7 @@ class UserForm
                             ->maxLength(50),
                         DatePicker::make('date_of_birth')
                             ->native(false)
+                            ->required()
                             ->displayFormat('d M'),
                         Textarea::make('residential_address')
                             ->columnSpanFull(),

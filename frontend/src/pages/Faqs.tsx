@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronDown } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { getFaqs } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { Faq } from '@/types'
 
@@ -57,11 +59,17 @@ export default function Faqs() {
           </div>
         )}
         {!isLoading && (
-        <ul className="mt-8 divide-y divide-border border-y border-border">
+        <motion.ul
+          className="mt-8 divide-y divide-border border-y border-border"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
           {visible.map((faq) => {
             const isOpen = effectiveOpenId === faq.id
             return (
-              <li key={faq.id}>
+              <motion.li key={faq.id} variants={itemVariants}>
                 <h3>
                   <button
                     type="button"
@@ -84,10 +92,10 @@ export default function Faqs() {
                     {faq.answer}
                   </p>
                 )}
-              </li>
+              </motion.li>
             )
           })}
-        </ul>
+        </motion.ul>
         )}
       </Section>
 

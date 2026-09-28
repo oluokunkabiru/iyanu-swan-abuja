@@ -1,11 +1,14 @@
 import { useState, type FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { PasswordRequirements } from '@/components/common/PasswordRequirements'
 import { Section } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context/AuthContext'
 import { useSettings } from '@/context/SettingsContext'
+import { pageVariants } from '@/lib/animations'
 import { defaultPasswordPolicy, passwordMeetsPolicy, passwordRequirementText } from '@/lib/password'
 
 export default function ChangePassword() {
@@ -14,6 +17,7 @@ export default function ChangePassword() {
   const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [password, setPassword] = useState('')
   const passwordPolicy = settings?.passwordPolicy ?? defaultPasswordPolicy
 
   if (!isLoading && !user) {
@@ -61,7 +65,12 @@ export default function ChangePassword() {
 
   return (
     <Section>
-      <div className="mx-auto max-w-lg border border-border bg-card p-6 md:p-8">
+      <motion.div
+        className="mx-auto max-w-lg border border-border bg-card p-6 md:p-8"
+        initial="initial"
+        animate="animate"
+        variants={pageVariants}
+      >
         <h1 className="text-3xl">Choose a new password</h1>
         <p className="mt-3 text-[0.95rem] leading-relaxed text-muted-foreground">
           For your security, replace the temporary password emailed to you before accessing your member account. {passwordRequirementText(passwordPolicy)}
@@ -74,7 +83,8 @@ export default function ChangePassword() {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">New password</Label>
-            <Input id="password" name="password" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" />
+            <Input id="password" name="password" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} />
+            <PasswordRequirements password={password} policy={passwordPolicy} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="passwordConfirmation">Confirm new password</Label>
@@ -87,7 +97,7 @@ export default function ChangePassword() {
             {submitting ? 'Saving password…' : 'Save new password'}
           </Button>
         </form>
-      </div>
+      </motion.div>
     </Section>
   )
 }

@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { containerVariants } from '@/lib/animations'
 
 /** Page-level header used at the top of every interior page. */
 export function PageHeader({
@@ -91,14 +93,28 @@ export function Section({
   children,
   className,
   tone = 'default',
+  animate = true,
 }: {
   children: ReactNode
   className?: string
   tone?: 'default' | 'tinted'
+  animate?: boolean
 }) {
   return (
     <section className={cn(tone === 'tinted' && 'bg-secondary/50', className)}>
-      <div className="mx-auto max-w-6xl px-4 py-14 md:py-18">{children}</div>
+      {animate ? (
+        <motion.div
+          className="mx-auto max-w-6xl px-4 py-14 md:py-18"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={containerVariants}
+        >
+          {children}
+        </motion.div>
+      ) : (
+        <div className="mx-auto max-w-6xl px-4 py-14 md:py-18">{children}</div>
+      )}
     </section>
   )
 }

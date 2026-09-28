@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { getDirectoryMembers, getFirms } from '@/api/content'
 import { PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -10,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { DirectoryMember, Firm, Sector } from '@/types'
 
@@ -129,11 +131,18 @@ export default function Directory() {
             ))}
           </div>
         ) : (
-          <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.ul
+            className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {visible.map((m) => (
-              <li
+              <motion.li
                 key={m.id}
                 className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+                variants={itemVariants}
               >
                 <div className="flex items-start gap-3">
                   <Avatar className="h-12 w-12 shrink-0">
@@ -177,9 +186,9 @@ export default function Directory() {
                     )}
                   </dl>
                 )}
-              </li>
+              </motion.li>
             ))}
-          </ul>
+          </motion.ul>
         )}
 
         {!isLoading && visible.length === 0 && (

@@ -1,9 +1,11 @@
+import { motion } from 'framer-motion'
 import { getAnnouncements, getProgramme } from '@/api/content'
 import { AnnouncementRow } from '@/components/common/Cards'
 import { LazyImage } from '@/components/common/LazyImage'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import { stripHtml } from '@/lib/format'
 import { Link } from 'react-router-dom'
 import type { Announcement, ProgrammeEntry } from '@/types'
@@ -34,13 +36,19 @@ export default function Announcements() {
                 ))}
               </div>
             ) : (
-              <ul className="divide-y divide-border border-y border-border">
+              <motion.ul
+                className="divide-y divide-border border-y border-border"
+                initial="initial"
+                whileInView="animate"
+                viewport={{ once: true, amount: 0.2 }}
+                variants={containerVariants}
+              >
                 {announcements.map((a) => (
-                  <AnnouncementRow key={a.id} {...a} />
+                  <motion.li key={a.id} variants={itemVariants}>
+                    <AnnouncementRow {...a} />
+                  </motion.li>
                 ))}
-              </ul>
-            )}
-          </div>
+              </motion.ul>\n            )}\n          </div>
 
           <aside>
             <SectionHeading title="Forthcoming programme" className="mb-6" />
@@ -51,9 +59,15 @@ export default function Announcements() {
                 ))}
               </div>
             ) : (
-              <ul className="divide-y divide-border border-y border-border">
+              <motion.ul
+                className="divide-y divide-border border-y border-border"
+                initial="initial"
+                whileInView="animate"
+                viewport={{ once: true, amount: 0.2 }}
+                variants={containerVariants}
+              >
                 {programme.map((p) => (
-                  <li key={p.id} className="flex gap-3 py-3.5">
+                  <motion.li key={p.id} className="flex gap-3 py-3.5" variants={itemVariants}>
                     {p.imageUrl && (
                       <LazyImage
                         src={p.imageUrl}

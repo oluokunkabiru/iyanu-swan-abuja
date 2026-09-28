@@ -1,11 +1,14 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { resetPassword } from '@/api/auth'
+import { PasswordRequirements } from '@/components/common/PasswordRequirements'
 import { Section } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useSettings } from '@/context/SettingsContext'
+import { pageVariants } from '@/lib/animations'
 import { defaultPasswordPolicy, passwordMeetsPolicy, passwordRequirementText } from '@/lib/password'
 
 export default function ResetPassword() {
@@ -13,6 +16,7 @@ export default function ResetPassword() {
   const [searchParams] = useSearchParams()
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [password, setPassword] = useState('')
   const { settings } = useSettings()
   const token = searchParams.get('token') ?? ''
   const email = searchParams.get('email') ?? ''
@@ -54,7 +58,12 @@ export default function ResetPassword() {
 
   return (
     <Section>
-      <div className="mx-auto max-w-lg border border-border bg-card p-6 md:p-8">
+      <motion.div
+        className="mx-auto max-w-lg border border-border bg-card p-6 md:p-8"
+        initial="initial"
+        animate="animate"
+        variants={pageVariants}
+      >
         <h1 className="text-3xl">Choose a new password</h1>
         <p className="mt-3 text-[0.95rem] leading-relaxed text-muted-foreground">
           Choose a password you will remember. {passwordRequirementText(passwordPolicy)}
@@ -67,7 +76,8 @@ export default function ResetPassword() {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">New password</Label>
-            <Input id="password" name="password" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" />
+            <Input id="password" name="password" type="password" minLength={passwordPolicy.minLength} autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} />
+            <PasswordRequirements password={password} policy={passwordPolicy} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="passwordConfirmation">Confirm new password</Label>
@@ -87,7 +97,7 @@ export default function ResetPassword() {
             Request a new reset link
           </Link>
         </p>
-      </div>
+      </motion.div>
     </Section>
   )
 }

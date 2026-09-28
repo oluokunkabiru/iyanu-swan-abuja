@@ -12,7 +12,12 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5176,
+    // port: 5176,
     strictPort: true,
+     watch: {
+      usePolling: true,
+      interval: 1000,
+    },
+    
   },
 })

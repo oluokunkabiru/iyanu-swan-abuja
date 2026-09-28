@@ -35,7 +35,7 @@ class AuthController extends Controller
             'residential_address' => ['required', 'string', 'max:1000'],
             'place_of_work' => ['required', 'string', 'max:255'],
             'specialisation' => ['nullable', 'string', 'max:255'],
-            'date_of_birth' => ['nullable', 'date', 'before:today'],
+            'date_of_birth' => ['required', 'date', 'before:today'],
         ]);
 
         $user = User::create([
@@ -244,7 +244,7 @@ class AuthController extends Controller
             'phone' => ['sometimes', 'nullable', 'string', 'max:50'],
             'residential_address' => ['sometimes', 'nullable', 'string', 'max:1000'],
             'place_of_work' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'date_of_birth' => ['sometimes', 'nullable', 'date'],
+            'date_of_birth' => ['required', 'date', 'before:today'],
             'is_directory_listed' => ['sometimes', 'boolean'],
             'photo' => ['sometimes', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
             'personal_email' => ['sometimes', 'nullable', 'email', 'max:255', 'different:email', Rule::unique('users', 'personal_email')->ignore($user->id)],

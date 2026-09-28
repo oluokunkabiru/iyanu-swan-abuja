@@ -1,7 +1,9 @@
 import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { Footer } from '@/components/layout/Footer'
 import { Header } from '@/components/layout/Header'
+import { pageVariants } from '@/lib/animations'
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation()
@@ -31,9 +33,17 @@ export function Layout() {
       </a>
       <ScrollToTop />
       <Header />
-      <main id="main" className="flex-1">
+      <motion.main
+        id="main"
+        className="flex-1"
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        variants={pageVariants}
+        key="main"
+      >
         <Outlet />
-      </main>
+      </motion.main>
       <Footer />
     </div>
   )

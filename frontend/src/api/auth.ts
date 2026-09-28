@@ -21,7 +21,7 @@ export async function register(payload: {
   residentialAddress: string
   placeOfWork: string
   professionalInterest?: string
-  dateOfBirth?: string
+  dateOfBirth: string
 }): Promise<AuthenticationResponse> {
   const { data } = await api.post<AuthenticationResponse>('/register', {
     last_name: payload.lastName,
@@ -80,7 +80,7 @@ export async function updateMe(payload: {
   phone?: string
   residentialAddress?: string
   placeOfWork?: string
-  dateOfBirth?: string
+  dateOfBirth: string
   isDirectoryListed?: boolean
   photo?: File
   personalEmail?: string
@@ -93,7 +93,7 @@ export async function updateMe(payload: {
   if (payload.phone !== undefined) form.append('phone', payload.phone)
   if (payload.residentialAddress !== undefined) form.append('residential_address', payload.residentialAddress)
   if (payload.placeOfWork !== undefined) form.append('place_of_work', payload.placeOfWork)
-  if (payload.dateOfBirth !== undefined) form.append('date_of_birth', payload.dateOfBirth)
+  form.append('date_of_birth', payload.dateOfBirth)
   if (payload.isDirectoryListed !== undefined) {
     form.append('is_directory_listed', payload.isDirectoryListed ? '1' : '0')
   }
