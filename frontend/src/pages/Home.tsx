@@ -237,10 +237,12 @@ export default function Home() {
           variants={containerVariants}
         >
           {desks.map((desk) => (
-            <motion.div key={desk.title} variants={itemVariants}>
+            <motion.div key={desk.title} variants={itemVariants}
+                whileHover="hover"
+              >
               <Link
                 to={desk.to}
-                className="group bg-card p-6 transition-colors hover:bg-secondary"
+                className="group flex h-full min-h-52 flex-col bg-card p-6 transition-colors hover:bg-secondary"
               >
                 <desk.icon aria-hidden="true" className="h-6 w-6 text-primary" />
                 <h2 className="mt-4 text-[1.05rem]">{desk.title}</h2>

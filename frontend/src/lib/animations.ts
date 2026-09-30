@@ -61,6 +61,23 @@ export const itemVariants = {
       duration: 0.4,
     },
   },
+  hover: {
+    y: -4,
+    transition: {
+      duration: 0.2,
+      ease: 'easeOut',
+    },
+  },
+}
+
+/** Shared hover lift for cards and other interactive content surfaces. */
+export const cardHover = {
+  rest: { y: 0, boxShadow: '0 0 0 rgba(0,0,0,0)' },
+  hover: {
+    y: -6,
+    boxShadow: '0 16px 32px -18px rgba(0,0,10,0.35)',
+    transition: { duration: 0.25, ease: 'easeOut' },
+  },
 }
 
 export const scaleVariants = {

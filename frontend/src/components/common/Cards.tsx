@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
 import { CalendarDays, Clock, Download, MapPin } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { LazyImage } from '@/components/common/LazyImage'
 import { StatusTag } from '@/components/common/Primitives'
+import { cardHover } from '@/lib/animations'
 import { dateParts, formatDate, formatNaira, formatShortDate, formatTimeRange } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { ChapterEvent, NewsPost, Publication, ResourceItem, Training } from '@/types'
@@ -13,13 +15,20 @@ export function EventCard({ event, compact = false }: { event: ChapterEvent; com
     : null
 
   return (
-    <article className="group flex h-full flex-col border border-border bg-card">
+    <motion.article
+      initial="rest"
+      whileHover="hover"
+      animate="rest"
+      variants={cardHover}
+      className="group flex h-full flex-col border border-border bg-card"
+    >
       {event.coverUrl && !compact && (
         <Link to={`/events/${event.slug}`} className="block overflow-hidden">
           <LazyImage
             src={event.coverUrl}
             alt=""
-            className="aspect-[16/10] w-full object-cover"
+            className="aspect-[16/10] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            hoverZoom={false}
           />
         </Link>
       )}
@@ -81,15 +90,19 @@ export function EventCard({ event, compact = false }: { event: ChapterEvent; com
           </Link>
         </div>
       </div>
-    </article>
+    </motion.article>
   )
 }
 
 export function NewsCard({ post, featured = false }: { post: NewsPost; featured?: boolean }) {
   return (
-    <article
+    <motion.article
+      initial="rest"
+      whileHover="hover"
+      animate="rest"
+      variants={cardHover}
       className={cn(
-        'flex h-full flex-col border border-border bg-card',
+        'group flex h-full flex-col border border-border bg-card',
         featured && 'md:flex-row',
       )}
     >
@@ -101,7 +114,11 @@ export function NewsCard({ post, featured = false }: { post: NewsPost; featured?
           <LazyImage
             src={post.coverUrl}
             alt=""
-            className={cn('w-full object-cover', featured ? 'h-full min-h-56' : 'aspect-[16/9]')}
+            className={cn(
+              'w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105',
+              featured ? 'h-full min-h-56' : 'aspect-[16/9]',
+            )}
+            hoverZoom={false}
           />
         </Link>
       )}
@@ -120,13 +137,13 @@ export function NewsCard({ post, featured = false }: { post: NewsPost; featured?
         </p>
         <div className="mt-auto pt-4 text-[0.8rem] text-muted-foreground">{post.author}</div>
       </div>
-    </article>
+    </motion.article>
   )
 }
 
 export function TrainingRow({ training }: { training: Training }) {
   return (
-    <tr className="border-b border-border last:border-0">
+    <tr className="border-b border-border transition-colors duration-200 last:border-0 hover:bg-secondary/40">
       <td className="py-3.5 pr-4 align-top">
         <span className="block font-medium leading-snug">{training.title}</span>
         <span className="mt-1 block text-[0.8rem] text-muted-foreground">
@@ -162,7 +179,7 @@ export function DocumentRow({ item }: { item: Publication | ResourceItem }) {
     <li className="border-b border-border last:border-0">
       <a
         href={item.fileUrl}
-        className="group flex items-start justify-between gap-4 py-4 hover:bg-secondary/40"
+        className="group flex items-start justify-between gap-4 py-4 transition-all duration-200 hover:translate-x-1 hover:bg-secondary/40"
       >
         <div className="min-w-0">
           <span className="block font-medium leading-snug group-hover:text-plum-700 dark:group-hover:text-primary">
@@ -174,9 +191,9 @@ export function DocumentRow({ item }: { item: Publication | ResourceItem }) {
               : item.description}
           </span>
         </div>
-        <span className="flex shrink-0 items-center gap-2 pt-0.5 text-[0.78rem] font-semibold text-accent-foreground">
+        <span className="flex shrink-0 items-center gap-2 pt-0.5 text-[0.78rem] font-semibold text-accent-foreground transition-transform duration-200 group-hover:translate-x-0.5">
           {isPublication ? 'PDF' : item.format}
-          <Download aria-hidden="true" className="h-4 w-4" />
+          <Download aria-hidden="true" className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
         </span>
       </a>
     </li>
@@ -197,7 +214,10 @@ export function AnnouncementRow({
   const tone = kind === 'deadline' ? 'warning' : kind === 'circular' ? 'gold' : 'neutral'
   return (
     <li className="border-b border-border last:border-0">
-      <Link to={href} className="group flex items-start gap-4 py-3.5">
+      <Link
+        to={href}
+        className="group flex items-start gap-4 py-3.5 transition-transform duration-200 hover:translate-x-1"
+      >
         <CalendarDays aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-primary" />
         <span className="min-w-0 flex-1">
           <span className="block text-[0.92rem] leading-snug group-hover:text-plum-700 dark:group-hover:text-primary">
