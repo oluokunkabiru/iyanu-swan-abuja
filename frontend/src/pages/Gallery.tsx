@@ -60,12 +60,17 @@ export default function Gallery() {
             variants={containerVariants}
           >
             {visible.map((img) => (
-              <motion.li key={img.id} className="border border-border bg-card" variants={itemVariants}>
-                <LazyImage
-                  src={img.imageUrl}
-                  alt={img.caption}
-                  className="aspect-[4/3] w-full object-cover"
-                />
+              <motion.li key={img.id} className="group border border-border bg-card" variants={itemVariants}
+                whileHover="hover"
+              >
+                <div className="overflow-hidden">
+                  <LazyImage
+                    src={img.imageUrl}
+                    alt={img.caption}
+                    className="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                    hoverZoom={false}
+                  />
+                </div>
                 <div className="p-4">
                   <p className="text-[0.92rem] leading-snug">{img.caption}</p>
                   <p className="tnum mt-1 text-[0.78rem] text-muted-foreground">

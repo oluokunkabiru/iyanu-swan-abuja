@@ -249,7 +249,7 @@ function MegaItem({
         end={section.to === '/'}
         className={({ isActive }) =>
           cn(
-            'px-2 py-2 text-[0.85rem] font-medium whitespace-nowrap transition-colors',
+            'link-underline px-2 py-2 text-[0.85rem] font-medium whitespace-nowrap transition-colors',
             isActive
               ? 'text-plum-700 dark:text-primary'
               : 'text-muted-foreground hover:text-foreground',
@@ -292,7 +292,10 @@ function MegaItem({
                 <ul className="mt-3 space-y-2.5">
                   {col.items.map((item) => (
                     <li key={item.to + item.label}>
-                      <Link to={item.to} className="group block">
+                      <Link
+                        to={item.to}
+                        className="group block transition-transform duration-200 hover:translate-x-1"
+                      >
                         <span className="text-[0.9rem] font-medium text-foreground group-hover:text-plum-700 dark:group-hover:text-primary">
                           {item.label}
                         </span>
@@ -316,7 +319,7 @@ function MegaItem({
                 <p className="mt-2 text-[0.82rem] leading-relaxed">{section.feature.body}</p>
                 <Link
                   to={section.feature.to}
-                  className="mt-4 inline-block border-b border-gold-500 pb-0.5 text-[0.82rem] font-semibold text-gold-300"
+                  className="mt-4 inline-block border-b border-gold-500 pb-0.5 text-[0.82rem] font-semibold text-gold-300 transition-transform duration-200 hover:translate-x-1"
                 >
                   {section.feature.cta}
                 </Link>

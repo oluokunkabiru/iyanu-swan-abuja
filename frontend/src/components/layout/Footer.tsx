@@ -89,7 +89,10 @@ export function Footer() {
                 <ul className="mt-3 space-y-2 text-[0.86rem]">
                   {col.items.map((item) => (
                     <li key={item.to}>
-                      <Link to={item.to} className="hover:text-white">
+                      <Link
+                        to={item.to}
+                        className="link-underline inline-block transition-transform duration-200 hover:translate-x-1 hover:text-white"
+                      >
                         {item.label}
                       </Link>
                     </li>
@@ -144,7 +147,7 @@ function SocialLinkIcon({
       rel="noreferrer"
       aria-label={label}
       title={label}
-      className="flex h-9 w-9 items-center justify-center rounded-sm border border-plum-800 text-plum-200 transition-colors hover:border-gold-500 hover:text-gold-300"
+      className="flex h-9 w-9 items-center justify-center rounded-sm border border-plum-800 text-plum-200 transition-all duration-200 hover:-translate-y-0.5 hover:scale-110 hover:border-gold-500 hover:text-gold-300"
     >
       <Icon aria-hidden="true" className="h-4 w-4" />
     </a>

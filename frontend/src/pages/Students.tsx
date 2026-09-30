@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
+import { containerVariants, itemVariants } from '@/lib/animations'
 
 const pathway = [
   {
@@ -38,9 +40,15 @@ export default function Students() {
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
           <div>
             <SectionHeading title="The route to membership" />
-            <ol className="mt-6 divide-y divide-border border-y border-border">
+            <motion.ol
+              className="mt-6 divide-y divide-border border-y border-border"
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={containerVariants}
+            >
               {pathway.map((p, i) => (
-                <li key={p.stage} className="flex gap-5 py-4">
+                <motion.li key={p.stage} className="flex gap-5 py-4" variants={itemVariants}>
                   <span className="tnum shrink-0 font-heading text-2xl leading-none text-plum-200 dark:text-plum-500">
                     {String(i + 1).padStart(2, '0')}
                   </span>
@@ -50,9 +58,9 @@ export default function Students() {
                       {p.detail}
                     </p>
                   </div>
-                </li>
+                </motion.li>
               ))}
-            </ol>
+            </motion.ol>
             <Button variant="outline" asChild className="mt-6">
               <Link to="/about#ican">About the chapter and ICAN</Link>
             </Button>

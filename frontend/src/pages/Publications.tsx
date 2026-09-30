@@ -5,7 +5,7 @@ import { DocumentRow } from '@/components/common/Cards'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
-import { containerVariants, itemVariants } from '@/lib/animations'
+import { containerVariants } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { Publication } from '@/types'
 
@@ -72,9 +72,7 @@ export default function Publications() {
             variants={containerVariants}
           >
             {visible.map((p) => (
-              <motion.li key={p.id} variants={itemVariants}>
-                <DocumentRow item={p} />
-              </motion.li>
+              <DocumentRow key={p.id} item={p} />
             ))}
           </motion.ul>
         )}

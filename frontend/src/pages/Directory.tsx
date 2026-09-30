@@ -143,6 +143,7 @@ export default function Directory() {
                 key={m.id}
                 className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
                 variants={itemVariants}
+                whileHover="hover"
               >
                 <div className="flex items-start gap-3">
                   <Avatar className="h-12 w-12 shrink-0">

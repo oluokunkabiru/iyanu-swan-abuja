@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type TouchEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { LazyImage } from '@/components/common/LazyImage'
+import { TiltCard } from '@/components/common/TiltCard'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { HomeSlide } from '@/types'
@@ -13,7 +13,6 @@ export function HomeSlider({ slides }: { slides: HomeSlide[] }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const touchStartX = useRef<number | null>(null)
-  const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
     if (slides.length < 2 || isPaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -62,48 +61,23 @@ export function HomeSlider({ slides }: { slides: HomeSlide[] }) {
       }}
       onTouchEnd={handleTouchEnd}
     >
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.article
-          key={activeSlide.id}
-          aria-label={`${activeIndex + 1} of ${slides.length}`}
-          className="grid min-w-0 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]"
-          initial={{ opacity: 0, x: 18 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -18 }}
-          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        >
+      <article
+        key={activeSlide.id}
+        aria-label={`${activeIndex + 1} of ${slides.length}`}
+        className="grid min-w-0 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]"
+      >
         <div className="order-2 flex min-h-[25rem] min-w-0 items-center bg-plum-900 px-4 pt-14 pb-24 text-plum-200 lg:order-1 lg:min-h-[38rem] lg:py-20">
           <div className="ml-auto w-full min-w-0 max-w-[36rem] lg:pl-4 lg:pr-14">
-            <motion.p
-              initial={shouldReduceMotion ? false : { opacity: 0, x: -28 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.12, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="text-[0.78rem] font-semibold tracking-[0.16em] text-gold-300 uppercase"
-            >
+            <p className="text-[0.78rem] font-semibold tracking-[0.16em] text-gold-300 uppercase">
               {activeSlide.badge}
-            </motion.p>
-            <motion.h1
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-5 max-w-2xl text-4xl leading-[1.06] text-white sm:text-5xl lg:text-[3.7rem]"
-            >
+            </p>
+            <h1 className="mt-5 max-w-2xl text-4xl leading-[1.06] text-white sm:text-5xl lg:text-[3.7rem]">
               {activeSlide.title}
-            </motion.h1>
-            <motion.p
-              initial={shouldReduceMotion ? false : { opacity: 0, x: 28 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-6 max-w-xl text-[1rem] leading-relaxed text-plum-200/80"
-            >
+            </h1>
+            <p className="mt-6 max-w-xl text-[1rem] leading-relaxed text-plum-200/80">
               {activeSlide.description}
-            </motion.p>
-            <motion.div
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 22 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-8 flex flex-wrap gap-3"
-            >
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
               <Button
                 size="lg"
                 asChild
@@ -121,21 +95,24 @@ export function HomeSlider({ slides }: { slides: HomeSlide[] }) {
                   <Link to={activeSlide.secondaryCtaLink}>{activeSlide.secondaryCtaLabel}</Link>
                 </Button>
               )}
-            </motion.div>
+            </div>
           </div>
         </div>
 
-        <div className="group interactive-media order-1 h-72 min-w-0 overflow-hidden bg-secondary lg:order-2 lg:h-auto lg:min-h-[38rem]">
+        <TiltCard
+          max={5}
+          className="order-1 h-72 min-w-0 overflow-hidden bg-secondary lg:order-2 lg:h-auto lg:min-h-[38rem]"
+        >
           <LazyImage
             src={activeSlide.image}
             alt={activeSlide.imageAlt}
-            className="h-full w-full object-cover"
+            className="h-full w-full scale-105 object-cover"
+            hoverZoom={false}
             style={{ objectPosition: activeSlide.imagePosition }}
             loading={activeIndex === 0 ? 'eager' : 'lazy'}
           />
-        </div>
-        </motion.article>
-      </AnimatePresence>
+        </TiltCard>
+      </article>
 
       {slides.length > 1 && (
         <div className="absolute right-4 bottom-4 left-4 flex items-center justify-between gap-5 lg:right-8 lg:bottom-7 lg:left-auto lg:justify-end">

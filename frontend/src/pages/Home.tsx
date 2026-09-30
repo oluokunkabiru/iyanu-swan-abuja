@@ -278,7 +278,9 @@ export default function Home() {
             variants={containerVariants}
           >
             {(settings?.chapterStats ?? []).map((s) => (
-              <motion.div key={s.label} variants={itemVariants}>
+              <motion.div key={s.label} variants={itemVariants}
+                whileHover="hover"
+              >
                 <Stat value={s.value} label={s.label} note={s.note} />
               </motion.div>
             ))}
@@ -375,9 +377,20 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <ol className="grid gap-px bg-border md:grid-cols-3">
+          <motion.ol
+            className="grid gap-px bg-border md:grid-cols-3"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {registrationSteps.map((s) => (
-              <li key={s.step} className="bg-card p-6">
+              <motion.li
+                key={s.step}
+                className="bg-card p-6"
+                variants={itemVariants}
+                whileHover="hover"
+              >
                 <span className="tnum font-heading text-3xl leading-none text-plum-200 dark:text-plum-500">
                   {String(s.step).padStart(2, '0')}
                 </span>
@@ -385,9 +398,9 @@ export default function Home() {
                 <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
                   {s.description}
                 </p>
-              </li>
+              </motion.li>
             ))}
-          </ol>
+          </motion.ol>
         )}
         <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild>
@@ -428,7 +441,9 @@ export default function Home() {
             {executives
               .filter((e) => e.isPrincipal)
               .map((exec) => (
-                <motion.li key={exec.id} className="border border-border bg-card" variants={itemVariants}>
+                <motion.li key={exec.id} className="border border-border bg-card" variants={itemVariants}
+                whileHover="hover"
+              >
                   {exec.photoUrl && (
                     <LazyImage
                       src={exec.photoUrl}

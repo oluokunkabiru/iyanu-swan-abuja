@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { getFirms } from '@/api/content'
 import { PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
@@ -8,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import type { Firm } from '@/types'
 
 export default function Firms() {
@@ -69,9 +71,20 @@ export default function Firms() {
             ))}
           </div>
         ) : (
-          <ul className="mt-8 grid gap-px bg-border md:grid-cols-2">
+          <motion.ul
+            className="mt-8 grid gap-px bg-border md:grid-cols-2"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {visible.map((f) => (
-              <li key={f.id} className="bg-card p-6">
+              <motion.li
+                key={f.id}
+                className="bg-card p-6"
+                variants={itemVariants}
+                whileHover="hover"
+              >
                 <div className="flex items-start justify-between gap-4">
                   <h2 className="text-[1.08rem] leading-snug">{f.name}</h2>
                   <StatusTag tone={f.licenceStatus === 'Active' ? 'positive' : 'warning'}>
@@ -93,9 +106,9 @@ export default function Firms() {
                     <dd>{f.services.join(', ')}</dd>
                   </div>
                 </dl>
-              </li>
+              </motion.li>
             ))}
-          </ul>
+          </motion.ul>
         )}
 
         {!isLoading && visible.length === 0 && (

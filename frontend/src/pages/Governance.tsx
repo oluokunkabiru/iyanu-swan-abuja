@@ -1,8 +1,11 @@
+import { motion } from 'framer-motion'
 import { getExecutives, getPastChairpersons } from '@/api/content'
 import { LazyImage } from '@/components/common/LazyImage'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
+import { TiltCard } from '@/components/common/TiltCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import type { ExecutiveMember } from '@/types'
 
 export default function Governance() {
@@ -60,17 +63,30 @@ export default function Governance() {
           lede="The offices with day-to-day responsibility for the chapter."
           className="mb-8"
         />
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <motion.ul
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
           {isLoading
             ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32" />)
             : principals.map((exec) => (
-            <li key={exec.id} className="flex gap-4 border border-border bg-card p-5">
+            <motion.li
+              key={exec.id}
+              className="flex gap-4 border border-border bg-card p-5"
+              variants={itemVariants}
+              whileHover="hover"
+            >
               {exec.photoUrl && (
-                <LazyImage
-                  src={exec.photoUrl}
-                  alt=""
-                  className="h-20 w-20 shrink-0 rounded-sm object-cover object-top"
-                />
+                <TiltCard max={12} className="h-20 w-20 shrink-0 overflow-hidden rounded-sm">
+                  <LazyImage
+                    src={exec.photoUrl}
+                    alt=""
+                    className="h-20 w-20 object-cover object-top"
+                  />
+                </TiltCard>
               )}
               <div className="min-w-0">
                 <h3 className="text-[1rem] leading-snug">
@@ -84,16 +100,27 @@ export default function Governance() {
                   />
                 )}
               </div>
-            </li>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
       </Section>
 
       <Section>
         <SectionHeading title="Other members of council" className="mb-8" />
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <motion.ul
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
           {!isLoading && others.map((exec) => (
-            <li key={exec.id} className="flex gap-4 border border-border bg-card p-5">
+            <motion.li
+              key={exec.id}
+              className="flex gap-4 border border-border bg-card p-5"
+              variants={itemVariants}
+              whileHover="hover"
+            >
               {exec.photoUrl && (
                 <LazyImage
                   src={exec.photoUrl}
@@ -110,9 +137,9 @@ export default function Governance() {
                   {exec.bio}
                 </p>
               </div>
-            </li>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
       </Section>
 
       <Section tone="tinted">
@@ -122,12 +149,23 @@ export default function Governance() {
             lede="Women who have led the chapter before."
             className="mb-8"
           />
-          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.ul
+            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {loadingPastChairpersons
               ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-24" />)
               : pastChairpersons.length > 0
                 ? pastChairpersons.map((exec) => (
-                  <li key={exec.id} className="flex gap-4 border border-border bg-card p-5">
+                  <motion.li
+                    key={exec.id}
+                    className="flex gap-4 border border-border bg-card p-5"
+                    variants={itemVariants}
+                    whileHover="hover"
+                  >
                     {exec.photoUrl && (
                       <LazyImage
                         src={exec.photoUrl}
@@ -145,14 +183,14 @@ export default function Governance() {
                           : 'Chairperson'}
                       </p>
                     </div>
-                  </li>
+                  </motion.li>
                 ))
                 : (
                   <li className="border border-dashed border-border bg-card px-5 py-8 text-sm text-muted-foreground sm:col-span-2 lg:col-span-3">
                     Past chairperson records will appear here as the chapter archive is added.
                   </li>
                 )}
-          </ul>
+          </motion.ul>
         </div>
       </Section>
     </>

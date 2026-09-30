@@ -80,7 +80,9 @@ export default function Jobs() {
           variants={containerVariants}
         >
           {visible.map((job) => (
-            <motion.li key={job.id} className="py-5" variants={itemVariants}>
+            <motion.li key={job.id} className="py-5" variants={itemVariants}
+                whileHover="hover"
+              >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h2 className="text-[1.1rem] leading-snug">

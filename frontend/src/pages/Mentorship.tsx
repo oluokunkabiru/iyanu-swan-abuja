@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { PageHeader, Section, SectionHeading, Stat } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
+import { containerVariants, itemVariants } from '@/lib/animations'
 
 const expectations = [
   {
@@ -71,9 +73,20 @@ export default function Mentorship() {
             </div>
           </div>
 
-          <div className="space-y-6">
+          <motion.div
+            className="space-y-6"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {expectations.map((block) => (
-              <div key={block.party} className="border border-border bg-card p-6">
+              <motion.div
+                key={block.party}
+                className="border border-border bg-card p-6"
+                variants={itemVariants}
+                whileHover="hover"
+              >
                 <h2 className="text-[1.05rem]">{block.party}</h2>
                 <ul className="mt-4 space-y-2.5">
                   {block.items.map((item) => (
@@ -85,9 +98,9 @@ export default function Mentorship() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </Section>
     </>

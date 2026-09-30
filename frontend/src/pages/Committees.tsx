@@ -40,7 +40,9 @@ export default function Committees() {
             variants={containerVariants}
           >
             {committees.map((c) => (
-              <motion.li key={c.id} className="bg-card p-6" variants={itemVariants}>
+              <motion.li key={c.id} className="bg-card p-6" variants={itemVariants}
+                whileHover="hover"
+              >
                 <h2 className="text-[1.1rem]">
                   <Link to={`/committees/${c.slug}`} className="hover:text-plum-700 dark:hover:text-primary">
                     {c.name}

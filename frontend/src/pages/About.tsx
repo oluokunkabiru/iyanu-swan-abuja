@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { getCoreValues, getPartners } from '@/api/content'
 import { PageHeader, Section, SectionHeading, Stat } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSettings } from '@/context/SettingsContext'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import type { CoreValue, Partner } from '@/types'
 
 export default function About() {
@@ -43,13 +45,21 @@ export default function About() {
             </div>
           </div>
 
-          <div className="space-y-8">
+          <motion.div
+            className="space-y-8"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {loadingSettings
               ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16" />)
               : chapterStats.map((s) => (
-                  <Stat key={s.label} value={s.value} label={s.label} note={s.note} />
+                  <motion.div key={s.label} variants={itemVariants}>
+                    <Stat value={s.value} label={s.label} note={s.note} />
+                  </motion.div>
                 ))}
-          </div>
+          </motion.div>
         </div>
       </Section>
 
@@ -96,16 +106,27 @@ export default function About() {
             ))}
           </div>
         ) : (
-          <dl className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+          <motion.dl
+            className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {coreValues.map((v) => (
-              <div key={v.title} className="bg-card p-6">
+              <motion.div
+                key={v.title}
+                className="bg-card p-6"
+                variants={itemVariants}
+                whileHover="hover"
+              >
                 <dt className="font-heading text-[1.15rem] text-accent-foreground">{v.title}</dt>
                 <dd className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
                   {v.description}
                 </dd>
-              </div>
+              </motion.div>
             ))}
-          </dl>
+          </motion.dl>
         )}
       </Section>
 
@@ -140,18 +161,24 @@ export default function About() {
                 ))}
               </div>
             ) : (
-              <ul className="mt-6 divide-y divide-border border-y border-border">
+              <motion.ul
+                className="mt-6 divide-y divide-border border-y border-border"
+                initial="initial"
+                whileInView="animate"
+                viewport={{ once: true, amount: 0.2 }}
+                variants={containerVariants}
+              >
                 {partners.map((p) => (
-                  <li key={p.id} className="py-3.5">
+                  <motion.li key={p.id} className="py-3.5" variants={itemVariants}>
                     <a href={p.url} target="_blank" rel="noreferrer" className="group block">
                       <span className="text-[0.76rem] font-semibold text-accent-foreground">{p.scope}</span>
                       <span className="mt-0.5 block text-[0.93rem] group-hover:text-plum-700 dark:group-hover:text-primary">
                         {p.name}
                       </span>
                     </a>
-                  </li>
+                  </motion.li>
                 ))}
-              </ul>
+              </motion.ul>
             )}
           </div>
         </div>

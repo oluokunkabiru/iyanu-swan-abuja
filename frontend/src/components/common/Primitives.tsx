@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { CountUp } from '@/components/common/CountUp'
 import { cn } from '@/lib/utils'
 import { containerVariants } from '@/lib/animations'
 
@@ -124,7 +125,7 @@ export function Stat({ value, label, note }: { value: string; label: string; not
   return (
     <div className="border-l-2 border-gold-500 pl-4">
       <p className="tnum font-heading text-3xl leading-none text-plum-700 dark:text-primary">
-        {value}
+        <CountUp value={value} />
       </p>
       <p className="mt-2 text-sm font-medium">{label}</p>
       {note && <p className="mt-1 text-[0.8rem] leading-snug text-muted-foreground">{note}</p>}

@@ -54,6 +54,56 @@ Enhanced with staggered animations on:
 - Chapter council members (5 profile cards)
 - Chapter news (3 news cards)
 
+### 7. **Hover-lift on list and card items**
+`itemVariants` (in `src/lib/animations.ts`) now has a third `hover` state
+(`y: -4` with a quick ease-out) alongside `initial`/`animate`. Anywhere a list
+already uses `variants={itemVariants}`, adding `whileHover="hover"` to the
+same element makes it lift slightly on mouse-over — no extra markup needed.
+This is wired up across the site: Home (desks, stats, events, council, news),
+Events, News, Gallery, Committees, Publications, Faqs, Jobs, Directory,
+Governance, About, Membership, Cpd, Mentorship, Practice, Firms and
+Resources.
+
+`EventCard` and `NewsCard` (`src/components/common/Cards.tsx`) have their own
+independent hover lift (`cardHover` variants, with a soft shadow) since they
+render as standalone `motion.article` elements — don't also add
+`whileHover="hover"` to a `motion.div`/`motion.li` that wraps one of these
+two cards, or the lift doubles up. Their cover images also zoom in slightly
+(`group-hover:scale-105`) on hover.
+
+### 8. **TiltCard** (`src/components/common/TiltCard.tsx`)
+A mouse-move 3D tilt wrapper with a soft light glare that follows the
+cursor. Use it around a photo or feature card you want to feel more
+tactile:
+
+```tsx
+import { TiltCard } from '@/components/common/TiltCard'
+
+<TiltCard max={10} className="overflow-hidden rounded-sm">
+  <LazyImage src={photo} alt="" className="h-full w-full object-cover" />
+</TiltCard>
+```
+
+- `max` — maximum tilt in degrees (default `8`). Use a smaller value (4–6)
+  for large hero images, a larger one (10–14) for small square portraits.
+- `glare` — set `false` to disable the cursor-following light overlay.
+
+Currently used on the Home hero slider image and the principal executives'
+photos on the Governance page. It automatically renders as a static,
+non-tilting wrapper when the visitor has `prefers-reduced-motion: reduce`
+set — see `src/hooks/usePrefersReducedMotion.ts`.
+
+### 9. **CountUp** (`src/components/common/CountUp.tsx`)
+Animates a stat figure counting up from zero when it scrolls into view.
+It's wired directly into the shared `Stat` component
+(`src/components/common/Primitives.tsx`), so every `<Stat value="1,240" .../>`
+across the site (Home, About, Cpd, Mentorship) counts up automatically —
+nothing to change at the call site. It parses the numeric part of the
+string and keeps whatever prefix, suffix or thousands-comma the original
+value had (`"120+"`, `"₦25,000"`, `"1,240"` all work). Like `TiltCard`, it
+skips the animation and shows the final value immediately when
+`prefers-reduced-motion: reduce` is set.
+
 ## How It Works
 
 ### Page Transitions
@@ -151,7 +201,13 @@ import { myCustomVariant } from '@/lib/animations'
 
 - Animations use `viewport={{ once: true }}` to prevent repeated re-triggering
 - Framer Motion uses GPU-accelerated transforms for smooth 60fps animations
-- Animations are skipped on reduced-motion preferences (respects `prefers-reduced-motion`)
+- Scroll and hover animations built on `framer-motion` variants (page
+  transitions, `AnimatedBlock`, `containerVariants`/`itemVariants`) inherit
+  Framer Motion's automatic `prefers-reduced-motion` handling
+- `TiltCard` and `CountUp` are JS-driven (mouse tracking / a counting
+  `requestAnimationFrame` loop) so they check
+  `src/hooks/usePrefersReducedMotion.ts` directly and fall back to a static
+  render when the visitor has asked for less motion
 - Lazy loading via `whileInView` ensures animations only load when needed
 
 ## Browser Support

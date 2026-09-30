@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { CalendarDays, Clock, MapPin } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { getEvent, getEvents, registerForEvent } from '@/api/content'
 import { LazyImage } from '@/components/common/LazyImage'
 import { EmptyState, PageHeader, Section, SectionHeading, StatusTag } from '@/components/common/Primitives'
@@ -9,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import { formatDate, formatNaira, formatTimeRange } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { ChapterEvent } from '@/types'
@@ -132,16 +134,28 @@ export default function EventDetail() {
             {event.galleryImageUrls.length > 0 && (
               <div className="mt-10">
                 <SectionHeading title="Event gallery" className="mb-6" />
-                <div className="grid gap-4 sm:grid-cols-2">
+                <motion.div
+                  className="grid gap-4 sm:grid-cols-2"
+                  initial="initial"
+                  whileInView="animate"
+                  viewport={{ once: true, amount: 0.2 }}
+                  variants={containerVariants}
+                >
                   {event.galleryImageUrls.map((imageUrl, index) => (
-                    <LazyImage
+                    <motion.div
                       key={imageUrl}
-                      src={imageUrl}
-                      alt={`${event.title} gallery image ${index + 1}`}
-                      className="aspect-[4/3] w-full border border-border object-cover"
-                    />
+                      variants={itemVariants}
+                      className="overflow-hidden border border-border"
+                    >
+                      <LazyImage
+                        src={imageUrl}
+                        alt={`${event.title} gallery image ${index + 1}`}
+                        className="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out hover:scale-110"
+                        hoverZoom={false}
+                      />
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               </div>
             )}
 

@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { getCommittees, getEvents, getTrainings } from '@/api/content'
 import { PageHeader, Section, SectionHeading, Stat } from '@/components/common/Primitives'
 import { TrainingRow } from '@/components/common/Cards'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import type { ChapterEvent, Committee, Training } from '@/types'
 
 export default function Cpd() {
@@ -134,18 +136,29 @@ export default function Cpd() {
             ))}
           </div>
         ) : (
-          <ul className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+          <motion.ul
+            className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {committees.slice(0, 3).map((c) => (
-              <li key={c.id} className="bg-card p-6">
+              <motion.li
+                key={c.id}
+                className="bg-card p-6"
+                variants={itemVariants}
+                whileHover="hover"
+              >
                 <h3 className="text-[1.05rem]">
                   <Link to={`/committees/${c.slug}`} className="hover:text-plum-700 dark:hover:text-primary">
                     {c.name}
                   </Link>
                 </h3>
                 <p className="mt-2 text-[0.88rem] leading-relaxed text-muted-foreground">{c.remit}</p>
-              </li>
+              </motion.li>
             ))}
-          </ul>
+          </motion.ul>
         )}
         <p className="mt-6 text-[0.9rem] text-muted-foreground">
           {loadingEvents ? '…' : upcomingEvents.length} chapter events are open for registration.{' '}

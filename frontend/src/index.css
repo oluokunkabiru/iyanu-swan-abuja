@@ -179,6 +179,16 @@
     text-wrap: pretty;
   }
 
+  /* Every link eases into its hover state instead of snapping — buttons
+     (data-slot="button") manage their own hover treatment and are excluded
+     so the two don't fight. */
+  a:not([data-slot='button']) {
+    transition:
+      color 200ms ease-out,
+      opacity 200ms ease-out,
+      background-color 200ms ease-out;
+  }
+
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
@@ -209,6 +219,25 @@
 
   .tnum {
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Animated underline for plain-text navigation links (header menus, footer
+     columns, prose links) — sweeps in from the left on hover/focus instead of
+     the underline just appearing. Not for links already styled as buttons or
+     cards. */
+  .link-underline {
+    position: relative;
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0% 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: background-size 250ms ease-out;
+  }
+
+  .link-underline:hover,
+  .link-underline:focus-visible {
+    background-size: 100% 1px;
   }
 }
 

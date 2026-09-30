@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useSettings } from '@/context/SettingsContext'
-import { pageVariants, containerVariants, itemVariants } from '@/lib/animations'
+import { containerVariants } from '@/lib/animations'
 
 const routes = [
   { office: 'General Secretary', handles: 'Correspondence, meetings, committee service and anything not listed below.' },

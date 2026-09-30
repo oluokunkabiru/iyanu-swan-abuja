@@ -44,11 +44,11 @@ export default function Announcements() {
                 variants={containerVariants}
               >
                 {announcements.map((a) => (
-                  <motion.li key={a.id} variants={itemVariants}>
-                    <AnnouncementRow {...a} />
-                  </motion.li>
+                  <AnnouncementRow key={a.id} {...a} />
                 ))}
-              </motion.ul>\n            )}\n          </div>
+              </motion.ul>
+            )}
+          </div>
 
           <aside>
             <SectionHeading title="Forthcoming programme" className="mb-6" />
@@ -67,7 +67,9 @@ export default function Announcements() {
                 variants={containerVariants}
               >
                 {programme.map((p) => (
-                  <motion.li key={p.id} className="flex gap-3 py-3.5" variants={itemVariants}>
+                  <motion.li key={p.id} className="flex gap-3 py-3.5" variants={itemVariants}
+                whileHover="hover"
+              >
                     {p.imageUrl && (
                       <LazyImage
                         src={p.imageUrl}
@@ -100,9 +102,9 @@ export default function Announcements() {
                         </a>
                       )}
                     </div>
-                  </li>
+                  </motion.li>
                 ))}
-              </ul>
+              </motion.ul>
             )}
           </aside>
         </div>

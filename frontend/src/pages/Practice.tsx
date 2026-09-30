@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { getFirms, getResources } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import type { Firm, ResourceItem } from '@/types'
 
 export default function Practice() {
@@ -31,29 +33,35 @@ export default function Practice() {
               </p>
               <p>The chapter took three actions in response.</p>
             </div>
-            <ol className="mt-6 divide-y divide-border border-y border-border">
-              <li className="py-4">
+            <motion.ol
+              className="mt-6 divide-y divide-border border-y border-border"
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={containerVariants}
+            >
+              <motion.li className="py-4" variants={itemVariants} whileHover="hover">
                 <h3 className="text-[1.02rem]">A standing licensing clinic</h3>
                 <p className="mt-1.5 text-[0.9rem] leading-relaxed text-muted-foreground">
                   Held quarterly by the Women in Practice committee. Bring your application and
                   leave with it checked.
                 </p>
-              </li>
-              <li className="py-4">
+              </motion.li>
+              <motion.li className="py-4" variants={itemVariants} whileHover="hover">
                 <h3 className="text-[1.02rem]">A practice attachment register</h3>
                 <p className="mt-1.5 text-[0.9rem] leading-relaxed text-muted-foreground">
                   Members with licensed firms who are willing to host an attachment list themselves
                   here, so candidates are not cold-calling for a placement.
                 </p>
-              </li>
-              <li className="py-4">
+              </motion.li>
+              <motion.li className="py-4" variants={itemVariants} whileHover="hover">
                 <h3 className="text-[1.02rem]">A submission on re-entry</h3>
                 <p className="mt-1.5 text-[0.9rem] leading-relaxed text-muted-foreground">
                   Made to the Professional Practice directorate on how members returning after a
                   break in service are treated.
                 </p>
-              </li>
-            </ol>
+              </motion.li>
+            </motion.ol>
           </div>
 
           <aside id="registration" className="scroll-mt-24 space-y-6">
@@ -69,7 +77,10 @@ export default function Practice() {
                 <ul className="mt-4 divide-y divide-border border-y border-border">
                   {guides.map((g) => (
                     <li key={g.id}>
-                      <a href={g.fileUrl} className="group block py-3">
+                      <a
+                        href={g.fileUrl}
+                        className="group block py-3 transition-transform duration-200 hover:translate-x-1"
+                      >
                         <span className="block text-[0.9rem] leading-snug group-hover:text-plum-700 dark:group-hover:text-primary">
                           {g.title}
                         </span>
@@ -141,16 +152,27 @@ export default function Practice() {
               ))}
             </div>
           ) : (
-            <ul className="grid gap-px bg-border md:grid-cols-2 lg:grid-cols-3">
+            <motion.ul
+              className="grid gap-px bg-border md:grid-cols-2 lg:grid-cols-3"
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={containerVariants}
+            >
               {firms.map((f) => (
-                <li key={f.id} className="bg-card p-5">
+                <motion.li
+                  key={f.id}
+                  className="bg-card p-5"
+                  variants={itemVariants}
+                  whileHover="hover"
+                >
                   <h3 className="text-[1rem] leading-snug">{f.name}</h3>
                   <p className="mt-1 text-[0.82rem] text-accent-foreground">{f.principal}</p>
                   <p className="mt-2 text-[0.84rem] text-muted-foreground">{f.services.join(' · ')}</p>
                   <p className="mt-2 text-[0.8rem] text-muted-foreground">{f.area}</p>
-                </li>
+                </motion.li>
               ))}
-            </ul>
+            </motion.ul>
           )}
         </div>
       </Section>

@@ -69,7 +69,9 @@ export default function Faqs() {
           {visible.map((faq) => {
             const isOpen = effectiveOpenId === faq.id
             return (
-              <motion.li key={faq.id} variants={itemVariants}>
+              <motion.li key={faq.id} variants={itemVariants}
+                whileHover="hover"
+              >
                 <h3>
                   <button
                     type="button"

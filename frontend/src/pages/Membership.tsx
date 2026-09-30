@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { getMembershipLevels } from '@/api/content'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSettings } from '@/context/SettingsContext'
 import { useApiData } from '@/hooks/useApiData'
+import { containerVariants, itemVariants } from '@/lib/animations'
 import { formatNaira } from '@/lib/format'
 import type { MembershipLevel } from '@/types'
 
@@ -94,9 +96,20 @@ export default function Membership() {
             ))}
           </div>
         ) : (
-          <ol className="grid gap-px bg-border md:grid-cols-3">
+          <motion.ol
+            className="grid gap-px bg-border md:grid-cols-3"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {registrationSteps.map((s) => (
-              <li key={s.step} className="bg-card p-6">
+              <motion.li
+                key={s.step}
+                className="bg-card p-6"
+                variants={itemVariants}
+                whileHover="hover"
+              >
                 <span className="tnum font-heading text-3xl leading-none text-plum-200 dark:text-plum-500">
                   {String(s.step).padStart(2, '0')}
                 </span>
@@ -104,9 +117,9 @@ export default function Membership() {
                 <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
                   {s.description}
                 </p>
-              </li>
+              </motion.li>
             ))}
-          </ol>
+          </motion.ol>
         )}
         <Button size="lg" asChild className="mt-8">
           <Link to="/membership/register">Start your registration</Link>
@@ -126,16 +139,27 @@ export default function Membership() {
             ))}
           </div>
         ) : (
-          <dl className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+          <motion.dl
+            className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+          >
             {memberBenefits.map((b) => (
-              <div key={b.title} className="bg-card p-6">
+              <motion.div
+                key={b.title}
+                className="bg-card p-6"
+                variants={itemVariants}
+                whileHover="hover"
+              >
                 <dt className="text-[1.05rem] font-semibold">{b.title}</dt>
                 <dd className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
                   {b.description}
                 </dd>
-              </div>
+              </motion.div>
             ))}
-          </dl>
+          </motion.dl>
         )}
       </Section>
     </>

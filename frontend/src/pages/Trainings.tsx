@@ -5,7 +5,7 @@ import { PageHeader, Section, SectionHeading } from '@/components/common/Primiti
 import { TrainingRow } from '@/components/common/Cards'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useApiData } from '@/hooks/useApiData'
-import { containerVariants, itemVariants } from '@/lib/animations'
+import { containerVariants } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { Training } from '@/types'
 
@@ -121,7 +121,7 @@ export default function Trainings() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </motion.div>
         )}
 
         {!isLoading && visible.length === 0 && (
