@@ -78,7 +78,9 @@ export function Header() {
 
       <div className="border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex h-[4.75rem] max-w-[96rem] items-center gap-3 px-4">
-          <Link to="/" aria-label={`${settings?.shortName ?? 'SWAN Abuja'} home`} className="shrink-0">
+          <Link to="/" aria-label={`${settings?.shortName ?? 'SWAN Abuja'} home`}
+            className="shrink-0 rounded-md transition-colors dark:bg-white dark:px-2 dark:py-1.5 dark:shadow-sm"
+          >
             <BrandLogo className="h-7 sm:h-10" />
           </Link>
 
