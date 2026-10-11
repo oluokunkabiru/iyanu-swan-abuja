@@ -8,7 +8,7 @@ import Announcements from '@/pages/Announcements'
 import Committees, { CommitteeDetail } from '@/pages/Committees'
 import Constitution from '@/pages/Constitution'
 import Contact from '@/pages/Contact'
-import Cpd from '@/pages/Cpd'
+// import Cpd from '@/pages/Cpd'
 import Directory from '@/pages/Directory'
 import EmailVerified from '@/pages/EmailVerified'
 import EventDetail from '@/pages/EventDetail'
@@ -35,9 +35,9 @@ import Resources from '@/pages/Resources'
 import ResetPassword from '@/pages/ResetPassword'
 import Students from '@/pages/Students'
 import TicketVerify from '@/pages/TicketVerify'
-import Trainings from '@/pages/Trainings'
+// import Trainings from '@/pages/Trainings'
 
-import MembersCpd from '@/pages/members/Cpd'
+// import MembersCpd from '@/pages/members/Cpd'
 import MembersOverview from '@/pages/members/Overview'
 import MembersProfile from '@/pages/members/Profile'
 import MembersSubscription from '@/pages/members/Subscription'
@@ -65,8 +65,8 @@ export function AppRouter() {
         <Route path="students" element={<Students />} />
 
         {/* Professional development */}
-        <Route path="cpd" element={<Cpd />} />
-        <Route path="cpd/trainings" element={<Trainings />} />
+        {/* <Route path="cpd" element={<Cpd />} /> */}
+        {/* <Route path="cpd/trainings" element={<Trainings />} /> */}
         <Route path="practice" element={<Practice />} />
         <Route path="jobs" element={<Jobs />} />
 
@@ -104,7 +104,7 @@ export function AppRouter() {
           }
         >
           <Route index element={<MembersOverview />} />
-          <Route path="cpd" element={<MembersCpd />} />
+          {/* <Route path="cpd" element={<MembersCpd />} /> */}
           <Route path="subscription" element={<MembersSubscription />} />
           <Route path="tickets" element={<MembersTickets />} />
           <Route path="profile" element={<MembersProfile />} />

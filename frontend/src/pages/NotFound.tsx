@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 const suggestions = [
   { label: 'Membership', to: '/membership' },
   { label: 'Events', to: '/events' },
-  { label: 'CPD', to: '/cpd' },
+  // { label: 'CPD', to: '/cpd' },
   { label: 'Members directory', to: '/directory' },
   { label: 'Publications', to: '/publications' },
   { label: 'Contact', to: '/contact' },

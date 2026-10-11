@@ -56,7 +56,7 @@ export const navigation: NavSection[] = [
         heading: 'Manage',
         items: [
           { label: 'Subscription and welfare levy', to: '/members/subscription' },
-          { label: 'CPD record', to: '/members/cpd' },
+          // { label: 'CPD record', to: '/members/cpd' },
           { label: 'My event tickets', to: '/members/tickets' },
           { label: 'Profile and preferences', to: '/members/profile' },
         ],
@@ -77,42 +77,43 @@ export const navigation: NavSection[] = [
       cta: 'Start your registration',
     },
   },
-  {
-    label: 'Development',
-    columns: [
-      {
-        heading: 'Continuing development',
-        items: [
-          { label: 'CPD overview', to: '/cpd', description: '120 hours across three years' },
-          { label: 'Training calendar', to: '/cpd/trainings' },
-          { label: 'Committees and technical work', to: '/committees' },
-        ],
-      },
-      {
-        heading: 'Practice',
-        items: [
-          { label: 'Women in practice', to: '/practice' },
-          { label: 'Firm registration', to: '/practice#registration' },
-          { label: 'Licence renewal', to: '/practice#renewal' },
-          { label: 'Practice attachment register', to: '/practice#attachment' },
-        ],
-      },
-      {
-        heading: 'Career',
-        items: [
-          { label: 'Mentorship programme', to: '/mentorship' },
-          { label: 'Job centre', to: '/jobs' },
-          { label: 'Students and prospective members', to: '/students' },
-        ],
-      },
-    ],
-    feature: {
-      title: 'CPD that actually posts',
-      body: 'Chapter sessions are accredited and tracked. Register with your ICAN details and hours land on your record.',
-      to: '/cpd',
-      cta: 'See the CPD calendar',
-    },
-  },
+  // Development menu hidden (CPD disabled)
+  // {
+  //   label: 'Development',
+  //   columns: [
+  //     {
+  //       heading: 'Continuing development',
+  //       items: [
+  //         { label: 'CPD overview', to: '/cpd', description: '120 hours across three years' },
+  //         { label: 'Training calendar', to: '/cpd/trainings' },
+  //         { label: 'Committees and technical work', to: '/committees' },
+  //       ],
+  //     },
+  //     {
+  //       heading: 'Practice',
+  //       items: [
+  //         { label: 'Women in practice', to: '/practice' },
+  //         { label: 'Firm registration', to: '/practice#registration' },
+  //         { label: 'Licence renewal', to: '/practice#renewal' },
+  //         { label: 'Practice attachment register', to: '/practice#attachment' },
+  //       ],
+  //     },
+  //     {
+  //       heading: 'Career',
+  //       items: [
+  //         { label: 'Mentorship programme', to: '/mentorship' },
+  //         { label: 'Job centre', to: '/jobs' },
+  //         { label: 'Students and prospective members', to: '/students' },
+  //       ],
+  //     },
+  //   ],
+  //   feature: {
+  //     title: 'CPD that actually posts',
+  //     body: 'Chapter sessions are accredited and tracked. Register with your ICAN details and hours land on your record.',
+  //     to: '/cpd',
+  //     cta: 'See the CPD calendar',
+  //   },
+  // },
   {
     label: 'Events',
     columns: [
@@ -122,7 +123,7 @@ export const navigation: NavSection[] = [
           { label: 'All events', to: '/events' },
           { label: 'Upcoming', to: '/events?when=upcoming' },
           { label: 'Past events', to: '/events?when=past' },
-          { label: 'Training calendar', to: '/cpd/trainings' },
+          // { label: 'Training calendar', to: '/cpd/trainings' },
         ],
       },
       {
@@ -196,8 +197,8 @@ export const footerLinks = [
   {
     heading: 'Professional',
     items: [
-      { label: 'CPD', to: '/cpd' },
-      { label: 'Training calendar', to: '/cpd/trainings' },
+      // { label: 'CPD', to: '/cpd' },
+      // { label: 'Training calendar', to: '/cpd/trainings' },
       { label: 'Women in practice', to: '/practice' },
       { label: 'Job centre', to: '/jobs' },
     ],

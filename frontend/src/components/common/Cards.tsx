@@ -44,9 +44,9 @@ export function EventCard({ event, compact = false }: { event: ChapterEvent; com
           <div className="min-w-0">
             <div className="mb-1.5 flex flex-wrap items-center gap-2">
               <StatusTag tone="neutral">{event.category}</StatusTag>
-              {event.cpdHours > 0 && (
+              {/* {event.cpdHours > 0 && (
                 <StatusTag tone="gold">{event.cpdHours} CPD hours</StatusTag>
-              )}
+              )} */}
             </div>
             <h3 className="text-[1.05rem] leading-snug">
               <Link

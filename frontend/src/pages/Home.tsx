@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Building2, GraduationCap, Users, Wallet } from 'lucide-react'
+import { ArrowRight, Building2, /* GraduationCap, */ Users, Wallet } from 'lucide-react'
 import { motion } from 'framer-motion'
 import {
   getCoreValues,
@@ -33,12 +33,12 @@ const desks = [
     body: 'Eligibility, dues, and what an active membership gets you.',
     to: '/membership',
   },
-  {
-    icon: GraduationCap,
-    title: 'CPD and training',
-    body: '120 hours across three years, tracked against your record.',
-    to: '/cpd',
-  },
+  // {
+  //   icon: GraduationCap,
+  //   title: 'CPD and training',
+  //   body: '120 hours across three years, tracked against your record.',
+  //   to: '/cpd',
+  // },
   {
     icon: Building2,
     title: 'Directories',
@@ -230,7 +230,7 @@ export default function Home() {
       {/* Quick desks */}
       <section className="border-b border-border bg-card">
         <motion.div
-          className="mx-auto grid max-w-6xl gap-px bg-border px-4 md:grid-cols-2 lg:grid-cols-4"
+          className="mx-auto grid max-w-6xl gap-px bg-border px-4 md:grid-cols-3"
           initial="initial"
           whileInView="animate"
           viewport={{ once: true, amount: 0.2 }}

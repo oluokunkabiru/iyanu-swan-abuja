@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 
 const railLinks = [
   { to: '/members', label: 'Overview', end: true },
-  { to: '/members/cpd', label: 'CPD record' },
+  // { to: '/members/cpd', label: 'CPD record' },
   { to: '/members/subscription', label: 'Subscription and welfare' },
   { to: '/members/tickets', label: 'Event tickets' },
   { to: '/members/profile', label: 'Profile' },

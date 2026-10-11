@@ -204,7 +204,7 @@ export default function EventDetail() {
               </dl>
               <div className="mt-4 flex flex-wrap gap-2">
                 <StatusTag tone="neutral">{event.category}</StatusTag>
-                {event.cpdHours > 0 && <StatusTag tone="gold">{event.cpdHours} CPD hours</StatusTag>}
+                {/* {event.cpdHours > 0 && <StatusTag tone="gold">{event.cpdHours} CPD hours</StatusTag>} */}
                 {event.status === 'past' && <StatusTag tone="neutral">Concluded</StatusTag>}
               </div>
             </div>

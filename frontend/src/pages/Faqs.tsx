@@ -11,7 +11,7 @@ import { containerVariants, itemVariants } from '@/lib/animations'
 import { cn } from '@/lib/utils'
 import type { Faq } from '@/types'
 
-const topics: (Faq['topic'] | 'All')[] = ['All', 'Membership', 'Events', 'Payments', 'CPD', 'General']
+const topics: (Faq['topic'] | 'All')[] = ['All', 'Membership', 'Events', 'Payments', /* 'CPD', */ 'General']
 
 export default function Faqs() {
   const [topic, setTopic] = useState<(typeof topics)[number]>('All')
@@ -26,7 +26,7 @@ export default function Faqs() {
       <PageHeader
         breadcrumb={[{ label: 'Home', to: '/' }, { label: 'FAQs' }]}
         title="Frequently asked questions"
-        intro="Membership, events, payments and CPD. If your question is not here, the General Secretary will answer it."
+        intro="Membership, events and payments. If your question is not here, the General Secretary will answer it."
       />
 
       <Section>

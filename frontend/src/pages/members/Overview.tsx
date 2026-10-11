@@ -1,22 +1,22 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Award, CalendarDays, GraduationCap, Mail, Ticket, Wallet, ArrowRight } from 'lucide-react'
-import { fetchMyCpdRecords, fetchMyRegistrations, fetchMySubscriptions, resendVerificationEmail } from '@/api/auth'
+import { /* Award, */ CalendarDays, /* GraduationCap, */ Mail, Ticket, Wallet, ArrowRight } from 'lucide-react'
+import { /* fetchMyCpdRecords, */ fetchMyRegistrations, fetchMySubscriptions, resendVerificationEmail } from '@/api/auth'
 import { getEvents } from '@/api/content'
-import { EmptyState, SectionHeading, StatusTag } from '@/components/common/Primitives'
+import { /* EmptyState, */ SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
 import { useApiData } from '@/hooks/useApiData'
-import { formatDate, formatNaira, formatShortDate } from '@/lib/format'
+import { formatDate, formatNaira /* , formatShortDate */ } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import type { ChapterEvent, CpdRecord, SubscriptionRecord, TicketRecord } from '@/types'
+import type { ChapterEvent, /* CpdRecord, */ SubscriptionRecord, TicketRecord } from '@/types'
 
 export default function MembersOverview() {
   const { user } = useAuth()
   const [resending, setResending] = useState(false)
   const [resent, setResent] = useState(false)
-  const { data: cpdRecords, isLoading: loadingCpd } = useApiData(fetchMyCpdRecords, [] as CpdRecord[])
+  // const { data: cpdRecords, isLoading: loadingCpd } = useApiData(fetchMyCpdRecords, [] as CpdRecord[])
   const { data: subscriptions, isLoading: loadingSubscriptions } = useApiData(
     fetchMySubscriptions,
     [] as SubscriptionRecord[],
@@ -26,12 +26,12 @@ export default function MembersOverview() {
 
   if (!user) return null
 
-  const isLoading = loadingCpd || loadingSubscriptions || loadingTickets
-  const cycleStart = new Date().getFullYear() - 2
-  const cycleHours = cpdRecords
-    .filter((r) => new Date(r.date).getFullYear() >= cycleStart)
-    .reduce((sum, r) => sum + r.hours, 0)
-  const progress = Math.min(100, Math.round((cycleHours / user.cpdTarget) * 100))
+  const isLoading = /* loadingCpd || */ loadingSubscriptions || loadingTickets
+  // const cycleStart = new Date().getFullYear() - 2
+  // const cycleHours = cpdRecords
+  //   .filter((r) => new Date(r.date).getFullYear() >= cycleStart)
+  //   .reduce((sum, r) => sum + r.hours, 0)
+  // const progress = Math.min(100, Math.round((cycleHours / user.cpdTarget) * 100))
 
   const currentYear = new Date().getFullYear()
   const currentYearRecord = subscriptions.find((s) => s.year === currentYear)
@@ -73,13 +73,14 @@ export default function MembersOverview() {
       <div>
         <SectionHeading title="Where you stand" className="mb-6" />
         {isLoading ? (
-          <div className="grid gap-5 sm:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
+          <div className="grid gap-5 sm:grid-cols-2">
+            {Array.from({ length: 2 }).map((_, i) => (
               <Skeleton key={i} className="h-44 rounded-xl" />
             ))}
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2">
+            {/* CPD card hidden
             <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
               <div className="flex items-center justify-between">
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
@@ -109,6 +110,8 @@ export default function MembersOverview() {
               </div>
               <p className="mt-2 text-[0.78rem] text-muted-foreground">{progress}% of target</p>
             </div>
+            */}
+
 
             <div className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
               <div className="flex items-center justify-between">
@@ -204,6 +207,7 @@ export default function MembersOverview() {
         )
       )}
 
+      {/* Recent CPD section hidden
       <div>
         <SectionHeading
           title="Recent CPD"
@@ -255,6 +259,7 @@ export default function MembersOverview() {
           </div>
         )}
       </div>
+      */}
 
       {(nextTicket || nextEvent) && (
         <div className="grid gap-5 md:grid-cols-2">
