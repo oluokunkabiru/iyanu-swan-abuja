@@ -22,12 +22,8 @@ class SiteSetting extends Model implements HasMedia
         'vision',
         'aims',
         'address',
-        'phone',
+        'phones',
         'email',
-        'facebook_url',
-        'instagram_url',
-        'twitter_url',
-        'linkedin_url',
         'social_links',
         'hero_video_url',
         'chairperson_heading',
@@ -48,6 +44,7 @@ class SiteSetting extends Model implements HasMedia
     {
         return [
             'mission_items' => 'array',
+            'phones' => 'array',
             'social_links' => 'array',
             'chairperson_message' => 'array',
             'chapter_stats' => 'array',

@@ -6,6 +6,11 @@ export interface SocialLink {
   network: 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube'
 }
 
+export interface ContactPhone {
+  label: string | null
+  number: string
+}
+
 export interface SiteSettings {
   chapterName: string
   shortName: string
@@ -16,6 +21,7 @@ export interface SiteSettings {
   aims: string
   address: string
   phone: string
+  phones: ContactPhone[]
   email: string
   socials: SocialLink[]
   logoUrl?: string | null

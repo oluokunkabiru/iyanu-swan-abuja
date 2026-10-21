@@ -59,21 +59,27 @@ export function Footer() {
                   )}
                 </a>
               </li>
-              <li className="flex items-start gap-2.5">
-                <Phone aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
-                <a href={`tel:${settings?.phone?.replace(/\s/g, '') ?? ''}`} className="hover:text-white">
-                  {loadingSettings ? (
-                    <Skeleton className="inline-block h-3 w-24 align-middle bg-plum-800" />
-                  ) : (
-                    settings?.phone
-                  )}
-                </a>
-              </li>
+              {loadingSettings ? (
+                <li className="flex items-start gap-2.5">
+                  <Phone aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                  <Skeleton className="inline-block h-3 w-24 align-middle bg-plum-800" />
+                </li>
+              ) : (
+                (settings?.phones ?? []).map((p) => (
+                  <li key={p.number} className="flex items-start gap-2.5">
+                    <Phone aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                    <a href={`tel:${p.number.replace(/\s/g, '')}`} className="hover:text-white">
+                      {p.number}
+                      {p.label && <span className="text-plum-200"> · {p.label}</span>}
+                    </a>
+                  </li>
+                ))
+              )}
             </ul>
 
             <ul className="mt-6 flex flex-wrap gap-2">
               {(settings?.socials ?? []).map((s) => (
-                <li key={s.label}>
+                <li key={s.url}>
                   <SocialLinkIcon network={s.network} label={s.label} url={s.url} />
                 </li>
               ))}

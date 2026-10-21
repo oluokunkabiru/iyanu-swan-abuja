@@ -43,11 +43,8 @@ class SwanContentSeeder extends Seeder
             'vision' => "To be the world's foremost professional association of Female Chartered Accountants, championing excellence in the accountancy profession.",
             'aims' => 'Promoting and upholding high standards of effectiveness and professional conduct without discrimination, and supporting ICAN in safeguarding its Charter, the status of the profession, and the interests of its female members.',
             'address' => 'Abuja, Nigeria',
-            'phone' => '0803 450 2401',
+            'phones' => [['label' => null, 'number' => '0803 450 2401']],
             'email' => 'contact@swanabujachapter.com',
-            'facebook_url' => 'https://facebook.com',
-            'instagram_url' => 'https://instagram.com',
-            'twitter_url' => 'https://x.com',
             'chairperson_heading' => 'Welcome to a chapter built for women to thrive.',
             'chairperson_message' => [
                 'Welcome to the Abuja Chapter of the Society of Women Accountants of Nigeria. Our chapter exists to help women accountants grow in competence, lead with integrity and stay connected to a professional community that supports them.',

@@ -101,14 +101,23 @@ class ManageSiteSettings extends Page
                 Section::make('Contact & social')
                     ->schema([
                         TextInput::make('address')->maxLength(255),
-                        TextInput::make('phone')->tel()->maxLength(50),
                         TextInput::make('email')->email()->maxLength(255),
-                        TextInput::make('facebook_url')->url()->maxLength(255),
-                        TextInput::make('instagram_url')->url()->maxLength(255),
-                        TextInput::make('twitter_url')->url()->maxLength(255),
-                        TextInput::make('linkedin_url')->url()->maxLength(255),
                         TextInput::make('hero_video_url')->url()->maxLength(255),
+                        Repeater::make('phones')
+                            ->label('Phone numbers')
+                            ->schema([
+                                TextInput::make('number')->tel()->required()->maxLength(50),
+                                TextInput::make('label')
+                                    ->placeholder('Optional, e.g. Secretariat or WhatsApp')
+                                    ->maxLength(100),
+                            ])
+                            ->columns(2)
+                            ->defaultItems(1)
+                            ->reorderable()
+                            ->addActionLabel('Add phone number')
+                            ->columnSpanFull(),
                         Repeater::make('social_links')
+                            ->label('Social media')
                             ->schema([
                                 TextInput::make('label')->required(),
                                 Select::make('network')
@@ -123,6 +132,8 @@ class ManageSiteSettings extends Page
                                 TextInput::make('url')->url()->required(),
                             ])
                             ->columns(3)
+                            ->reorderable()
+                            ->addActionLabel('Add social link')
                             ->columnSpanFull(),
                     ])
                     ->columns(2),

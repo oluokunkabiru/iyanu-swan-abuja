@@ -51,7 +51,7 @@ class DemoContentSeeder extends Seeder
             ],
             'aims' => 'Promoting high standards of professional conduct and supporting ICAN in safeguarding its Charter and female members.',
             'address' => 'Abuja, Federal Capital Territory, Nigeria',
-            'phone' => '0803 450 2401',
+            'phones' => [['label' => null, 'number' => '0803 450 2401']],
             'email' => 'contact@swanabujachapter.com',
             'social_links' => [
                 ['label' => 'Facebook', 'url' => 'https://facebook.com', 'network' => 'facebook'],

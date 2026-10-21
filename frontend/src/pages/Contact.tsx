@@ -131,15 +131,15 @@ export default function Contact() {
                     {settings?.email}
                   </a>
                 </li>
-                <li className="flex gap-3">
-                  <Phone aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <a
-                    href={`tel:${settings?.phone?.replace(/\s/g, '') ?? ''}`}
-                    className="underline-offset-4 hover:underline"
-                  >
-                    {settings?.phone}
-                  </a>
-                </li>
+                {(settings?.phones ?? []).map((p) => (
+                  <li key={p.number} className="flex gap-3">
+                    <Phone aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <a href={`tel:${p.number.replace(/\s/g, '')}`} className="underline-offset-4 hover:underline">
+                      {p.number}
+                      {p.label && <span className="text-muted-foreground"> · {p.label}</span>}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
 
