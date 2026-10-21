@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Building2, /* GraduationCap, */ Users, Wallet } from 'lucide-react'
+import { ArrowRight, Building2, CalendarDays, /* GraduationCap, */ Users, Wallet } from 'lucide-react'
 import { motion } from 'framer-motion'
 import {
   getCoreValues,
@@ -40,6 +40,12 @@ const desks = [
   //   body: '120 hours across three years, tracked against your record.',
   //   to: '/cpd',
   // },
+  {
+    icon: CalendarDays,
+    title: 'Chapter events',
+    body: 'Explore upcoming meetings, outreach and chapter activities.',
+    to: '/events',
+  },
   {
     icon: Building2,
     title: 'Directories',
@@ -231,7 +237,7 @@ export default function Home() {
       {/* Quick desks */}
       <section className="border-b border-border bg-card">
         <motion.div
-          className="mx-auto grid max-w-6xl gap-px bg-border px-4 md:grid-cols-3"
+          className="mx-auto grid max-w-6xl gap-px bg-border px-4 sm:grid-cols-2 lg:grid-cols-4"
           initial="initial"
           whileInView="animate"
           viewport={{ once: true, amount: 0.2 }}
@@ -250,7 +256,7 @@ export default function Home() {
                 <p className="mt-1.5 text-[0.85rem] leading-relaxed text-muted-foreground">
                   {desk.body}
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1.5 text-[0.82rem] font-semibold text-plum-700 dark:text-primary">
+                <span className="mt-auto inline-flex items-center gap-1.5 pt-3 text-[0.82rem] font-semibold text-plum-700 dark:text-primary">
                   Open
                   <ArrowRight
                     aria-hidden="true"
