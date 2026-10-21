@@ -10,7 +10,7 @@ class SiteSetting extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
-    protected $appends = ['logo_url', 'constitution_url'];
+    protected $appends = ['logo_url', 'constitution_url', 'brochure_url'];
 
     protected $fillable = [
         'chapter_name',
@@ -82,6 +82,11 @@ class SiteSetting extends Model implements HasMedia
         return $this->getFirstMediaUrl('constitution') ?: null;
     }
 
+    public function getBrochureUrlAttribute(): ?string
+    {
+        return $this->getFirstMediaUrl('brochure') ?: null;
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('logo')
@@ -89,6 +94,10 @@ class SiteSetting extends Model implements HasMedia
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
 
         $this->addMediaCollection('constitution')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf']);
+
+        $this->addMediaCollection('brochure')
             ->singleFile()
             ->acceptsMimeTypes(['application/pdf']);
     }

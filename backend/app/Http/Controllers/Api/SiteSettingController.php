@@ -28,6 +28,7 @@ class SiteSettingController extends Controller
             'logoUrl' => $settings->logo_url,
             'constitutionUrl' => $settings->constitution_url,
             'constitutionLabel' => $settings->constitution_label,
+            'brochureUrl' => $settings->brochure_url,
             'heroVideoUrl' => $settings->hero_video_url,
             'chairpersonWelcome' => [
                 'heading' => $settings->chairperson_heading ?? '',

@@ -21,6 +21,7 @@ export interface SiteSettings {
   logoUrl?: string | null
   constitutionUrl?: string | null
   constitutionLabel?: string | null
+  brochureUrl?: string | null
   heroVideoUrl?: string | null
   chairpersonWelcome?: { heading: string; paragraphs: string[] }
   chapterStats?: ChapterStat[]

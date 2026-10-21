@@ -140,6 +140,17 @@ class ManageSiteSettings extends Page
                             ->placeholder('e.g. Revised 2024')
                             ->maxLength(100),
                     ]),
+                Section::make('Brochure')
+                    ->description('The brochure displayed beside the constitution on the public site.')
+                    ->schema([
+                        SpatieMediaLibraryFileUpload::make('brochure')
+                            ->collection('brochure')
+                            ->disk('public')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(10240)
+                            ->helperText('Upload a PDF brochure up to 10 MB. Uploading a new file replaces the current brochure.')
+                            ->columnSpanFull(),
+                    ]),
                 Section::make('Payments')
                     ->description('Both gateways can hold API keys in .env at once — this is only which one is actually used to take payment. Membership fees are configured per level under Member Records → Membership Levels.')
                     ->schema([
