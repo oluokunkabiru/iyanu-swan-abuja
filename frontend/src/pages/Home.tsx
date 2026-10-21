@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Building2, CalendarDays, /* GraduationCap, */ Users, Wallet } from 'lucide-react'
+import { ArrowRight, Building2, HeartHandshake, /* GraduationCap, */ Users, Wallet } from 'lucide-react'
 import { motion } from 'framer-motion'
 import {
   getCoreValues,
@@ -41,10 +41,10 @@ const desks = [
   //   to: '/cpd',
   // },
   {
-    icon: CalendarDays,
-    title: 'Chapter events',
-    body: 'Explore upcoming meetings, outreach and chapter activities.',
-    to: '/events',
+    icon: HeartHandshake,
+    title: 'Membership benefits',
+    body: 'Discover member support, mentorship and professional connections.',
+    to: '/membership#benefits',
   },
   {
     icon: Building2,
