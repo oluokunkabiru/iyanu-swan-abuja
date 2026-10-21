@@ -1,5 +1,5 @@
 import { api } from '@/api/client'
-import type { AuthUser, CpdRecord, NotificationEmailPreference, SubscriptionRecord, TicketRecord } from '@/types'
+import type { AuthUser, CpdRecord, MemberBioData, NotificationEmailPreference, SubscriptionRecord, TicketRecord } from '@/types'
 
 export interface AuthenticationResponse {
   accessToken: string
@@ -75,6 +75,20 @@ export async function fetchMe(): Promise<AuthUser> {
   return data
 }
 
+const bioDataFields: Record<keyof MemberBioData, string> = {
+  title: 'title',
+  formerName: 'former_name',
+  alternatePhone: 'alternate_phone',
+  maritalStatus: 'marital_status',
+  nationality: 'nationality',
+  stateOfOrigin: 'state_of_origin',
+  lgaOfOrigin: 'lga_of_origin',
+  nextOfKinName: 'next_of_kin_name',
+  nextOfKinRelationship: 'next_of_kin_relationship',
+  nextOfKinPhone: 'next_of_kin_phone',
+  nextOfKinAddress: 'next_of_kin_address',
+}
+
 export async function updateMe(payload: {
   name?: string
   phone?: string
@@ -86,6 +100,7 @@ export async function updateMe(payload: {
   personalEmail?: string
   officialEmail?: string
   notificationEmailPreference?: NotificationEmailPreference | ''
+  bioData?: { [K in keyof MemberBioData]?: string }
 }): Promise<AuthUser> {
   const form = new FormData()
   form.append('_method', 'PUT')
@@ -102,6 +117,9 @@ export async function updateMe(payload: {
   if (payload.officialEmail !== undefined) form.append('official_email', payload.officialEmail)
   if (payload.notificationEmailPreference !== undefined) {
     form.append('notification_email_preference', payload.notificationEmailPreference)
+  }
+  for (const [key, value] of Object.entries(payload.bioData ?? {})) {
+    if (value !== undefined) form.append(bioDataFields[key as keyof MemberBioData], value)
   }
 
   const { data } = await api.post<AuthUser>('/me', form)

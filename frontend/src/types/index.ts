@@ -325,7 +325,22 @@ export interface TicketRecord {
 
 export type NotificationEmailPreference = 'registered' | 'personal' | 'official' | 'all'
 
-export interface AuthUser {
+/** Bio-data and next-of-kin fields, modelled on the ICAN member profile. */
+export interface MemberBioData {
+  title: string | null
+  formerName: string | null
+  alternatePhone: string | null
+  maritalStatus: string | null
+  nationality: string | null
+  stateOfOrigin: string | null
+  lgaOfOrigin: string | null
+  nextOfKinName: string | null
+  nextOfKinRelationship: string | null
+  nextOfKinPhone: string | null
+  nextOfKinAddress: string | null
+}
+
+export interface AuthUser extends MemberBioData {
   id: string
   name: string
   firstName: string

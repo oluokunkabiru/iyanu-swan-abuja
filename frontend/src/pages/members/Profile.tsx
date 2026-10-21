@@ -9,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/context/AuthContext'
 import { useApiData } from '@/hooks/useApiData'
+import { maritalStatuses, memberTitles, nigerianStates } from '@/data'
 import { formatDate } from '@/lib/format'
-import type { NotificationEmailPreference, SubscriptionRecord } from '@/types'
+import type { MemberBioData, NotificationEmailPreference, SubscriptionRecord } from '@/types'
 
 const notificationPreferenceOptions: { value: NotificationEmailPreference; label: string }[] = [
   { value: 'registered', label: 'Registered email only' },
@@ -24,6 +25,19 @@ const preferences = [
   { id: 'pref-attachment', label: 'Willing to host a practice attachment', detail: 'For members with a licensed firm.' },
   { id: 'pref-notices', label: 'Email me chapter notices', detail: 'Deadlines, circulars and the meeting agenda.' },
 ]
+
+type BioDataForm = { [K in keyof MemberBioData]: string }
+
+const bioDataKeys: (keyof MemberBioData)[] = [
+  'title', 'formerName', 'alternatePhone', 'maritalStatus', 'nationality', 'stateOfOrigin',
+  'lgaOfOrigin', 'nextOfKinName', 'nextOfKinRelationship', 'nextOfKinPhone', 'nextOfKinAddress',
+]
+
+function bioDataFrom(user: MemberBioData | null): BioDataForm {
+  const form = Object.fromEntries(bioDataKeys.map((key) => [key, user?.[key] ?? ''])) as BioDataForm
+  if (!form.nationality) form.nationality = 'Nigeria'
+  return form
+}
 
 function initials(name: string): string {
   return name
@@ -49,6 +63,9 @@ export default function MembersProfile() {
   const [notificationPreference, setNotificationPreference] = useState<NotificationEmailPreference | ''>(
     user?.notificationEmailPreference ?? '',
   )
+  const [bioData, setBioData] = useState<BioDataForm>(() => bioDataFrom(user))
+  const [savingBioData, setSavingBioData] = useState(false)
+  const [savedBioData, setSavedBioData] = useState(false)
   const [savingEmails, setSavingEmails] = useState(false)
   const [savedEmails, setSavedEmails] = useState(false)
   const [checked, setChecked] = useState<Record<string, boolean>>({
@@ -83,6 +100,21 @@ export default function MembersProfile() {
     }
   }
 
+  function setBioField(key: keyof MemberBioData, value: string) {
+    setBioData((current) => ({ ...current, [key]: value }))
+  }
+
+  async function handleSaveBioData() {
+    setSavingBioData(true)
+    setSavedBioData(false)
+    try {
+      await updateProfile({ bioData, dateOfBirth })
+      setSavedBioData(true)
+    } finally {
+      setSavingBioData(false)
+    }
+  }
+
   async function handleSaveEmails() {
     setSavingEmails(true)
     setSavedEmails(false)
@@ -106,8 +138,14 @@ export default function MembersProfile() {
         <dl className="divide-y divide-border border-y border-border">
           <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
             <dt className="text-[0.88rem] text-muted-foreground">Name</dt>
-            <dd className="text-[0.92rem]">{user.name}</dd>
+            <dd className="text-[0.92rem]">{[user.title, user.name].filter(Boolean).join(' ')}</dd>
           </div>
+          {user.formerName && (
+            <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
+              <dt className="text-[0.88rem] text-muted-foreground">Former / maiden name</dt>
+              <dd className="text-[0.92rem]">{user.formerName}</dd>
+            </div>
+          )}
           <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
             <dt className="text-[0.88rem] text-muted-foreground">Membership number</dt>
             <dd className="tnum text-[0.92rem]">{user.membershipNumber}</dd>
@@ -277,6 +315,49 @@ export default function MembersProfile() {
 
       <div>
         <SectionHeading
+          title="Bio-data and next of kin"
+          lede="Kept on your chapter record for welfare and emergencies. Never shown in the directory."
+          className="mb-6"
+        />
+        <form
+          className="grid max-w-lg gap-5 sm:grid-cols-2"
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSaveBioData()
+          }}
+        >
+          <BioSelect id="bio-title" label="Title" options={memberTitles} value={bioData.title} onChange={(v) => setBioField('title', v)} />
+          <BioInput id="bio-former-name" label="Former / maiden name" value={bioData.formerName} onChange={(v) => setBioField('formerName', v)} />
+          <BioInput id="bio-alternate-phone" label="Alternate telephone number" type="tel" value={bioData.alternatePhone} onChange={(v) => setBioField('alternatePhone', v)} />
+          <BioSelect id="bio-marital-status" label="Marital status" options={maritalStatuses} value={bioData.maritalStatus} onChange={(v) => setBioField('maritalStatus', v)} />
+          <BioInput id="bio-nationality" label="Nationality" value={bioData.nationality} onChange={(v) => setBioField('nationality', v)} />
+          <BioSelect id="bio-state" label="State of origin" options={nigerianStates} value={bioData.stateOfOrigin} onChange={(v) => setBioField('stateOfOrigin', v)} />
+          <BioInput id="bio-lga" label="Local government of origin" value={bioData.lgaOfOrigin} onChange={(v) => setBioField('lgaOfOrigin', v)} />
+
+          <h3 className="sm:col-span-2 mt-2 border-t border-border pt-5 text-[1rem]">Next of kin</h3>
+          <BioInput id="bio-nok-name" label="Full name" value={bioData.nextOfKinName} onChange={(v) => setBioField('nextOfKinName', v)} />
+          <BioInput id="bio-nok-relationship" label="Relationship" placeholder="e.g. Husband, Daughter" value={bioData.nextOfKinRelationship} onChange={(v) => setBioField('nextOfKinRelationship', v)} />
+          <BioInput id="bio-nok-phone" label="Telephone number" type="tel" value={bioData.nextOfKinPhone} onChange={(v) => setBioField('nextOfKinPhone', v)} />
+          <div className="sm:col-span-2 space-y-2">
+            <Label htmlFor="bio-nok-address">Address</Label>
+            <Textarea
+              id="bio-nok-address"
+              rows={2}
+              value={bioData.nextOfKinAddress}
+              onChange={(e) => setBioField('nextOfKinAddress', e.target.value)}
+            />
+          </div>
+          <div className="sm:col-span-2 flex items-center gap-3">
+            <Button type="submit" disabled={savingBioData}>
+              {savingBioData ? 'Saving…' : 'Save changes'}
+            </Button>
+            {savedBioData && <span className="text-[0.85rem] text-muted-foreground">Saved.</span>}
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <SectionHeading
           title="Notification emails"
           lede="Which of your emails should chapter notices go to."
           className="mb-6"
@@ -379,6 +460,61 @@ export default function MembersProfile() {
           Sign out
         </Button>
       </div>
+    </div>
+  )
+}
+
+function BioInput({
+  id,
+  label,
+  value,
+  onChange,
+  type = 'text',
+  placeholder,
+}: {
+  id: string
+  label: string
+  value: string
+  onChange: (value: string) => void
+  type?: string
+  placeholder?: string
+}) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <Input id={id} type={type} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} />
+    </div>
+  )
+}
+
+function BioSelect({
+  id,
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  id: string
+  label: string
+  options: string[]
+  value: string
+  onChange: (value: string) => void
+}) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <Select value={value || undefined} onValueChange={onChange}>
+        <SelectTrigger id={id} className="w-full">
+          <SelectValue placeholder="Select" />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((option) => (
+            <SelectItem key={option} value={option}>
+              {option}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   )
 }

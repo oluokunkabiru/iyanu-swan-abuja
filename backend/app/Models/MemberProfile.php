@@ -11,17 +11,40 @@ class MemberProfile extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
+    public const TITLES = ['Mrs', 'Miss', 'Ms', 'Dr', 'Prof', 'Chief', 'Alhaja', 'Hon'];
+
+    public const MARITAL_STATUSES = ['Single', 'Married', 'Divorced', 'Widowed', 'Separated'];
+
+    public const NIGERIAN_STATES = [
+        'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno',
+        'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'FCT', 'Gombe', 'Imo',
+        'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa',
+        'Niger', 'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba',
+        'Yobe', 'Zamfara',
+    ];
+
     protected $appends = ['photo_url'];
 
     protected $fillable = [
         'user_id',
         'membership_number',
+        'title',
+        'former_name',
         'credential',
         'membership_status',
         'phone',
+        'alternate_phone',
         'residential_address',
         'place_of_work',
         'date_of_birth',
+        'marital_status',
+        'nationality',
+        'state_of_origin',
+        'lga_of_origin',
+        'next_of_kin_name',
+        'next_of_kin_relationship',
+        'next_of_kin_phone',
+        'next_of_kin_address',
         'sector',
         'specialisation',
         'year_admitted',

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\MemberProfile;
 use App\Models\MembershipLevel;
 use App\Models\User;
 use App\Notifications\PasswordResetConfirmed;
@@ -245,6 +246,17 @@ class AuthController extends Controller
             'residential_address' => ['sometimes', 'nullable', 'string', 'max:1000'],
             'place_of_work' => ['sometimes', 'nullable', 'string', 'max:255'],
             'date_of_birth' => ['required', 'date', 'before:today'],
+            'title' => ['sometimes', 'nullable', Rule::in(MemberProfile::TITLES)],
+            'former_name' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'alternate_phone' => ['sometimes', 'nullable', 'string', 'max:50'],
+            'marital_status' => ['sometimes', 'nullable', Rule::in(MemberProfile::MARITAL_STATUSES)],
+            'nationality' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'state_of_origin' => ['sometimes', 'nullable', Rule::in(MemberProfile::NIGERIAN_STATES)],
+            'lga_of_origin' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'next_of_kin_name' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'next_of_kin_relationship' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'next_of_kin_phone' => ['sometimes', 'nullable', 'string', 'max:50'],
+            'next_of_kin_address' => ['sometimes', 'nullable', 'string', 'max:1000'],
             'is_directory_listed' => ['sometimes', 'boolean'],
             'photo' => ['sometimes', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
             'personal_email' => ['sometimes', 'nullable', 'email', 'max:255', 'different:email', Rule::unique('users', 'personal_email')->ignore($user->id)],
@@ -259,6 +271,8 @@ class AuthController extends Controller
 
         $profileData = array_intersect_key($data, array_flip([
             'phone', 'residential_address', 'place_of_work', 'date_of_birth', 'is_directory_listed',
+            'title', 'former_name', 'alternate_phone', 'marital_status', 'nationality', 'state_of_origin',
+            'lga_of_origin', 'next_of_kin_name', 'next_of_kin_relationship', 'next_of_kin_phone', 'next_of_kin_address',
         ]));
 
         if ($profileData !== []) {
@@ -329,6 +343,17 @@ class AuthController extends Controller
             'specialisation' => $profile?->specialisation,
             'yearAdmitted' => $profile?->year_admitted,
             'chapterRole' => $profile?->chapter_role,
+            'title' => $profile?->title,
+            'formerName' => $profile?->former_name,
+            'alternatePhone' => $profile?->alternate_phone,
+            'maritalStatus' => $profile?->marital_status,
+            'nationality' => $profile?->nationality,
+            'stateOfOrigin' => $profile?->state_of_origin,
+            'lgaOfOrigin' => $profile?->lga_of_origin,
+            'nextOfKinName' => $profile?->next_of_kin_name,
+            'nextOfKinRelationship' => $profile?->next_of_kin_relationship,
+            'nextOfKinPhone' => $profile?->next_of_kin_phone,
+            'nextOfKinAddress' => $profile?->next_of_kin_address,
         ];
     }
 

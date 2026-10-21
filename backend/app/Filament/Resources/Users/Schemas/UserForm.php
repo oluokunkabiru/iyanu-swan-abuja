@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Models\MemberProfile;
 use App\Models\MembershipLevel;
 use App\Services\PasswordPolicy;
 use Filament\Forms\Components\DatePicker;
@@ -76,6 +77,12 @@ class UserForm
                             ->columnSpanFull(),
                         TextInput::make('membership_number')
                             ->maxLength(50),
+                        Select::make('title')
+                            ->options(array_combine(MemberProfile::TITLES, MemberProfile::TITLES))
+                            ->native(false),
+                        TextInput::make('former_name')
+                            ->label('Former / maiden name')
+                            ->maxLength(255),
                         Select::make('credential')
                             ->label('ICAN level')
                             ->options(fn (): array => MembershipLevel::query()->orderBy('sort_order')->pluck('name', 'name')->all())
@@ -91,10 +98,37 @@ class UserForm
                         TextInput::make('phone')
                             ->label('WhatsApp telephone')
                             ->maxLength(50),
+                        TextInput::make('alternate_phone')
+                            ->label('Alternate telephone')
+                            ->maxLength(50),
                         DatePicker::make('date_of_birth')
                             ->native(false)
                             ->required()
                             ->displayFormat('d M'),
+                        Select::make('marital_status')
+                            ->options(array_combine(MemberProfile::MARITAL_STATUSES, MemberProfile::MARITAL_STATUSES))
+                            ->native(false),
+                        TextInput::make('nationality')
+                            ->default('Nigeria')
+                            ->maxLength(100),
+                        Select::make('state_of_origin')
+                            ->options(array_combine(MemberProfile::NIGERIAN_STATES, MemberProfile::NIGERIAN_STATES))
+                            ->searchable(),
+                        TextInput::make('lga_of_origin')
+                            ->label('LGA of origin')
+                            ->maxLength(255),
+                        TextInput::make('next_of_kin_name')
+                            ->label('Next of kin')
+                            ->maxLength(255),
+                        TextInput::make('next_of_kin_relationship')
+                            ->label('Next of kin relationship')
+                            ->maxLength(100),
+                        TextInput::make('next_of_kin_phone')
+                            ->label('Next of kin telephone')
+                            ->maxLength(50),
+                        Textarea::make('next_of_kin_address')
+                            ->label('Next of kin address')
+                            ->columnSpanFull(),
                         Textarea::make('residential_address')
                             ->columnSpanFull(),
                         TextInput::make('place_of_work')

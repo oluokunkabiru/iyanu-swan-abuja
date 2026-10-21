@@ -110,6 +110,34 @@ class UserInfolist
                                     ]),
                             ]),
 
+                        Tab::make('Bio-data & next of kin')
+                            ->icon('heroicon-m-user')
+                            ->schema([
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('memberProfile.title')->label('Title')->placeholder('—'),
+                                        TextEntry::make('memberProfile.former_name')->label('Former / maiden name')->placeholder('—'),
+                                        TextEntry::make('memberProfile.alternate_phone')->label('Alternate telephone')->placeholder('—'),
+                                        TextEntry::make('memberProfile.marital_status')->label('Marital status')->placeholder('—'),
+                                        TextEntry::make('memberProfile.nationality')->label('Nationality')->placeholder('—'),
+                                        TextEntry::make('memberProfile.state_of_origin')->label('State of origin')->placeholder('—'),
+                                        TextEntry::make('memberProfile.lga_of_origin')->label('LGA of origin')->placeholder('—'),
+                                    ]),
+                                Section::make('Next of kin')
+                                    ->schema([
+                                        Grid::make(3)
+                                            ->schema([
+                                                TextEntry::make('memberProfile.next_of_kin_name')->label('Name')->placeholder('—'),
+                                                TextEntry::make('memberProfile.next_of_kin_relationship')->label('Relationship')->placeholder('—'),
+                                                TextEntry::make('memberProfile.next_of_kin_phone')->label('Telephone')->placeholder('—'),
+                                                TextEntry::make('memberProfile.next_of_kin_address')
+                                                    ->label('Address')
+                                                    ->placeholder('—')
+                                                    ->columnSpanFull(),
+                                            ]),
+                                    ]),
+                            ]),
+
                         Tab::make('CPD records')
                             ->icon('heroicon-m-academic-cap')
                             ->badge(fn (User $record): int => $record->cpdRecords()->count())
