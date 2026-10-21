@@ -536,7 +536,7 @@ export default function Home() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Button size="lg" asChild>
+            <Button size="lg" asChild className="bg-gold-500 text-plum-900 hover:bg-gold-500/85">
               <Link to="/contact">Contact the chapter</Link>
             </Button>
             <Button
