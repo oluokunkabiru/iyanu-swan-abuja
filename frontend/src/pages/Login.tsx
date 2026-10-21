@@ -52,7 +52,8 @@ export default function Login() {
         <div>
           <h1 className="text-3xl">Sign in</h1>
           <p className="mt-3 max-w-[45ch] text-[0.95rem] leading-relaxed text-muted-foreground">
-            Signing in applies your member rate at checkout, opens your CPD record, and shows the
+            {/* Signing in also opens your CPD record when CPD is enabled. */}
+            Signing in applies your member rate at checkout and shows the
             dues on your account.
           </p>
 
@@ -97,9 +98,12 @@ export default function Login() {
         <aside className="border border-border bg-card p-6">
           <h2 className="text-[1.05rem]">What signing in unlocks</h2>
           <p className="mt-3 text-[0.9rem] leading-relaxed text-muted-foreground">
-            Your CPD tracker, subscription and welfare dues history, event tickets and profile —
+            {/* Your CPD tracker is hidden while CPD is disabled. */}
+            Your subscription and welfare dues history, event tickets and profile —
             all matched to your chapter membership record.
           </p>
-        </aside>\n      </motion.div>\n    </Section>
+        </aside>
+      </motion.div>
+    </Section>
   )
 }

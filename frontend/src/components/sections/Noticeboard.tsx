@@ -21,13 +21,13 @@ export function Noticeboard() {
   const { data: programme, isLoading: loadingProgramme } = useApiData(getProgramme, [] as ProgrammeEntry[])
 
   return (
-    <Tabs defaultValue="notices" className="gap-0">
+    <Tabs defaultValue="programme" className="gap-0">
       <TabsList className="h-auto w-full justify-start rounded-none border-b border-rule bg-transparent p-0">
         <TabsTrigger
-          value="notices"
+          value="programme"
           className="rounded-none border-b-2 border-transparent px-4 py-2.5 text-[0.9rem] data-[state=active]:border-gold-500 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
         >
-          Notices
+          Programme
         </TabsTrigger>
         <TabsTrigger
           value="news"
@@ -36,10 +36,10 @@ export function Noticeboard() {
           Latest news
         </TabsTrigger>
         <TabsTrigger
-          value="programme"
+          value="notices"
           className="rounded-none border-b-2 border-transparent px-4 py-2.5 text-[0.9rem] data-[state=active]:border-gold-500 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
         >
-          Programme
+          Notices
         </TabsTrigger>
       </TabsList>
 

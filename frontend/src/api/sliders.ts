@@ -1,4 +1,5 @@
 import type { HomeSlide } from '@/types'
+import { containsCpd } from '@/lib/contentVisibility'
 
 function isHomeSlide(value: unknown): value is HomeSlide {
   if (typeof value !== 'object' || value === null) return false
@@ -31,5 +32,8 @@ export async function getSliders(signal?: AbortSignal): Promise<HomeSlide[]> {
 
   const payload: unknown = await response.json()
 
-  return Array.isArray(payload) ? payload.filter(isHomeSlide) : []
+  // Managed slides can still contain CPD copy even though local slides are commented out.
+  return Array.isArray(payload)
+    ? payload.filter(isHomeSlide).filter((slide) => !containsCpd(slide))
+    : []
 }

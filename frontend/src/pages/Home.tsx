@@ -13,6 +13,7 @@ import {
 } from '@/api/content'
 import { getSliders } from '@/api/sliders'
 import { EventCard, NewsCard } from '@/components/common/Cards'
+import { AnimatedBlock } from '@/components/common/AnimatedBlock'
 import { LazyImage } from '@/components/common/LazyImage'
 import { Section, SectionHeading, Stat } from '@/components/common/Primitives'
 import { HomeSlider } from '@/components/sections/HomeSlider'
@@ -138,7 +139,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(17rem,0.72fr)_minmax(0,1.28fr)] lg:gap-16">
-            <div className="relative mx-auto w-full max-w-sm border border-border bg-secondary p-3 lg:mx-0">
+            <AnimatedBlock variant="fromLeft" className="relative mx-auto w-full max-w-sm border border-border bg-secondary p-3 lg:mx-0">
               {chairperson?.photoUrl && (
                 <LazyImage
                   src={chairperson.photoUrl}
@@ -153,9 +154,9 @@ export default function Home() {
                 </p>
                 <p className="mt-0.5 text-[0.72rem] text-gold-300">Chapter Chairperson</p>
               </div>
-            </div>
+            </AnimatedBlock>
 
-            <div>
+            <AnimatedBlock variant="fromRight" delay={0.12}>
               <SectionHeading
                 title={settings?.chairpersonWelcome?.heading ?? 'A word from the chapter'}
                 lede="A message from the Chairperson"
@@ -172,7 +173,7 @@ export default function Home() {
                   Chairperson, SWAN Abuja Chapter
                 </span>
               </p>
-            </div>
+            </AnimatedBlock>
           </div>
         )}
       </Section>
@@ -180,7 +181,7 @@ export default function Home() {
       {/* Vision, mission, values */}
       <Section tone="tinted">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-          <div>
+          <AnimatedBlock variant="slideUp">
             <SectionHeading title="What we stand for" lede={settings?.aims} />
             <div className="mt-8 space-y-6">
               <div>
@@ -201,9 +202,9 @@ export default function Home() {
             <Button variant="outline" asChild className="mt-8">
               <Link to="/about">More about the chapter</Link>
             </Button>
-          </div>
+          </AnimatedBlock>
 
-          <div>
+          <AnimatedBlock variant="slideUp" delay={0.12}>
             <SectionHeading title="Core values" lede="Five commitments the chapter is measured against." />
             {loadingCoreValues ? (
               <div className="mt-8 space-y-3">
@@ -223,7 +224,7 @@ export default function Home() {
                 ))}
               </dl>
             )}
-          </div>
+          </AnimatedBlock>
         </div>
       </Section>
 
@@ -291,16 +292,16 @@ export default function Home() {
       {/* Noticeboard + publications */}
       <Section>
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-          <div>
+          <AnimatedBlock variant="slideUp">
             <SectionHeading
               title="Noticeboard"
               lede="Deadlines, circulars and what the chapter has published lately."
               className="mb-6"
             />
             <Noticeboard />
-          </div>
+          </AnimatedBlock>
 
-          <div>
+          <AnimatedBlock variant="slideUp" delay={0.12}>
             <SectionHeading title="From the library" lede="Communiqués, bulletins and reports." className="mb-6" />
             {loadingPublications ? (
               <div className="space-y-3">
@@ -330,7 +331,7 @@ export default function Home() {
             >
               Full publications library
             </Link>
-          </div>
+          </AnimatedBlock>
         </div>
       </Section>
 

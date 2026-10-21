@@ -111,8 +111,8 @@ export default function Practice() {
             <div className="border-l-2 border-gold-500 pl-5">
               <h3 className="text-[1.02rem]">Before you apply</h3>
               <p className="mt-2 text-[0.88rem] leading-relaxed text-muted-foreground">
-                Confirm your CPD hours are current and your annual subscription to the Institute is
-                paid. Both are checked.
+                {/* Confirm your CPD hours are current when CPD is enabled. */}
+                Confirm your annual subscription to the Institute is paid.
               </p>
             </div>
             <div className="border-l-2 border-gold-500 pl-5">

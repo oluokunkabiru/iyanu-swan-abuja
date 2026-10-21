@@ -24,6 +24,7 @@ function ScrollToTop() {
 
 export function Layout() {
   const { pathname } = useLocation()
+  const isHome = pathname === '/'
 
   return (
     <MotionConfig reducedMotion="user">
@@ -40,10 +41,11 @@ export function Layout() {
           <motion.main
             id="main"
             className="flex-1"
-            initial="initial"
+            initial={isHome ? false : 'initial'}
             animate="animate"
             exit="exit"
-            variants={pageVariants}
+            // The homepage animates individual components so the slider stays still.
+            variants={isHome ? undefined : pageVariants}
             key={pathname}
           >
             <Outlet />

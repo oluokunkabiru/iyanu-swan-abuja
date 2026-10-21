@@ -6,13 +6,14 @@
 import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { blockVariants } from '@/lib/animations'
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { cn } from '@/lib/utils'
 
 interface AnimatedBlockProps {
   children: ReactNode
   className?: string
   delay?: number
-  variant?: 'block' | 'scale' | 'slideUp'
+  variant?: 'block' | 'scale' | 'slideUp' | 'fromLeft' | 'fromRight'
 }
 
 export function AnimatedBlock({
@@ -21,6 +22,7 @@ export function AnimatedBlock({
   delay = 0,
   variant = 'block',
 }: AnimatedBlockProps) {
+  const reducedMotion = usePrefersReducedMotion()
   const variants = {
     block: blockVariants,
     scale: {
@@ -31,17 +33,25 @@ export function AnimatedBlock({
       initial: { opacity: 0, y: 20 },
       animate: { opacity: 1, y: 0 },
     },
+    fromLeft: {
+      initial: { opacity: 0, x: -24 },
+      animate: { opacity: 1, x: 0 },
+    },
+    fromRight: {
+      initial: { opacity: 0, x: 24 },
+      animate: { opacity: 1, x: 0 },
+    },
   }
 
   return (
     <motion.div
-      initial="initial"
+      initial={reducedMotion ? false : 'initial'}
       whileInView="animate"
       viewport={{ once: true, amount: 0.2 }}
       variants={variants[variant]}
       transition={{
-        duration: 0.5,
-        delay,
+        duration: reducedMotion ? 0 : 0.5,
+        delay: reducedMotion ? 0 : delay,
         ease: 'easeOut',
       }}
       className={cn(className)}

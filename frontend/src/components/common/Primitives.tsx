@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { CountUp } from '@/components/common/CountUp'
 import { cn } from '@/lib/utils'
 import { containerVariants } from '@/lib/animations'
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 
 /** Page-level header used at the top of every interior page. */
 export function PageHeader({
@@ -75,9 +76,23 @@ export function SectionHeading({
   id?: string
   className?: string
 }) {
+  const reducedMotion = usePrefersReducedMotion()
   return (
-    <div id={id} className={cn('scroll-mt-24', className)}>
-      <div className="rule-gold" />
+    <motion.div
+      id={id}
+      className={cn('scroll-mt-24', className)}
+      initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: reducedMotion ? 0 : 0.45, ease: 'easeOut' }}
+    >
+      <motion.div
+        className="rule-gold origin-left"
+        initial={reducedMotion ? false : { scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: reducedMotion ? 0 : 0.6, ease: 'easeOut' }}
+      />
       <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-2xl">
           <h2 className="text-2xl leading-tight md:text-[1.75rem]">{title}</h2>
@@ -85,7 +100,7 @@ export function SectionHeading({
         </div>
         {action}
       </div>
-    </div>
+    </motion.div>
   )
 }
 

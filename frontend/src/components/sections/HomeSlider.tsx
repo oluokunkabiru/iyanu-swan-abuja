@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState, type TouchEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { LazyImage } from '@/components/common/LazyImage'
-import { TiltCard } from '@/components/common/TiltCard'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { HomeSlide } from '@/types'
@@ -49,7 +47,7 @@ export function HomeSlider({ slides }: { slides: HomeSlide[] }) {
     <section
       aria-label="Chapter highlights"
       aria-roledescription="carousel"
-      className="relative overflow-hidden border-b border-rule bg-plum-900"
+      className="home-slider relative overflow-hidden border-b border-rule bg-plum-900"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onFocusCapture={() => setIsPaused(true)}
@@ -99,19 +97,17 @@ export function HomeSlider({ slides }: { slides: HomeSlide[] }) {
           </div>
         </div>
 
-        <TiltCard
-          max={5}
+        <div
           className="order-1 h-72 min-w-0 overflow-hidden bg-secondary lg:order-2 lg:h-auto lg:min-h-[38rem]"
         >
-          <LazyImage
+          <img
             src={activeSlide.image}
             alt={activeSlide.imageAlt}
-            className="h-full w-full scale-105 object-cover"
-            hoverZoom={false}
+            className="h-full w-full object-cover"
             style={{ objectPosition: activeSlide.imagePosition }}
             loading={activeIndex === 0 ? 'eager' : 'lazy'}
           />
-        </TiltCard>
+        </div>
       </article>
 
       {slides.length > 1 && (
@@ -122,10 +118,10 @@ export function HomeSlider({ slides }: { slides: HomeSlide[] }) {
                 key={slide.id}
                 type="button"
                 aria-label={`Show slide ${index + 1}: ${slide.title}`}
-                aria-current={index === selectedIndex ? 'true' : undefined}
+                aria-current={index === activeIndex ? 'true' : undefined}
                 onClick={() => goTo(index)}
                 className={cn(
-                  'h-2.5 rounded-full border border-white transition-[width,background-color] duration-300',
+                  'h-2.5 rounded-full border border-white',
                   index === activeIndex ? 'w-8 bg-gold-500' : 'w-2.5 bg-white/50',
                 )}
               />
@@ -136,7 +132,7 @@ export function HomeSlider({ slides }: { slides: HomeSlide[] }) {
               type="button"
               onClick={() => goTo(selectedIndex - 1)}
               aria-label="Previous slide"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-white text-plum-900 transition-colors hover:bg-gold-500"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-white text-plum-900 hover:bg-gold-500"
             >
               <ChevronLeft aria-hidden="true" className="h-5 w-5" />
             </button>
@@ -144,7 +140,7 @@ export function HomeSlider({ slides }: { slides: HomeSlide[] }) {
               type="button"
               onClick={() => goTo(selectedIndex + 1)}
               aria-label="Next slide"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-white text-plum-900 transition-colors hover:bg-gold-500"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-white text-plum-900 hover:bg-gold-500"
             >
               <ChevronRight aria-hidden="true" className="h-5 w-5" />
             </button>

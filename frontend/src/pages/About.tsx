@@ -141,11 +141,13 @@ export default function About() {
                 qualification body and does not examine or admit members — that remains with the
                 Institute.
               </p>
+              {/* CPD content hidden
               <p>
                 In practice the relationship runs two ways. Chapter technical sessions are
                 accredited for ICAN Continuing Professional Development, and chapter positions on
                 exposure drafts are submitted through the Technical and Education directorate.
               </p>
+              */}
             </div>
             <Button variant="outline" asChild className="mt-6">
               <Link to="/membership">Become a SWAN member</Link>
