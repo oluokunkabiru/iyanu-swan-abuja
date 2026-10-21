@@ -7,7 +7,9 @@ use App\Models\MemberProfile;
 use App\Models\MembershipLevel;
 use App\Models\User;
 use App\Notifications\PasswordResetConfirmed;
+use App\Services\IcanMembershipNumber;
 use App\Services\PasswordPolicy;
+use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +21,49 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function register(Request $request): JsonResponse
+    /**
+     * First step of registration: is this ICAN number already on the
+     * chapter's books? Public and unauthenticated, so a match reveals
+     * only the name and a masked email — enough for the member to
+     * recognise themselves, not enough to harvest contact details.
+     */
+    public function lookupMembershipNumber(Request $request, IcanMembershipNumber $numbers): JsonResponse
+    {
+        $data = $request->validate([
+            'membership_number' => ['required', 'string', 'max:50'],
+        ]);
+
+        $normalized = $numbers->normalize($data['membership_number']);
+
+        if ($normalized === null) {
+            throw ValidationException::withMessages([
+                'membership_number' => ['Enter your ICAN membership number, e.g. MB040071 or just the digits.'],
+            ]);
+        }
+
+        $profile = $numbers->findProfile($data['membership_number']);
+
+        if (! $profile?->user) {
+            return response()->json([
+                'exists' => false,
+                'membershipNumber' => $normalized,
+            ]);
+        }
+
+        $user = $profile->user;
+
+        return response()->json([
+            'exists' => true,
+            'membershipNumber' => $profile->membership_number,
+            'lastName' => $user->last_name ?? Str::afterLast($user->name, ' '),
+            'firstName' => $user->first_name ?? Str::before($user->name, ' '),
+            'middleName' => $user->middle_name,
+            'name' => $user->name,
+            'maskedEmail' => $this->maskEmail($user->email),
+        ]);
+    }
+
+    public function register(Request $request, IcanMembershipNumber $numbers): JsonResponse
     {
         $data = $request->validate([
             'last_name' => ['required', 'string', 'max:255'],
@@ -27,7 +71,18 @@ class AuthController extends Controller
             'middle_name' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => app(PasswordPolicy::class)->rules(confirmed: true),
-            'membership_number' => ['required', 'string', 'max:255', 'unique:member_profiles,membership_number'],
+            'membership_number' => [
+                'required',
+                'string',
+                'max:50',
+                function (string $attribute, mixed $value, Closure $fail) use ($numbers): void {
+                    if ($numbers->normalize((string) $value) === null) {
+                        $fail('Enter a valid ICAN membership number, e.g. MB040071.');
+                    } elseif ($numbers->findProfile((string) $value)) {
+                        $fail('This ICAN membership number is already registered. Sign in or reset your password instead.');
+                    }
+                },
+            ],
             // "Credential" here is the member's ICAN level — one of the
             // chapter's admin-configured Membership Levels (e.g. ACA,
             // FCA, AATWA), not a fixed ACA/FCA enum.
@@ -54,7 +109,7 @@ class AuthController extends Controller
         ]);
 
         $user->memberProfile()->create([
-            'membership_number' => $data['membership_number'],
+            'membership_number' => $numbers->normalize($data['membership_number']),
             'credential' => $data['credential'],
             'phone' => $data['phone'],
             'residential_address' => $data['residential_address'],
@@ -310,6 +365,14 @@ class AuthController extends Controller
                     'issuedAt' => ($registration->issued_at ?? $registration->created_at)->toDateString(),
                 ])
         );
+    }
+
+    /** "patofili@yahoo.co.uk" → "pa******@yahoo.co.uk" */
+    private function maskEmail(string $email): string
+    {
+        [$local, $domain] = array_pad(explode('@', $email, 2), 2, '');
+
+        return Str::substr($local, 0, 2).str_repeat('*', max(Str::length($local) - 2, 3)).'@'.$domain;
     }
 
     /** @return array<string, mixed> */

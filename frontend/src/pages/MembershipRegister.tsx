@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { isAxiosError } from 'axios'
 import { Check } from 'lucide-react'
+import { lookupMembershipNumber, type MembershipLookup } from '@/api/auth'
 import { getMembershipLevels } from '@/api/content'
 import { PasswordRequirements } from '@/components/common/PasswordRequirements'
 import { PageHeader, Section, SectionHeading } from '@/components/common/Primitives'
@@ -25,10 +27,35 @@ export default function MembershipRegister() {
   const [credential, setCredential] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirmation, setPasswordConfirmation] = useState('')
+  const [numberInput, setNumberInput] = useState('')
+  const [lookup, setLookup] = useState<MembershipLookup | null>(null)
+  const [checking, setChecking] = useState(false)
+  const [lookupError, setLookupError] = useState<string | null>(null)
 
   const { data: levels } = useApiData(getMembershipLevels, [] as MembershipLevel[])
   const registrationSteps = settings?.registrationSteps ?? []
   const passwordPolicy = settings?.passwordPolicy ?? defaultPasswordPolicy
+
+  async function handleLookup(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setLookupError(null)
+    setLookup(null)
+    if (!/\d/.test(numberInput)) {
+      setLookupError('Enter your ICAN membership number, e.g. MB040071 or just the digits.')
+      return
+    }
+    setChecking(true)
+    try {
+      const result = await lookupMembershipNumber(numberInput)
+      setLookup(result)
+      setNumberInput(result.membershipNumber)
+    } catch (err) {
+      const message = isAxiosError(err) ? err.response?.data?.errors?.membership_number?.[0] : undefined
+      setLookupError(message ?? 'We could not check that number just now. Try again in a moment.')
+    } finally {
+      setChecking(false)
+    }
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -38,7 +65,7 @@ export default function MembershipRegister() {
     const firstName = String(form.get('firstName') ?? '').trim()
     const middleName = String(form.get('middleName') ?? '').trim()
     const email = String(form.get('email') ?? '').trim()
-    const membershipNumber = String(form.get('membershipNumber') ?? '').trim()
+    const membershipNumber = lookup?.membershipNumber ?? ''
     const phone = String(form.get('phone') ?? '').trim()
     const residentialAddress = String(form.get('residentialAddress') ?? '').trim()
     const placeOfWork = String(form.get('placeOfWork') ?? '').trim()
@@ -85,8 +112,9 @@ export default function MembershipRegister() {
         dateOfBirth,
       })
       navigate('/members')
-    } catch {
-      setError('We could not complete that registration. Check your details and try again.')
+    } catch (err) {
+      const message = isAxiosError(err) ? err.response?.data?.errors?.membership_number?.[0] : undefined
+      setError(message ?? 'We could not complete that registration. Check your details and try again.')
       setSubmitting(false)
     }
   }
@@ -100,30 +128,94 @@ export default function MembershipRegister() {
           { label: 'Register' },
         ]}
         title="Create your account"
-        intro="Registration itself is free. Your details are matched against the ICAN roll, so use the name and membership number exactly as they appear on your record — you'll choose a membership level and pay your dues from your dashboard afterwards."
+        intro="Registration itself is free. Start with your ICAN membership number — we check it first so nobody is registered twice — then use your name exactly as it appears on your ICAN record. You'll choose a membership level and pay your dues from your dashboard afterwards."
       />
 
       <Section>
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
           <div>
-            <SectionHeading title="Your details" className="mb-6" />
+            <SectionHeading
+              title="Start with your ICAN number"
+              lede="We check it against the chapter's records first, so nobody ends up with two accounts."
+              className="mb-6"
+            />
+            <form onSubmit={handleLookup} className="space-y-3">
+              <Label htmlFor="membershipNumber">ICAN membership number</Label>
+              <div className="flex flex-wrap gap-3">
+                <Input
+                  id="membershipNumber"
+                  name="membershipNumber"
+                  autoComplete="off"
+                  placeholder="MB040071 or just 40071"
+                  className="max-w-xs uppercase"
+                  value={numberInput}
+                  onChange={(event) => {
+                    setNumberInput(event.target.value)
+                    setLookup(null)
+                    setLookupError(null)
+                  }}
+                  aria-describedby="membership-number-help"
+                />
+                <Button type="submit" variant="outline" disabled={checking || !numberInput.trim()}>
+                  {checking ? 'Checking…' : 'Check number'}
+                </Button>
+              </div>
+              <p id="membership-number-help" className="text-[0.8rem] text-muted-foreground">
+                Type it with or without the letters — numbers shorter than six digits are padded with
+                zeros, so 40071 becomes MB040071.
+              </p>
+              {lookupError && (
+                <p role="alert" className="text-[0.85rem] text-destructive">
+                  {lookupError}
+                </p>
+              )}
+              {lookup?.exists && (
+                <div role="status" className="border-l-2 border-gold-500 bg-muted/40 px-4 py-4 text-[0.9rem]">
+                  <p className="font-semibold">{lookup.membershipNumber} is already registered</p>
+                  <p className="mt-1 text-muted-foreground">
+                    The account belongs to <span className="font-medium text-foreground">{lookup.name}</span>,
+                    with the email {lookup.maskedEmail}. If that&rsquo;s you, sign in — or reset your
+                    password if you can&rsquo;t remember it.
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    <Button asChild size="sm">
+                      <Link to="/login">Sign in</Link>
+                    </Button>
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/forgot-password">Reset password</Link>
+                    </Button>
+                  </div>
+                  <p className="mt-3 text-[0.8rem] text-muted-foreground">
+                    Not you? <Link to="/contact" className="underline underline-offset-4">Contact the chapter</Link>{' '}
+                    and we&rsquo;ll sort out the record.
+                  </p>
+                </div>
+              )}
+              {lookup && !lookup.exists && (
+                <p role="status" className="text-[0.85rem] font-medium text-primary">
+                  {lookup.membershipNumber} isn&rsquo;t registered yet — fill in your details below.
+                </p>
+              )}
+            </form>
+
+            <SectionHeading title="Your details" className="mb-6 mt-12" />
             <form onSubmit={handleSubmit} className="space-y-5">
+              <fieldset
+                disabled={!lookup || lookup.exists}
+                className="space-y-5 transition-opacity disabled:opacity-50"
+              >
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last name</Label>
-                  <Input id="lastName" name="lastName" autoComplete="family-name" placeholder="Surname as it appears on your ICAN record" />
+                  <Input key={`lastName-${lookup?.membershipNumber ?? ''}`} defaultValue={lookup?.exists ? lookup.lastName ?? '' : undefined} id="lastName" name="lastName" autoComplete="family-name" placeholder="Surname as it appears on your ICAN record" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First name</Label>
-                  <Input id="firstName" name="firstName" autoComplete="given-name" placeholder="First name as it appears on your ICAN record" />
+                  <Input key={`firstName-${lookup?.membershipNumber ?? ''}`} defaultValue={lookup?.exists ? lookup.firstName ?? '' : undefined} id="firstName" name="firstName" autoComplete="given-name" placeholder="First name as it appears on your ICAN record" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="middleName">Middle name (optional)</Label>
-                  <Input id="middleName" name="middleName" autoComplete="additional-name" placeholder="Middle name, if applicable" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="membershipNumber">ICAN membership number</Label>
-                  <Input id="membershipNumber" name="membershipNumber" placeholder="As it appears on your ICAN record" />
+                  <Input key={`middleName-${lookup?.membershipNumber ?? ''}`} defaultValue={lookup?.exists ? lookup.middleName ?? '' : undefined} id="middleName" name="middleName" autoComplete="additional-name" placeholder="Middle name, if applicable" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="credential">ICAN level</Label>
@@ -201,6 +293,7 @@ export default function MembershipRegister() {
               <Button type="submit" size="lg" disabled={submitting}>
                 {submitting ? 'Creating your account…' : 'Create my account'}
               </Button>
+              </fieldset>
 
               <p className="text-[0.82rem] leading-relaxed text-muted-foreground">
                 We&rsquo;ll send a link to confirm your email. Your account opens as pending, and

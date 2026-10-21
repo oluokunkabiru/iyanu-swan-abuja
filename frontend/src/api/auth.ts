@@ -8,6 +8,23 @@ export interface AuthenticationResponse {
   user: AuthUser
 }
 
+export type MembershipLookup =
+  | { exists: false; membershipNumber: string }
+  | {
+      exists: true
+      membershipNumber: string
+      lastName: string | null
+      firstName: string
+      middleName: string | null
+      name: string
+      maskedEmail: string
+    }
+
+export async function lookupMembershipNumber(membershipNumber: string): Promise<MembershipLookup> {
+  const { data } = await api.post<MembershipLookup>('/register/lookup', { membership_number: membershipNumber })
+  return data
+}
+
 export async function register(payload: {
   lastName: string
   firstName: string

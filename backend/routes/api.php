@@ -61,6 +61,7 @@ Route::get('/publications', [PublicationController::class, 'index']);
 
 Route::post('/contact', [ContactMessageController::class, 'store']);
 
+Route::post('/register/lookup', [AuthController::class, 'lookupMembershipNumber'])->middleware('throttle:20,1');
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:6,1');
