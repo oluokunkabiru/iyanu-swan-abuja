@@ -25,7 +25,7 @@ class AdminPanelSmokeTest extends TestCase
             'admin/committees',
             'admin/contact-messages',
             'admin/core-values',
-            'admin/cpd-records',
+            // 'admin/cpd-records',
             'admin/events',
             'admin/events/create',
             'admin/executive-members',
@@ -47,7 +47,7 @@ class AdminPanelSmokeTest extends TestCase
             'admin/sliders',
             'admin/sliders/create',
             'admin/subscriptions',
-            'admin/trainings',
+            // 'admin/trainings',
             'admin/users',
             'admin/users/create',
         ];

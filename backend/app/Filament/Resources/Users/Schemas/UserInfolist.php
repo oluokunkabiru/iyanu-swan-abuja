@@ -101,7 +101,7 @@ class UserInfolist
                                         TextEntry::make('memberProfile.specialisation')->label('Specialisation')->placeholder('—'),
                                         TextEntry::make('memberProfile.year_admitted')->label('Year admitted')->placeholder('—'),
                                         TextEntry::make('memberProfile.chapter_role')->label('Chapter role')->placeholder('—'),
-                                        TextEntry::make('memberProfile.cpd_target')->label('CPD target (hrs)'),
+                                        // TextEntry::make('memberProfile.cpd_target')->label('CPD target (hrs)'),
                                         IconEntry::make('memberProfile.is_directory_listed')
                                             ->label('In public directory')
                                             ->boolean(),
@@ -138,6 +138,7 @@ class UserInfolist
                                     ]),
                             ]),
 
+                        /* CPD records are hidden while CPD is disabled.
                         Tab::make('CPD records')
                             ->icon('heroicon-m-academic-cap')
                             ->badge(fn (User $record): int => $record->cpdRecords()->count())
@@ -160,6 +161,7 @@ class UserInfolist
                                     ])
                                     ->placeholder('No CPD records logged yet.'),
                             ]),
+                        */
 
                         Tab::make('Subscriptions')
                             ->icon('heroicon-m-banknotes')

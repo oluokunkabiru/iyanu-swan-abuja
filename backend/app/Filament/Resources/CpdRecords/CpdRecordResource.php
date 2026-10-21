@@ -24,6 +24,9 @@ use UnitEnum;
 
 class CpdRecordResource extends Resource
 {
+    /** CPD administration is disabled alongside the public CPD pages. */
+    protected static bool $isDiscovered = false;
+
     protected static ?string $model = CpdRecord::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClock;

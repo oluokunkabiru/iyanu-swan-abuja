@@ -68,11 +68,11 @@ class EventForm
                 DateTimePicker::make('starts_at')
                     ->required(),
                 DateTimePicker::make('ends_at'),
-                TextInput::make('cpd_hours')
-                    ->numeric()
-                    ->minValue(0)
-                    ->default(0)
-                    ->required(),
+                // TextInput::make('cpd_hours')
+                //     ->numeric()
+                //     ->minValue(0)
+                //     ->default(0)
+                //     ->required(),
                 Repeater::make('speakers')
                     ->schema([
                         FileUpload::make('photo')

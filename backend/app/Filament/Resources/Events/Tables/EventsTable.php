@@ -25,7 +25,7 @@ class EventsTable
                 TextColumn::make('category')->badge(),
                 TextColumn::make('starts_at')->dateTime()->sortable(),
                 TextColumn::make('location'),
-                TextColumn::make('cpd_hours')->label('CPD'),
+                // TextColumn::make('cpd_hours')->label('CPD'),
                 TextColumn::make('status')->badge(),
                 IconColumn::make('is_featured')->boolean(),
                 TextColumn::make('registrations_count')->counts('registrations')->label('Registrations'),

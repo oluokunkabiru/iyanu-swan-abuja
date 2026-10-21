@@ -24,6 +24,9 @@ use UnitEnum;
 
 class TrainingResource extends Resource
 {
+    /** The CPD training calendar is disabled alongside the public CPD pages. */
+    protected static bool $isDiscovered = false;
+
     protected static ?string $model = Training::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;
@@ -54,7 +57,7 @@ class TrainingResource extends Resource
                     ])
                     ->required(),
                 DatePicker::make('starts_on')->required(),
-                TextInput::make('cpd_hours')->numeric()->minValue(0)->required(),
+                // TextInput::make('cpd_hours')->numeric()->minValue(0)->required(),
                 TextInput::make('fee')->numeric()->minValue(0)->prefix('₦')->required(),
                 TextInput::make('member_fee')->numeric()->minValue(0)->prefix('₦')->required(),
                 TextInput::make('seats_available')->numeric()->minValue(0)->required(),

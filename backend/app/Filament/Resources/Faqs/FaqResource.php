@@ -19,6 +19,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 class FaqResource extends Resource
@@ -41,7 +42,7 @@ class FaqResource extends Resource
                         'Membership' => 'Membership',
                         'Events' => 'Events',
                         'Payments' => 'Payments',
-                        'CPD' => 'CPD',
+                        // 'CPD' => 'CPD',
                     ])
                     ->required(),
                 TextInput::make('question')
@@ -79,6 +80,11 @@ class FaqResource extends Resource
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('topic', '!=', 'CPD');
     }
 
     public static function getPages(): array
