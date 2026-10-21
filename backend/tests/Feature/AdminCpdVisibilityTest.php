@@ -115,6 +115,7 @@ class AdminCpdVisibilityTest extends TestCase
             'membership_status' => 'active',
             'date_of_birth' => '1985-05-10',
             'cpd_target' => 240,
+            'next_of_kin_name' => 'Family contact',
         ]);
         $record = CpdRecord::factory()->for($member)->create([
             'activity' => 'Hidden learning activity',
@@ -129,12 +130,14 @@ class AdminCpdVisibilityTest extends TestCase
         Livewire::actingAs($admin)
             ->test(EditUser::class, ['record' => $member->getRouteKey()])
             ->assertFormFieldDoesNotExist('memberProfile.cpd_target')
+            ->assertFormFieldExists('memberProfile.next_of_kin_name')
             ->fillForm(['name' => 'Updated member name'])
             ->call('save')
             ->assertHasNoFormErrors();
 
         $this->assertSame('Updated member name', $member->fresh()->name);
         $this->assertSame(240, $member->fresh()->memberProfile->cpd_target);
+        $this->assertSame('Family contact', $member->fresh()->memberProfile->next_of_kin_name);
         $this->assertModelExists($record);
     }
 
