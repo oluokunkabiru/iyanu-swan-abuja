@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { CalendarDays, Clock, MapPin } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -14,6 +14,18 @@ import { containerVariants, itemVariants } from '@/lib/animations'
 import { formatDate, formatNaira, formatTimeRange } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { ChapterEvent } from '@/types'
+
+const GALLERY_PREVIEW_SIZE = 12
+
+/** A fresh random pick each time the page opens, so repeat visitors see different photos. */
+function randomSample<T>(items: T[], size: number): T[] {
+  const shuffled = [...items]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled.slice(0, size)
+}
 
 function speakerInitials(name: string): string {
   return name
@@ -39,6 +51,12 @@ export default function EventDetail() {
   const [registering, setRegistering] = useState(false)
   const [registered, setRegistered] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const galleryPreview = useMemo(
+    () => randomSample(event?.galleryImageUrls ?? [], GALLERY_PREVIEW_SIZE),
+    [event?.galleryImageUrls],
+  )
+  const galleryTotal = (event?.galleryImageUrls.length ?? 0) + (event?.galleryVideoCount ?? 0)
 
   useEffect(() => {
     setSelectedTier(null)
@@ -131,47 +149,59 @@ export default function EventDetail() {
               dangerouslySetInnerHTML={{ __html: event.body }}
             />
 
-            {event.galleryImageUrls.length + event.galleryVideoCount > 0 && (
+            {galleryTotal > 0 && (
               <div className="mt-10">
                 <SectionHeading
                   title="Event gallery"
                   lede={
-                    event.galleryVideoCount > 0
-                      ? `${event.galleryVideoCount} ${event.galleryVideoCount === 1 ? 'video' : 'videos'} from this event ${event.galleryVideoCount === 1 ? 'is' : 'are'} on the gallery's Videos tab.`
+                    galleryTotal > galleryPreview.length
+                      ? `A selection of ${galleryPreview.length} from ${galleryTotal} photos and videos.`
                       : undefined
-                  }
-                  action={
-                    <Link
-                      to={`/gallery?event=${event.slug}`}
-                      className="text-[0.85rem] font-semibold text-plum-700 underline-offset-4 hover:underline dark:text-primary"
-                    >
-                      Open in the gallery
-                    </Link>
                   }
                   className="mb-6"
                 />
-                <motion.div
-                  className="grid gap-4 sm:grid-cols-2"
-                  initial="initial"
-                  whileInView="animate"
-                  viewport={{ once: true, amount: 0.2 }}
-                  variants={containerVariants}
-                >
-                  {event.galleryImageUrls.map((imageUrl, index) => (
-                    <motion.div
-                      key={imageUrl}
-                      variants={itemVariants}
-                      className="overflow-hidden border border-border"
-                    >
-                      <LazyImage
-                        src={imageUrl}
-                        alt={`${event.title} gallery image ${index + 1}`}
-                        className="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out hover:scale-110"
-                        hoverZoom={false}
-                      />
-                    </motion.div>
-                  ))}
-                </motion.div>
+                {galleryPreview.length > 0 && (
+                  <motion.div
+                    className="grid grid-cols-2 gap-3 lg:grid-cols-3"
+                    initial="initial"
+                    whileInView="animate"
+                    viewport={{ once: true, amount: 0.1 }}
+                    variants={containerVariants}
+                  >
+                    {galleryPreview.map((imageUrl, index) => (
+                      <motion.div
+                        key={imageUrl}
+                        variants={itemVariants}
+                        className="overflow-hidden border border-border"
+                      >
+                        <Link to={`/gallery?event=${event.slug}`} aria-label={`Open ${event.title} gallery`}>
+                          <LazyImage
+                            src={imageUrl}
+                            alt={`${event.title} gallery image ${index + 1}`}
+                            className="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out hover:scale-110"
+                            hoverZoom={false}
+                          />
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Button asChild>
+                    <Link to={`/gallery?event=${event.slug}`}>
+                      {event.galleryImageUrls.length > galleryPreview.length
+                        ? `See all ${event.galleryImageUrls.length} photos`
+                        : 'Open in the gallery'}
+                    </Link>
+                  </Button>
+                  {event.galleryVideoCount > 0 && (
+                    <Button variant="outline" asChild>
+                      <Link to={`/gallery?event=${event.slug}&tab=videos`}>
+                        Watch {event.galleryVideoCount} {event.galleryVideoCount === 1 ? 'video' : 'videos'}
+                      </Link>
+                    </Button>
+                  )}
+                </div>
               </div>
             )}
 

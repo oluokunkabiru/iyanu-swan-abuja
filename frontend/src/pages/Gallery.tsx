@@ -11,7 +11,8 @@ import { formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { GalleryItem } from '@/types'
 
-const OTHER_TYPE = 'Other'
+/** Items not linked to any event — one album, and one entry in the type filter. */
+const GENERAL = 'General'
 
 type Album = {
   key: string
@@ -23,7 +24,7 @@ type Album = {
 }
 
 function typeOf(item: GalleryItem): string {
-  return item.eventType ?? OTHER_TYPE
+  return item.eventType ?? GENERAL
 }
 
 /** YouTube and Vimeo links play inline; anything else opens in a new tab. */
@@ -79,17 +80,17 @@ export default function Gallery() {
 
   const types = useMemo(() => {
     const found = Array.from(new Set(ofTab.map(typeOf))).sort()
-    return found.includes(OTHER_TYPE) ? [...found.filter((t) => t !== OTHER_TYPE), OTHER_TYPE] : found
+    return found.includes(GENERAL) ? [...found.filter((t) => t !== GENERAL), GENERAL] : found
   }, [ofTab])
 
   const albums = useMemo(() => {
     const byKey = new Map<string, Album>()
     for (const item of ofTab) {
       if (type !== 'All' && typeOf(item) !== type) continue
-      const key = item.eventSlug ?? `album:${item.album}`
+      const key = item.eventSlug ?? 'general'
       const album = byKey.get(key) ?? {
         key,
-        title: item.eventTitle ?? item.album,
+        title: item.eventTitle ?? GENERAL,
         eventSlug: item.eventSlug,
         eventType: item.eventType,
         eventDate: item.eventDate,
@@ -98,7 +99,8 @@ export default function Gallery() {
       album.items.push(item)
       byKey.set(key, album)
     }
-    return Array.from(byKey.values())
+    // General goes last, after the event albums.
+    return Array.from(byKey.values()).sort((a, b) => Number(a.key === 'general') - Number(b.key === 'general'))
   }, [ofTab, type])
 
   const scopedEvent = eventSlug ? inScope[0] : undefined

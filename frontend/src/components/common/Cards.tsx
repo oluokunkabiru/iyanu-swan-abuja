@@ -97,12 +97,21 @@ export function EventCard({ event, compact = false }: { event: ChapterEvent; com
                 : `From ${formatNaira(lowest)}`}
             </span>
           )}
-          <Link
-            to={`/events/${event.slug}`}
-            className="border-b border-plum-700 pb-0.5 text-[0.85rem] font-semibold text-plum-700 dark:border-primary dark:text-primary"
-          >
-            {event.status === 'upcoming' ? 'Register' : 'Read the record'}
-          </Link>
+          {event.status === 'past' && event.galleryImageUrls.length + event.galleryVideoCount > 0 ? (
+            <Link
+              to={`/gallery?event=${event.slug}`}
+              className="border-b border-plum-700 pb-0.5 text-[0.85rem] font-semibold text-plum-700 dark:border-primary dark:text-primary"
+            >
+              View gallery
+            </Link>
+          ) : (
+            <Link
+              to={`/events/${event.slug}`}
+              className="border-b border-plum-700 pb-0.5 text-[0.85rem] font-semibold text-plum-700 dark:border-primary dark:text-primary"
+            >
+              {event.status === 'upcoming' ? 'Register' : 'Read the record'}
+            </Link>
+          )}
         </div>
       </div>
     </motion.article>

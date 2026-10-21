@@ -16,8 +16,8 @@ class GalleryImageController extends Controller
      * the event itself, Gallery Images linked to an event, and the
      * event's video link. Each item carries its media type, event and
      * event type so the frontend can split photos from videos, group by
-     * event and filter by type. Older images not yet linked to an
-     * event are still returned, under their album name.
+     * event and filter by type. Items not linked to any event are
+     * posted under a single "General" album.
      */
     public function index(): JsonResponse
     {
@@ -56,7 +56,7 @@ class GalleryImageController extends Controller
             ->get()
             ->map(fn (GalleryImage $image): array => [
                 ...$this->item((string) $image->id, $image->image_url, $image->getFirstMedia('image')?->mime_type, $image->caption ?? '', null),
-                'album' => $image->album ?? 'Chapter life',
+                'album' => 'General',
                 'year' => $image->year ?? $image->created_at->year,
             ]);
 

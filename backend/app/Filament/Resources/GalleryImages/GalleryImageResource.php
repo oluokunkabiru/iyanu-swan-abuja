@@ -49,8 +49,8 @@ class GalleryImageResource extends Resource
                     ->label('Event')
                     ->options(fn () => Event::query()->orderByDesc('starts_at')->pluck('title', 'id'))
                     ->searchable()
-                    ->required()
-                    ->helperText('The gallery is organised by event — this photo appears in that event\'s album and under its event type.'),
+                    ->placeholder('General (no event)')
+                    ->helperText('The gallery is organised by event — this appears in that event\'s album. Leave empty to post it under General.'),
             ]);
     }
 
@@ -66,7 +66,7 @@ class GalleryImageResource extends Resource
                     ->badge()
                     ->state(fn (GalleryImage $record): string => $record->is_video ? 'Video' : 'Photo'),
                 TextColumn::make('caption'),
-                TextColumn::make('event.title')->label('Event')->placeholder('Not linked')->searchable(),
+                TextColumn::make('event.title')->label('Event')->placeholder('General')->searchable(),
                 TextColumn::make('event.category')->label('Event type')->badge(),
                 TextColumn::make('album')->label('Old album')->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
             ])

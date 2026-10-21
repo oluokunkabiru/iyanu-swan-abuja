@@ -67,4 +67,16 @@ class EventGalleryTest extends TestCase
             ->assertJsonCount(2, 'galleryImageUrls')
             ->assertJsonPath('galleryVideoCount', 2);
     }
+
+    public function test_items_without_an_event_are_posted_under_general(): void
+    {
+        Storage::fake('public');
+        GalleryImage::create(['caption' => 'Unlinked photo', 'album' => 'Old album name'])
+            ->addMedia(UploadedFile::fake()->image('unlinked.jpg'))->toMediaCollection('image');
+
+        $item = collect($this->getJson('/api/gallery')->assertOk()->json())->firstWhere('caption', 'Unlinked photo');
+
+        $this->assertSame('General', $item['album']);
+        $this->assertNull($item['eventSlug']);
+    }
 }
