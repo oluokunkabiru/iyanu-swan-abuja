@@ -14,17 +14,21 @@ class Committee extends Model
     protected $fillable = [
         'name',
         'slug',
-        'remit',
+        'subtitle',
+        'purpose',
         'chair',
-        'focus_areas',
-        'meeting_cadence',
+        'objectives',
+        'structure',
+        'meetings',
+        'reporting',
+        'note',
         'is_active',
     ];
 
     protected function casts(): array
     {
         return [
-            'focus_areas' => 'array',
+            'objectives' => 'array',
             'is_active' => 'boolean',
         ];
     }

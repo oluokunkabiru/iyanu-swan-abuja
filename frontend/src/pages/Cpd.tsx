@@ -155,7 +155,7 @@ export default function Cpd() {
                     {c.name}
                   </Link>
                 </h3>
-                <p className="mt-2 text-[0.88rem] leading-relaxed text-muted-foreground">{c.remit}</p>
+                <p className="mt-2 line-clamp-3 text-[0.88rem] leading-relaxed text-muted-foreground">{c.purpose}</p>
               </motion.li>
             ))}
           </motion.ul>

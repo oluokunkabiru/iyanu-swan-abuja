@@ -23,10 +23,12 @@ class CommitteeFactory extends Factory
         return [
             'name' => Str::title($name),
             'slug' => Str::slug($name),
-            'remit' => fake()->paragraph(),
+            'purpose' => fake()->paragraph(),
             'chair' => fake()->name(),
-            'focus_areas' => fake()->words(4),
-            'meeting_cadence' => 'Monthly',
+            'objectives' => fake()->sentences(4),
+            'structure' => fake()->paragraph(),
+            'meetings' => fake()->sentence(),
+            'reporting' => fake()->sentence(),
             'is_active' => true,
         ];
     }

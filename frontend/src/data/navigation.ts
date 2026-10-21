@@ -21,7 +21,7 @@ export const navigation: NavSection[] = [
       {
         heading: 'Structure',
         items: [
-          { label: 'Standing committees', to: '/committees', description: 'Eight committees and their remits' },
+          { label: 'Standing committees', to: '/committees', description: 'Ten committees and their mandates' },
           { label: 'Relationship with ICAN', to: '/about#ican' },
           { label: 'Affiliates and partners', to: '/about#partners' },
         ],

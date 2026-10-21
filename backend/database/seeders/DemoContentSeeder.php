@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Announcement;
-use App\Models\Committee;
 use App\Models\CpdRecord;
 use App\Models\Event;
 use App\Models\ExecutiveMember;
@@ -68,7 +67,7 @@ class DemoContentSeeder extends Seeder
             'chapter_stats' => [
                 ['label' => 'Members on the chapter roll', 'value' => '640+', 'note' => 'Female ICAN members across the FCT'],
                 ['label' => 'CPD hours delivered', 'value' => '1,240', 'note' => 'Across seminars, clinics and technical sessions'],
-                ['label' => 'Standing committees', 'value' => '8', 'note' => 'Technical, welfare, outreach and mentorship'],
+                ['label' => 'Standing committees', 'value' => '10', 'note' => 'Welfare, outreach, events and youth development'],
                 ['label' => 'Years in the FCT', 'value' => '24', 'note' => 'Serving Abuja and surrounding districts'],
             ],
             'registration_steps' => [
@@ -221,24 +220,6 @@ class DemoContentSeeder extends Seeder
             Faq::query()->updateOrCreate(['question' => $question], [
                 'topic' => $topic, 'answer' => 'The chapter team can provide current guidance through the website and member portal.',
                 'is_active' => true,
-            ]);
-        }
-
-        $committees = [
-            ['Technical and Research', 'technical-and-research', 'Ngozi Francisca Ashinze, FCA'],
-            ['Membership and Records', 'membership-and-records', 'Nsini Bassey, FCA'],
-            ['Professional Development', 'professional-development', 'Dr Maryam Danna Mohammed, FCA'],
-            ['Mentorship and Career', 'mentorship-and-career', 'Aisha Bello Oroche, FCA'],
-            ['Women in Practice', 'women-in-practice', 'Charity Okongwu, FCA'],
-            ['Welfare', 'welfare', 'Taiye Fasan, ACA'],
-            ['Community Outreach', 'community-outreach', 'Oluwakemi Toluwani, FCA'],
-            ['Publicity and Communications', 'publicity-and-communications', 'Oluwakemi Toluwani, FCA'],
-        ];
-        foreach ($committees as [$name, $slug, $chair]) {
-            Committee::query()->updateOrCreate(['slug' => $slug], [
-                'name' => $name, 'remit' => 'Plans and delivers the chapter work assigned to this committee.',
-                'chair' => $chair, 'focus_areas' => ['Planning', 'Member engagement', 'Reporting'],
-                'meeting_cadence' => 'Monthly', 'is_active' => true,
             ]);
         }
 

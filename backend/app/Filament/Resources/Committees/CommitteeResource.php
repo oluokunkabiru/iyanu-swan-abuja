@@ -10,7 +10,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -43,10 +43,26 @@ class CommitteeResource extends Resource
                     ->afterStateUpdated(fn ($state, callable $set) => $set('slug', Str::slug($state)))
                     ->maxLength(255),
                 TextInput::make('slug')->required()->unique(ignoreRecord: true)->maxLength(255),
-                Textarea::make('remit')->required()->rows(4)->columnSpanFull(),
-                TextInput::make('chair')->required()->maxLength(255),
-                TextInput::make('meeting_cadence')->required()->maxLength(100),
-                TagsInput::make('focus_areas')->required()->columnSpanFull(),
+                TextInput::make('subtitle')
+                    ->helperText('Optional line shown under the name, e.g. "Muslim and Christian Thanksgiving".')
+                    ->maxLength(255),
+                TextInput::make('chair')
+                    ->helperText('Leave blank until a chair is appointed.')
+                    ->maxLength(255),
+                Textarea::make('purpose')->required()->rows(4)->columnSpanFull(),
+                Repeater::make('objectives')
+                    ->simple(Textarea::make('objective')->required()->rows(2))
+                    ->required()
+                    ->reorderable()
+                    ->addActionLabel('Add objective')
+                    ->columnSpanFull(),
+                Textarea::make('structure')->label('Structure & membership')->required()->rows(3)->columnSpanFull(),
+                Textarea::make('meetings')->required()->rows(2)->columnSpanFull(),
+                Textarea::make('reporting')->required()->rows(3)->columnSpanFull(),
+                Textarea::make('note')
+                    ->helperText('Optional closing provision, shown highlighted at the end of the mandate.')
+                    ->rows(2)
+                    ->columnSpanFull(),
                 Toggle::make('is_active')->default(true),
             ]);
     }
@@ -59,8 +75,10 @@ class CommitteeResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
-                TextColumn::make('chair')->searchable(),
-                TextColumn::make('meeting_cadence')->label('Meetings'),
+                TextColumn::make('chair')->searchable()->placeholder('Not appointed'),
+                TextColumn::make('objectives')
+                    ->label('Objectives')
+                    ->state(fn (Committee $record): int => count($record->objectives ?? [])),
                 IconColumn::make('is_active')->boolean(),
             ])
             ->filters([

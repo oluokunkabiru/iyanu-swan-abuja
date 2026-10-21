@@ -41,8 +41,8 @@ export default function Governance() {
           <div className="border-l-2 border-gold-500 pl-5">
             <h3 className="text-[1.05rem]">Committees</h3>
             <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
-              Eight standing committees carry the working load. Any financial member may serve;
-              places are confirmed by council at the start of each session.
+              Ten standing committees carry the working load, each under a written mandate. Any
+              financial member may serve; places are confirmed by council at the start of each session.
             </p>
           </div>
           <div className="border-l-2 border-gold-500 pl-5">

@@ -33,10 +33,14 @@ class CommitteeController extends Controller
             'id' => (string) $committee->id,
             'name' => $committee->name,
             'slug' => $committee->slug,
-            'remit' => $committee->remit,
+            'subtitle' => $committee->subtitle,
+            'purpose' => $committee->purpose,
             'chair' => $committee->chair,
-            'focusAreas' => $committee->focus_areas,
-            'meetingCadence' => $committee->meeting_cadence,
+            'objectives' => $committee->objectives,
+            'structure' => $committee->structure,
+            'meetings' => $committee->meetings,
+            'reporting' => $committee->reporting,
+            'note' => $committee->note,
         ];
     }
 }

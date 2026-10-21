@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { getCommittee, getCommittees } from '@/api/content'
@@ -16,13 +17,13 @@ export default function Committees() {
       <PageHeader
         breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Committees' }]}
         title="Standing committees"
-        intro="Eight committees carry the working load of the chapter. Any financial member may serve — places are confirmed by council at the start of each session."
+        intro="Ten committees carry the working load of the chapter, each under a written mandate. Any financial member may serve — places are confirmed by council at the start of each session."
       />
 
       <Section>
         <SectionHeading
           title="The committees"
-          lede="Each committee sets its own work plan within the remit council gives it."
+          lede="Each mandate sets out the committee's purpose, objectives, membership, meetings and reporting line."
           className="mb-8"
         />
         {isLoading ? (
@@ -48,9 +49,16 @@ export default function Committees() {
                     {c.name}
                   </Link>
                 </h2>
-                <p className="mt-1 text-[0.8rem] font-semibold text-accent-foreground">Chair: {c.chair}</p>
-                <p className="mt-3 text-[0.9rem] leading-relaxed text-muted-foreground">{c.remit}</p>
-                <p className="mt-4 text-[0.8rem] text-muted-foreground">Meets {c.meetingCadence.toLowerCase()}</p>
+                {c.subtitle && (
+                  <p className="mt-1 text-[0.8rem] font-semibold text-accent-foreground">{c.subtitle}</p>
+                )}
+                <p className="mt-3 line-clamp-4 text-[0.9rem] leading-relaxed text-muted-foreground">{c.purpose}</p>
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-[0.8rem]">
+                  <span className="text-muted-foreground">{c.objectives.length} objectives</span>
+                  <Link to={`/committees/${c.slug}`} className="font-semibold hover:text-plum-700 dark:hover:text-primary">
+                    Read the mandate →
+                  </Link>
+                </div>
               </motion.li>
             ))}
           </motion.ul>
@@ -117,33 +125,57 @@ export function CommitteeDetail() {
           { label: 'Committees', to: '/committees' },
           { label: committee.name },
         ]}
-        title={committee.name}
-        intro={committee.remit}
+        title={`Mandate of the ${committee.name}`}
+        intro={committee.subtitle ?? undefined}
       />
 
       <Section>
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-          <div>
-            <SectionHeading title="Focus areas" />
-            <ul className="mt-6 divide-y divide-border border-y border-border">
-              {committee.focusAreas.map((area) => (
-                <li key={area} className="py-3.5 text-[0.95rem]">
-                  {area}
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+          <article className="space-y-10">
+            <MandateClause title="Purpose">
+              <p>{committee.purpose}</p>
+            </MandateClause>
 
-          <aside className="border border-border bg-card p-6">
+            <MandateClause title="Objectives">
+              <ol className="divide-y divide-border border-y border-border">
+                {committee.objectives.map((objective, i) => (
+                  <li key={i} className="flex gap-4 py-3.5">
+                    <span className="w-6 shrink-0 font-semibold tabular-nums text-accent-foreground">{i + 1}.</span>
+                    <span>{objective}</span>
+                  </li>
+                ))}
+              </ol>
+            </MandateClause>
+
+            <MandateClause title="Structure & membership">
+              <p>{committee.structure}</p>
+            </MandateClause>
+
+            <MandateClause title="Meetings">
+              <p>{committee.meetings}</p>
+            </MandateClause>
+
+            <MandateClause title="Reporting">
+              <p>{committee.reporting}</p>
+            </MandateClause>
+
+            {committee.note && (
+              <p className="border-l-2 border-gold-500 bg-muted/40 px-5 py-4 text-[0.95rem] font-semibold leading-relaxed">
+                {committee.note}
+              </p>
+            )}
+          </article>
+
+          <aside className="h-fit border border-border bg-card p-6 lg:sticky lg:top-24">
             <h2 className="text-[1.05rem]">Committee details</h2>
             <dl className="mt-4 space-y-4 text-[0.88rem]">
               <div>
                 <dt className="text-muted-foreground">Chair</dt>
-                <dd className="mt-0.5 font-medium">{committee.chair}</dd>
+                <dd className="mt-0.5 font-medium">{committee.chair ?? 'To be appointed by the executive'}</dd>
               </div>
               <div>
-                <dt className="text-muted-foreground">Meeting cadence</dt>
-                <dd className="mt-0.5 font-medium">{committee.meetingCadence}</dd>
+                <dt className="text-muted-foreground">Objectives</dt>
+                <dd className="mt-0.5 font-medium">{committee.objectives.length}</dd>
               </div>
               <div>
                 <dt className="text-muted-foreground">Open to</dt>
@@ -157,5 +189,14 @@ export function CommitteeDetail() {
         </div>
       </Section>
     </>
+  )
+}
+
+function MandateClause({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section>
+      <SectionHeading title={title} />
+      <div className="mt-5 text-[0.95rem] leading-relaxed">{children}</div>
+    </section>
   )
 }

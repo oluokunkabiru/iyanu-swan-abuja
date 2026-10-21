@@ -184,10 +184,14 @@ export interface Committee {
   id: string
   name: string
   slug: string
-  remit: string
-  chair: string
-  focusAreas: string[]
-  meetingCadence: string
+  subtitle: string | null
+  purpose: string
+  chair: string | null
+  objectives: string[]
+  structure: string
+  meetings: string
+  reporting: string
+  note: string | null
 }
 
 export interface Training {

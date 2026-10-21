@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Announcement;
-use App\Models\Committee;
 use App\Models\CoreValue;
 use App\Models\CpdRecord;
 use App\Models\Event;
@@ -57,7 +56,7 @@ class SwanContentSeeder extends Seeder
             'chapter_stats' => [
                 ['label' => 'Members on the chapter roll', 'value' => '640+', 'note' => 'Female ICAN members across the FCT'],
                 ['label' => 'CPD hours delivered', 'value' => '1,240', 'note' => 'Across seminars, clinics and technical sessions'],
-                ['label' => 'Standing committees', 'value' => '8', 'note' => 'Technical, welfare, outreach and mentorship'],
+                ['label' => 'Standing committees', 'value' => '10', 'note' => 'Welfare, outreach, events and youth development'],
                 ['label' => 'Years in the FCT', 'value' => '24', 'note' => 'Serving Abuja and the surrounding districts'],
             ],
             'registration_steps' => [
@@ -408,74 +407,7 @@ class SwanContentSeeder extends Seeder
 
     private function seedCommittees(): void
     {
-        $committees = [
-            [
-                'name' => 'Technical Committee',
-                'chair' => 'Dr Maryam Danna Mohammed',
-                'remit' => 'Sets the chapter\'s CPD calendar, reviews exposure drafts and coordinates the chapter\'s technical positions submitted through ICAN.',
-                'focus_areas' => ['CPD programme', 'Exposure drafts', 'Technical bulletins'],
-                'meeting_cadence' => 'Monthly',
-            ],
-            [
-                'name' => 'Welfare Committee',
-                'chair' => 'Ngozi Adebayo',
-                'remit' => 'Administers the welfare fund, supporting members through bereavement, illness and other major life events.',
-                'focus_areas' => ['Welfare fund', 'Member support', 'Annual welfare report'],
-                'meeting_cadence' => 'Monthly',
-            ],
-            [
-                'name' => 'Membership Committee',
-                'chair' => 'Ojoma Blessing Lawal-Adewale',
-                'remit' => 'Reviews new membership registrations, maintains the directory, and runs the induction process for newly admitted members.',
-                'focus_areas' => ['Registration', 'Directory', 'Induction'],
-                'meeting_cadence' => 'Monthly',
-            ],
-            [
-                'name' => 'Mentorship and Career Committee',
-                'chair' => 'Biola Olawoore',
-                'remit' => 'Runs the chapter mentorship programme and the job centre, connecting members with senior professionals and career opportunities.',
-                'focus_areas' => ['Mentorship pairing', 'Job centre', 'Student outreach'],
-                'meeting_cadence' => 'Bi-monthly',
-            ],
-            [
-                'name' => 'Women in Practice Committee',
-                'chair' => 'Patricia Chinwe Ofili',
-                'remit' => 'Supports members setting up or running licensed practices, through the licensing clinic and the practice attachment register.',
-                'focus_areas' => ['Licensing clinic', 'Practice attachment', 'Licence renewal'],
-                'meeting_cadence' => 'Quarterly',
-            ],
-            [
-                'name' => 'Outreach and Publicity Committee',
-                'chair' => 'Ojoma Blessing Olaniran',
-                'remit' => 'Plans community outreach programmes and manages the chapter\'s public communications and media presence.',
-                'focus_areas' => ['Community outreach', 'Media relations', 'Chapter publications'],
-                'meeting_cadence' => 'Monthly',
-            ],
-            [
-                'name' => 'Finance and Fundraising Committee',
-                'chair' => 'Biola Olawoore',
-                'remit' => 'Oversees chapter finances, prepares annual accounts, and coordinates fundraising for chapter programmes.',
-                'focus_areas' => ['Annual accounts', 'Fundraising', 'Budget oversight'],
-                'meeting_cadence' => 'Monthly',
-            ],
-            [
-                'name' => 'Ethics and Disciplinary Committee',
-                'chair' => 'Dr Maryam Danna Mohammed',
-                'remit' => 'Handles conduct matters referred by council and advises members on professional ethics questions.',
-                'focus_areas' => ['Conduct matters', 'Ethics advisory'],
-                'meeting_cadence' => 'As required',
-            ],
-        ];
-
-        foreach ($committees as $committee) {
-            Committee::query()->updateOrCreate(
-                ['name' => $committee['name']],
-                $committee + [
-                    'slug' => Str::slug($committee['name']),
-                    'is_active' => true,
-                ]
-            );
-        }
+        $this->call(CommitteeMandateSeeder::class);
     }
 
     private function seedFaqs(): void
