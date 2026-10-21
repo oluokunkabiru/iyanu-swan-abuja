@@ -68,7 +68,7 @@ class Event extends Model implements HasMedia
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
 
         $this->addMediaCollection('gallery')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+            ->acceptsMimeTypes([...GalleryImage::IMAGE_MIME_TYPES, ...GalleryImage::VIDEO_MIME_TYPES]);
     }
 
     public function getRouteKeyName(): string

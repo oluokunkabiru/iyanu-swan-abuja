@@ -35,38 +35,40 @@ class GalleryImageResource extends Resource
         return $schema
             ->components([
                 SpatieMediaLibraryFileUpload::make('image')
+                    ->label('Photo or video')
+                    ->helperText('JPG, PNG or WebP photo, or MP4, WebM or MOV video up to 100 MB.')
                     ->collection('image')
                     ->disk('public')
-                    ->image()
+                    ->acceptedFileTypes([...GalleryImage::IMAGE_MIME_TYPES, ...GalleryImage::VIDEO_MIME_TYPES])
+                    ->maxSize(GalleryImage::MAX_UPLOAD_KB)
                     ->required()
                     ->columnSpanFull(),
                 TextInput::make('caption')
                     ->maxLength(255),
-                TextInput::make('album')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('year')
-                    ->numeric()
-                    ->minValue(2000)
-                    ->maxValue(2100)
-                    ->required(),
                 Select::make('event_id')
-                    ->label('Related event')
-                    ->options(fn () => Event::query()->pluck('title', 'id'))
-                    ->searchable(),
+                    ->label('Event')
+                    ->options(fn () => Event::query()->orderByDesc('starts_at')->pluck('title', 'id'))
+                    ->searchable()
+                    ->required()
+                    ->helperText('The gallery is organised by event — this photo appears in that event\'s album and under its event type.'),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('caption')
+            ->defaultSort('created_at', 'desc')
             ->columns([
-                SpatieMediaLibraryImageColumn::make('image')->collection('image'),
+                SpatieMediaLibraryImageColumn::make('image')->collection('image')
+                    ->defaultImageUrl(asset('images/logo.png')),
+                TextColumn::make('media_type')
+                    ->label('Type')
+                    ->badge()
+                    ->state(fn (GalleryImage $record): string => $record->is_video ? 'Video' : 'Photo'),
                 TextColumn::make('caption'),
-                TextColumn::make('album')->searchable(),
-                TextColumn::make('year')->sortable(),
-                TextColumn::make('event.title')->label('Event'),
+                TextColumn::make('event.title')->label('Event')->placeholder('Not linked')->searchable(),
+                TextColumn::make('event.category')->label('Event type')->badge(),
+                TextColumn::make('album')->label('Old album')->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

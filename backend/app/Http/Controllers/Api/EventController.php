@@ -14,7 +14,7 @@ class EventController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Event::query()
-            ->with(['ticketTypes', 'media'])
+            ->with(['ticketTypes', 'media', 'galleryImages.media'])
             ->where('status', 'published');
 
         if ($request->query('when') === 'past') {
@@ -32,7 +32,7 @@ class EventController extends Controller
     {
         abort_unless($event->status === 'published', 404);
 
-        $event->load(['ticketTypes', 'media']);
+        $event->load(['ticketTypes', 'media', 'galleryImages.media']);
 
         return response()->json($this->payload($event));
     }
@@ -55,9 +55,14 @@ class EventController extends Controller
             'status' => $event->starts_at->isPast() ? 'past' : 'upcoming',
             'coverUrl' => $event->cover_url,
             'galleryImageUrls' => $event->getMedia('gallery')
+                ->reject(fn (Media $media): bool => str_starts_with($media->mime_type, 'video/'))
                 ->map(fn (Media $media): string => $media->getUrl())
+                ->concat($event->galleryImages->reject->is_video->pluck('image_url')->filter())
                 ->values()
                 ->all(),
+            'galleryVideoCount' => $event->getMedia('gallery')
+                ->filter(fn (Media $media): bool => str_starts_with($media->mime_type, 'video/'))
+                ->count() + $event->galleryImages->filter->is_video->count() + (filled($event->video_url) ? 1 : 0),
             'ticketTiers' => $event->ticketTypes->map(fn ($ticket): array => [
                 'id' => (string) $ticket->id,
                 'audience' => $ticket->audience ?? 'member',

@@ -9,7 +9,7 @@ import type {
   ExecutiveMember,
   Faq,
   Firm,
-  GalleryImage,
+  GalleryItem,
   JobListing,
   MemberSpotlight,
   MembershipLevel,
@@ -111,7 +111,7 @@ export const getNews = () => api.get<NewsPost[]>('/news').then((r) =>
 
 export const getNewsPost = (slug: string) => api.get<NewsPost>(`/news/${slug}`).then((r) => visibleNewsPost(r.data))
 
-export const getGallery = () => api.get<GalleryImage[]>('/gallery').then((r) => r.data)
+export const getGallery = () => api.get<GalleryItem[]>('/gallery').then((r) => r.data)
 
 export const getSpotlights = () => api.get<MemberSpotlight[]>('/spotlights').then((r) => r.data)
 

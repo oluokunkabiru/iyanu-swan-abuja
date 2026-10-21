@@ -77,11 +77,26 @@ export function EventCard({ event, compact = false }: { event: ChapterEvent; com
         </dl>
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-5">
-          <span className="text-[0.82rem] text-muted-foreground">
-            {lowest === null
-              ? 'Open to members, no charge'
-              : `From ${formatNaira(lowest)}`}
-          </span>
+          {event.galleryImageUrls.length + event.galleryVideoCount > 0 ? (
+            <Link
+              to={`/gallery?event=${event.slug}`}
+              className="text-[0.82rem] font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            >
+              {[
+                event.galleryImageUrls.length > 0 && `${event.galleryImageUrls.length} ${event.galleryImageUrls.length === 1 ? 'photo' : 'photos'}`,
+                event.galleryVideoCount > 0 && `${event.galleryVideoCount} ${event.galleryVideoCount === 1 ? 'video' : 'videos'}`,
+              ]
+                .filter(Boolean)
+                .join(' · ')}{' '}
+              in the gallery
+            </Link>
+          ) : (
+            <span className="text-[0.82rem] text-muted-foreground">
+              {lowest === null
+                ? 'Open to members, no charge'
+                : `From ${formatNaira(lowest)}`}
+            </span>
+          )}
           <Link
             to={`/events/${event.slug}`}
             className="border-b border-plum-700 pb-0.5 text-[0.85rem] font-semibold text-plum-700 dark:border-primary dark:text-primary"

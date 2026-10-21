@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Event;
+use App\Models\GalleryImage;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\Concerns\UsesMysqlInTransaction;
@@ -35,5 +36,35 @@ class EventGalleryTest extends TestCase
 
         $this->assertStringContainsString('first-gallery-image.jpg', $response->json('galleryImageUrls.0'));
         $this->assertStringContainsString('second-gallery-image.jpg', $response->json('galleryImageUrls.1'));
+    }
+
+    public function test_gallery_is_built_from_event_photos_tagged_with_event_and_type(): void
+    {
+        Storage::fake('public');
+        $event = Event::create([
+            'title' => 'Kwali Outreach',
+            'slug' => 'kwali-outreach-test',
+            'category' => 'Outreach',
+            'starts_at' => now()->subMonth(),
+            'status' => 'published',
+        ]);
+        $event->addMedia(UploadedFile::fake()->image('on-event.jpg'))->toMediaCollection('gallery');
+        $event->addMedia(UploadedFile::fake()->createWithContent('clip.mp4', "\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00mp42isom".str_repeat("\x00", 64)))->toMediaCollection('gallery');
+        $event->update(['video_url' => 'https://www.youtube.com/watch?v=abc123']);
+        GalleryImage::create(['caption' => 'Linked photo', 'event_id' => $event->id])
+            ->addMedia(UploadedFile::fake()->image('linked.jpg'))->toMediaCollection('image');
+
+        $photos = collect($this->getJson('/api/gallery')->assertOk()->json())
+            ->where('eventSlug', 'kwali-outreach-test');
+
+        $this->assertCount(4, $photos);
+        $this->assertSame(['Outreach'], $photos->pluck('eventType')->unique()->values()->all());
+        $this->assertContains('Linked photo', $photos->pluck('caption'));
+        $this->assertSame(2, $photos->where('mediaType', 'video')->count());
+        $this->assertTrue($photos->firstWhere('url', 'https://www.youtube.com/watch?v=abc123')['isExternal']);
+
+        $this->getJson('/api/events/kwali-outreach-test')
+            ->assertJsonCount(2, 'galleryImageUrls')
+            ->assertJsonPath('galleryVideoCount', 2);
     }
 }

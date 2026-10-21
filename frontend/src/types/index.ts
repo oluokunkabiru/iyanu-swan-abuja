@@ -120,6 +120,7 @@ export interface ChapterEvent {
   status: 'upcoming' | 'past'
   coverUrl: string | null
   galleryImageUrls: string[]
+  galleryVideoCount: number
   ticketTiers: TicketTier[]
   speakers: { name: string; role: string; photoUrl: string | null }[]
 }
@@ -162,12 +163,21 @@ export interface Faq {
   topic: 'Membership' | 'Events' | 'Payments' | 'CPD' | 'General'
 }
 
-export interface GalleryImage {
+/** One photo or video in the gallery. Event-linked items carry their event and its type. */
+export interface GalleryItem {
   id: string
+  url: string
+  mediaType: 'image' | 'video'
+  mimeType: string | null
+  /** A YouTube/Vimeo/other link rather than an uploaded file. */
+  isExternal: boolean
   caption: string
   album: string
   year: number
-  imageUrl: string
+  eventSlug: string | null
+  eventTitle: string | null
+  eventType: ChapterEvent['category'] | null
+  eventDate: string | null
 }
 
 export interface Partner {

@@ -131,9 +131,25 @@ export default function EventDetail() {
               dangerouslySetInnerHTML={{ __html: event.body }}
             />
 
-            {event.galleryImageUrls.length > 0 && (
+            {event.galleryImageUrls.length + event.galleryVideoCount > 0 && (
               <div className="mt-10">
-                <SectionHeading title="Event gallery" className="mb-6" />
+                <SectionHeading
+                  title="Event gallery"
+                  lede={
+                    event.galleryVideoCount > 0
+                      ? `${event.galleryVideoCount} ${event.galleryVideoCount === 1 ? 'video' : 'videos'} from this event ${event.galleryVideoCount === 1 ? 'is' : 'are'} on the gallery's Videos tab.`
+                      : undefined
+                  }
+                  action={
+                    <Link
+                      to={`/gallery?event=${event.slug}`}
+                      className="text-[0.85rem] font-semibold text-plum-700 underline-offset-4 hover:underline dark:text-primary"
+                    >
+                      Open in the gallery
+                    </Link>
+                  }
+                  className="mb-6"
+                />
                 <motion.div
                   className="grid gap-4 sm:grid-cols-2"
                   initial="initial"
@@ -280,7 +296,7 @@ export default function EventDetail() {
                 </p>
                 <div className="mt-4 flex flex-col gap-2">
                   <Button variant="outline" asChild>
-                    <Link to="/gallery">See the gallery</Link>
+                    <Link to={`/gallery?event=${event.slug}`}>See this event&rsquo;s gallery</Link>
                   </Button>
                   <Button variant="outline" asChild>
                     <Link to="/publications">Publications library</Link>

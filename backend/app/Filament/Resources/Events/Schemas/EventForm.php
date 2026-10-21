@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Events\Schemas;
 
+use App\Models\GalleryImage;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -52,17 +53,20 @@ class EventForm
                     ->image()
                     ->columnSpanFull(),
                 SpatieMediaLibraryFileUpload::make('gallery')
-                    ->label('Event gallery images')
-                    ->helperText('Upload as many images as needed. You can drag them into the order they should appear on the event page.')
+                    ->label('Event gallery photos and videos')
+                    ->helperText('Upload as many photos (JPG, PNG, WebP) and videos (MP4, WebM, MOV — up to 100 MB each) as needed. Drag them into the order they should appear. They also appear in the public Gallery under this event.')
                     ->collection('gallery')
                     ->disk('public')
-                    ->image()
+                    ->acceptedFileTypes([...GalleryImage::IMAGE_MIME_TYPES, ...GalleryImage::VIDEO_MIME_TYPES])
+                    ->maxSize(GalleryImage::MAX_UPLOAD_KB)
                     ->multiple()
                     ->reorderable()
                     ->columnSpanFull(),
                 TextInput::make('location')
                     ->maxLength(255),
                 TextInput::make('video_url')
+                    ->label('Video link')
+                    ->helperText('Optional YouTube, Vimeo or other video link — shown on the Gallery\'s Videos tab.')
                     ->url()
                     ->maxLength(255),
                 DateTimePicker::make('starts_at')
