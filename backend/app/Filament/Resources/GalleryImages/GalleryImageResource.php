@@ -11,6 +11,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
@@ -34,7 +35,22 @@ class GalleryImageResource extends Resource
     {
         return $schema
             ->components([
+                FileUpload::make('uploads')
+                    ->label('Photos and videos')
+                    ->helperText('Select as many files as you like — each becomes its own gallery item. JPG, PNG or WebP photos, or MP4, WebM or MOV videos up to 100 MB each.')
+                    ->multiple()
+                    ->maxFiles(100)
+                    ->panelLayout('grid')
+                    ->reorderable()
+                    ->disk('local')
+                    ->directory('gallery-uploads')
+                    ->acceptedFileTypes([...GalleryImage::IMAGE_MIME_TYPES, ...GalleryImage::VIDEO_MIME_TYPES])
+                    ->maxSize(GalleryImage::MAX_UPLOAD_KB)
+                    ->required()
+                    ->visibleOn('create')
+                    ->columnSpanFull(),
                 SpatieMediaLibraryFileUpload::make('image')
+                    ->hiddenOn('create')
                     ->label('Photo or video')
                     ->helperText('JPG, PNG or WebP photo, or MP4, WebM or MOV video up to 100 MB.')
                     ->collection('image')
@@ -44,6 +60,7 @@ class GalleryImageResource extends Resource
                     ->required()
                     ->columnSpanFull(),
                 TextInput::make('caption')
+                    ->helperText(fn (string $operation): ?string => $operation === 'create' ? 'Optional. Applied to every file in this upload.' : null)
                     ->maxLength(255),
                 Select::make('event_id')
                     ->label('Event')
