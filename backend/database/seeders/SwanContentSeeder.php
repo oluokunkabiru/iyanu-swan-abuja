@@ -134,7 +134,7 @@ class SwanContentSeeder extends Seeder
         foreach ($pastChairpersons as $chairperson) {
             ExecutiveMember::query()->updateOrCreate(
                 ['name' => $chairperson['name']],
-                $chairperson + ['is_active' => false, 'is_principal' => false]
+                $chairperson + ['is_active' => false, 'is_principal' => false, 'is_past_chairperson' => true]
             );
         }
 

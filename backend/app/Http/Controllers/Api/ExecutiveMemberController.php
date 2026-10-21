@@ -15,6 +15,7 @@ class ExecutiveMemberController extends Controller
                 ->with('media')
                 ->where('is_active', true)
                 ->where('is_ex_officio', false)
+                ->where('is_past_chairperson', false)
                 ->orderBy('sort_order')
                 ->orderBy('id')
                 ->get()
@@ -38,12 +39,7 @@ class ExecutiveMemberController extends Controller
         return response()->json(
             ExecutiveMember::query()
                 ->with('media')
-                ->where('position', 'Chairperson')
-                ->where(function ($query): void {
-                    $query
-                        ->where('is_active', false)
-                        ->orWhere('is_ex_officio', true);
-                })
+                ->where('is_past_chairperson', true)
                 ->orderByDesc('term_start_year')
                 ->orderByDesc('id')
                 ->get()

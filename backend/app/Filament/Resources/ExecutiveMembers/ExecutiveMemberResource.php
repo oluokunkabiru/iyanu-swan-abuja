@@ -21,6 +21,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 class ExecutiveMemberResource extends Resource
@@ -30,6 +31,12 @@ class ExecutiveMemberResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
     protected static string|UnitEnum|null $navigationGroup = 'Site Content';
+
+    /** Past chairpersons are managed in their own section. */
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('is_past_chairperson', false);
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -65,7 +72,7 @@ class ExecutiveMemberResource extends Resource
                     ->default(false),
                 Toggle::make('is_ex_officio')
                     ->label('Ex officio')
-                    ->helperText('Hides this executive from the standard public council list. A Chairperson marked ex officio appears under Past Chairpersons.')
+                    ->helperText('Hides this executive from the standard public council list. Past chairpersons are managed under Site Content → Past Chairpersons.')
                     ->default(false),
                 TextInput::make('sort_order')
                     ->label('Display order')

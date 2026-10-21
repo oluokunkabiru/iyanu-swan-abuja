@@ -2,7 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Resources\PastChairpersons\Pages\ManagePastChairpersons;
 use App\Models\ExecutiveMember;
+use App\Models\User;
+use Filament\Actions\CreateAction;
+use Filament\Facades\Filament;
+use Livewire\Livewire;
 use Tests\Concerns\UsesMysqlInTransaction;
 use Tests\TestCase;
 
@@ -89,5 +94,53 @@ class ExecutiveMemberTest extends TestCase
             array_search((string) $secondExecutive->id, $executiveIds, true),
             array_search((string) $firstExecutive->id, $executiveIds, true),
         );
+    }
+
+    public function test_past_chairpersons_come_from_their_own_flag_and_stay_off_the_council_list(): void
+    {
+        ExecutiveMember::create([
+            'name' => 'Former Chair',
+            'position' => 'Chairperson',
+            'is_active' => true,
+            'is_past_chairperson' => true,
+            'term_start_year' => 2018,
+            'term_end_year' => 2020,
+        ]);
+        ExecutiveMember::create([
+            'name' => 'Inactive Treasurer',
+            'position' => 'Treasurer',
+            'is_active' => false,
+        ]);
+
+        $this->getJson('/api/past-chairpersons')
+            ->assertOk()
+            ->assertJsonFragment(['name' => 'Former Chair', 'termStartYear' => 2018])
+            ->assertJsonMissing(['name' => 'Inactive Treasurer']);
+
+        $this->getJson('/api/executives')
+            ->assertOk()
+            ->assertJsonMissing(['name' => 'Former Chair']);
+    }
+
+    public function test_admin_can_add_a_past_chairperson_from_its_own_section(): void
+    {
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+        Livewire::actingAs(User::factory()->admin()->create())
+            ->test(ManagePastChairpersons::class)
+            ->callAction(CreateAction::class, [
+                'name' => 'Added Past Chair',
+                'credential' => 'FCA',
+                'term_start_year' => 2014,
+                'term_end_year' => 2016,
+            ])
+            ->assertHasNoActionErrors();
+
+        $this->assertDatabaseHas('executive_members', [
+            'name' => 'Added Past Chair',
+            'position' => 'Chairperson',
+            'is_past_chairperson' => true,
+            'is_active' => false,
+        ]);
     }
 }
