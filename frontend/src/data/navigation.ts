@@ -15,7 +15,7 @@ export const navigation: NavSection[] = [
           { label: 'Who we are', to: '/about', description: 'History, aims and objectives' },
           { label: 'Vision, mission and values', to: '/about#vision' },
           { label: 'Governance', to: '/governance', description: 'Council, elections and standing rules' },
-          { label: 'Constitution', to: '/constitution', description: 'Download the governing document' },
+          { label: 'Constitution and Brochure', to: '/constitution', description: 'Read and download the chapter documents' },
         ],
       },
       {
@@ -159,7 +159,7 @@ export const navigation: NavSection[] = [
         items: [
           { label: 'Publications', to: '/publications', description: 'Communiqués, bulletins and reports' },
           { label: 'Forms and downloads', to: '/resources' },
-          { label: 'Constitution', to: '/constitution', description: 'Download the governing document' },
+          { label: 'Constitution and Brochure', to: '/constitution', description: 'Read and download the chapter documents' },
           { label: 'Announcements', to: '/announcements' },
         ],
       },
