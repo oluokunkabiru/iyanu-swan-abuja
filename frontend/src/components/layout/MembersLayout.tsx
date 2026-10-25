@@ -1,81 +1,88 @@
-import { NavLink, Outlet } from 'react-router-dom'
-import { PageHeader, Section, StatusTag } from '@/components/common/Primitives'
+import { useState } from 'react'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { ArrowLeft, ArrowUpRight, ChevronRight, CircleHelp, LayoutDashboard, LogOut, Menu, ShieldCheck, Ticket, Wallet } from 'lucide-react'
+import { MotionConfig } from 'framer-motion'
+import { BrandLogo } from '@/components/common/BrandLogo'
+import { StatusTag } from '@/components/common/Primitives'
+import { ThemeToggle } from '@/components/ThemeToggle'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useAuth } from '@/context/AuthContext'
+import { profileSectionPath, profileSections } from '@/data/memberProfile'
 import { cn } from '@/lib/utils'
 
-const railLinks = [
-  { to: '/members', label: 'Overview', end: true },
-  // { to: '/members/cpd', label: 'CPD record' },
-  { to: '/members/subscription', label: 'Subscription and welfare' },
-  { to: '/members/tickets', label: 'Event tickets' },
-  { to: '/members/profile', label: 'Profile' },
-]
-
 export function MembersLayout() {
-  const { user } = useAuth()
-
-  return (
-    <>
-      <PageHeader
-        breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Members area' }]}
-        title={user ? `Good to see you, ${user.firstName}` : 'Members area'}
-        intro={
-          user
-            ? `${user.membershipNumber} · member since ${new Date(user.joinedAt).getFullYear()}`
-            : undefined
-        }
-        aside={
-          user && (
-            <div className="border border-gold-500/40 bg-plum-800/60 p-4 text-plum-200">
-              <p className="text-[0.78rem]">Membership status</p>
-              <p className="mt-1.5 font-heading text-xl capitalize text-gold-300">
-                {user.membershipStatus}
-              </p>
-            </div>
-          )
-        }
-      />
-
-      <Section>
-        <div className="grid gap-10 lg:grid-cols-[14rem_minmax(0,1fr)]">
-          <nav aria-label="Members area" className="lg:sticky lg:top-32 lg:self-start">
-            <ul className="flex gap-1 overflow-x-auto border-b border-border pb-px lg:flex-col lg:gap-0 lg:overflow-visible lg:border-b-0 lg:border-l lg:border-rule lg:pb-0">
-              {railLinks.map((link) => (
-                <li key={link.to}>
-                  <NavLink
-                    to={link.to}
-                    end={link.end}
-                    className={({ isActive }) =>
-                      cn(
-                        'block whitespace-nowrap px-4 py-2.5 text-[0.88rem] font-medium transition-colors lg:-ml-px lg:border-l-2',
-                        isActive
-                          ? 'border-b-2 border-gold-500 text-plum-700 lg:border-b-0 lg:border-l-gold-500 dark:text-primary'
-                          : 'border-transparent text-muted-foreground hover:text-foreground',
-                      )
-                    }
-                  >
-                    {link.label}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-
-            {user?.membershipStatus === 'pending' && (
-              <div className="mt-6 hidden border border-border bg-card p-4 lg:block">
-                <StatusTag tone="warning">Awaiting confirmation</StatusTag>
-                <p className="mt-2 text-[0.82rem] leading-relaxed text-muted-foreground">
-                  The Financial Secretary confirms payments within two working days. Member rates
-                  apply once your record is confirmed.
-                </p>
-              </div>
-            )}
-          </nav>
-
-          <div className="min-w-0">
-            <Outlet />
+  const { user, signOut } = useAuth()
+  const { pathname } = useLocation()
+  const [mobileOpen, setMobileOpen] = useState(false)
+  if (!user) return null
+  const profileSection = profileSections.find(section => profileSectionPath(section.id) === pathname)
+  const pageTitle = profileSection?.label ?? (pathname.endsWith('/subscription') ? 'Subscription and welfare' : pathname.endsWith('/tickets') ? 'Event tickets' : 'Dashboard')
+  const linkClass = ({ isActive }: { isActive: boolean }) => cn(
+    'flex items-center gap-3 rounded-lg px-3 py-2.5 text-[0.86rem] font-medium transition-colors',
+    isActive ? 'bg-white text-plum-900 shadow-sm' : 'text-white/70 hover:bg-white/10 hover:text-white',
+  )
+  function sidebar() {
+    return (
+      <>
+        <Link to="/" className="mx-5 mt-7 block rounded-lg bg-white px-3 py-3" onClick={() => setMobileOpen(false)}><BrandLogo className="max-h-10 w-full" /></Link>
+        <p className="px-6 pt-4 pb-6 text-[0.68rem] font-semibold tracking-[0.2em] text-white/50 uppercase">Abuja Chapter · Members portal</p>
+        <nav aria-label="Members area" className="flex-1 space-y-6 overflow-y-auto px-4 pb-6">
+          <NavLink to="/members/overview" end className={linkClass} onClick={() => setMobileOpen(false)}><LayoutDashboard className="h-4 w-4" aria-hidden="true" />Overview</NavLink>
+          <div>
+            <p className="mb-2 px-3 text-[0.65rem] font-semibold tracking-[0.18em] text-white/40 uppercase">My profile</p>
+            <ul className="space-y-1">{profileSections.map(section => (
+              <li key={section.id}><NavLink to={profileSectionPath(section.id)} end className={linkClass} onClick={() => setMobileOpen(false)}><section.icon className="h-4 w-4 shrink-0" aria-hidden="true" />{section.label}</NavLink></li>
+            ))}</ul>
           </div>
+          <div>
+            <p className="mb-2 px-3 text-[0.65rem] font-semibold tracking-[0.18em] text-white/40 uppercase">My account</p>
+            <ul className="space-y-1">
+              <li><NavLink to="/members/subscription" className={linkClass} onClick={() => setMobileOpen(false)}><Wallet className="h-4 w-4" aria-hidden="true" />Subscription & welfare</NavLink></li>
+              <li><NavLink to="/members/tickets" className={linkClass} onClick={() => setMobileOpen(false)}><Ticket className="h-4 w-4" aria-hidden="true" />Event tickets</NavLink></li>
+              <li><Link to="/change-password" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[0.86rem] text-white/70 hover:bg-white/10 hover:text-white"><ShieldCheck className="h-4 w-4" aria-hidden="true" />Password & security</Link></li>
+            </ul>
+          </div>
+        </nav>
+        <div className="border-t border-white/10 p-4">
+          <Link to="/contact" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-white/70 hover:text-white"><CircleHelp className="h-4 w-4" aria-hidden="true" />Help & support<ArrowUpRight className="ml-auto h-3.5 w-3.5" aria-hidden="true" /></Link>
+          <button type="button" onClick={signOut} className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-white/70 hover:bg-white/10 hover:text-white"><LogOut className="h-4 w-4" aria-hidden="true" />Sign out</button>
         </div>
-      </Section>
-    </>
+      </>
+    )
+  }
+  return (
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen bg-secondary/35">
+        <a href="#member-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded focus:bg-card focus:p-3">Skip to content</a>
+        <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-plum-900 lg:flex">{sidebar()}</aside>
+        <div className="min-w-0 lg:pl-64">
+          <header className="sticky top-0 z-30 flex h-18 items-center justify-between gap-3 border-b border-border bg-card px-4 sm:px-8">
+            <div className="flex min-w-0 items-center gap-3">
+              <Dialog open={mobileOpen} onOpenChange={setMobileOpen}>
+                <DialogTrigger asChild><Button variant="outline" size="icon" className="lg:hidden" aria-label="Open member menu"><Menu className="h-5 w-5" /></Button></DialogTrigger>
+                <DialogContent className="top-0 left-0 flex h-dvh w-72 max-w-[85vw] translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden rounded-none border-0 bg-plum-900 p-0 text-white sm:max-w-72">
+                  <DialogTitle className="sr-only">Member navigation</DialogTitle>
+                  <DialogDescription className="sr-only">Your profile sections and membership account.</DialogDescription>
+                  {sidebar()}
+                </DialogContent>
+              </Dialog>
+              <span className="hidden text-sm text-muted-foreground sm:inline">Members portal</span><ChevronRight className="hidden h-3.5 w-3.5 text-muted-foreground sm:block" aria-hidden="true" /><span className="truncate text-sm font-semibold">{pageTitle}</span>
+            </div>
+            <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+              <Link to="/" className="hidden items-center gap-2 text-[0.8rem] font-medium text-muted-foreground hover:text-foreground md:inline-flex"><ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />Visit website</Link><ThemeToggle /><span className="hidden max-w-40 truncate border-l border-border pl-4 text-sm font-medium sm:block">{user.firstName}</span>
+            </div>
+          </header>
+          <main id="member-content" className="mx-auto max-w-[100rem] px-4 py-7 sm:px-8 sm:py-9">
+            <div className="mb-7 flex flex-wrap items-start justify-between gap-4">
+              <div><p className="mb-2 text-[0.67rem] font-semibold tracking-[0.18em] text-muted-foreground uppercase">Your chapter. Your community.</p><h1 className="text-2xl sm:text-3xl">{profileSection ? 'My profile' : pageTitle === 'Dashboard' ? `Welcome back, ${user.firstName}` : pageTitle}</h1><p className="mt-2 text-sm text-muted-foreground">{profileSection ? 'Keep your membership record complete and up to date.' : 'Manage your chapter membership, payments and activities.'}</p></div>
+              <div className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs"><span className="text-muted-foreground">Membership</span><StatusTag tone={user.membershipStatus === 'active' ? 'positive' : 'warning'}>{user.membershipStatus}</StatusTag></div>
+            </div>
+            <Outlet />
+          </main>
+          <footer className="px-4 pb-6 text-center text-xs text-muted-foreground sm:px-8">© {new Date().getFullYear()} Society of Women Accountants of Nigeria, Abuja Chapter</footer>
+        </div>
+      </div>
+    </MotionConfig>
   )
 }

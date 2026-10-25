@@ -1,5 +1,5 @@
 import { api } from '@/api/client'
-import type { AuthUser, CpdRecord, MemberBioData, NotificationEmailPreference, SubscriptionRecord, TicketRecord } from '@/types'
+import type { AuthUser, CpdRecord, MemberBioData, MemberProfileDetails, NotificationEmailPreference, Sector, SubscriptionRecord, TicketRecord } from '@/types'
 
 export interface AuthenticationResponse {
   accessToken: string
@@ -118,6 +118,10 @@ export async function updateMe(payload: {
   officialEmail?: string
   notificationEmailPreference?: NotificationEmailPreference | ''
   bioData?: { [K in keyof MemberBioData]?: string }
+  profileDetails?: MemberProfileDetails
+  sector?: Sector | ''
+  specialisation?: string
+  yearAdmitted?: string
 }): Promise<AuthUser> {
   const form = new FormData()
   form.append('_method', 'PUT')
@@ -137,6 +141,14 @@ export async function updateMe(payload: {
   }
   for (const [key, value] of Object.entries(payload.bioData ?? {})) {
     if (value !== undefined) form.append(bioDataFields[key as keyof MemberBioData], value)
+  }
+  if (payload.sector !== undefined) form.append('sector', payload.sector)
+  if (payload.specialisation !== undefined) form.append('specialisation', payload.specialisation)
+  if (payload.yearAdmitted !== undefined) form.append('year_admitted', payload.yearAdmitted)
+  for (const [section, fields] of Object.entries(payload.profileDetails ?? {})) {
+    for (const [key, value] of Object.entries(fields ?? {})) {
+      form.append(`profile_details[${section}][${key}]`, value === null ? '' : String(value))
+    }
   }
 
   const { data } = await api.post<AuthUser>('/me', form)

@@ -52,6 +52,7 @@ class MemberProfile extends Model implements HasMedia
         'cpd_target',
         'is_directory_listed',
         'joined_at',
+        'profile_details',
     ];
 
     protected function casts(): array
@@ -62,6 +63,7 @@ class MemberProfile extends Model implements HasMedia
             'year_admitted' => 'integer',
             'cpd_target' => 'integer',
             'is_directory_listed' => 'boolean',
+            'profile_details' => 'array',
         ];
     }
 

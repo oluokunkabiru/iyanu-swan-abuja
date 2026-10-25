@@ -1,520 +1,200 @@
-import { useMemo, useState } from 'react'
-import { fetchMySubscriptions } from '@/api/auth'
+import { Fragment, useEffect, useState, type FormEvent } from 'react'
+import { Link, Navigate, useParams } from 'react-router-dom'
+import { isAxiosError } from 'axios'
+import { Camera, Check, CheckCircle2, LockKeyhole, Mail, Pencil, Phone, Save, ShieldCheck } from 'lucide-react'
+import type { updateMe } from '@/api/auth'
+import { StatusTag } from '@/components/common/Primitives'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { EmptyState, SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/context/AuthContext'
-import { useApiData } from '@/hooks/useApiData'
-import { maritalStatuses, memberTitles, nigerianStates } from '@/data'
+import { profileSections, profileSectionPath, type ProfileField } from '@/data/memberProfile'
 import { formatDate } from '@/lib/format'
-import type { MemberBioData, NotificationEmailPreference, SubscriptionRecord } from '@/types'
+import type { AuthUser, MemberBioData } from '@/types'
 
-const notificationPreferenceOptions: { value: NotificationEmailPreference; label: string }[] = [
-  { value: 'registered', label: 'Registered email only' },
-  { value: 'personal', label: 'Personal email only' },
-  { value: 'official', label: 'Official email only' },
-  { value: 'all', label: 'All emails on file' },
-]
+type SectionDefinition = (typeof profileSections)[number]
+const emailLabels: Record<string, string> = { registered: 'Registered email only', personal: 'Personal email only', official: 'Official email only', all: 'All emails on file' }
 
-const preferences = [
-  { id: 'pref-mentor', label: 'Available as a mentor', detail: 'The Membership Secretary may match you with a newly inducted member.' },
-  { id: 'pref-attachment', label: 'Willing to host a practice attachment', detail: 'For members with a licensed firm.' },
-  { id: 'pref-notices', label: 'Email me chapter notices', detail: 'Deadlines, circulars and the meeting agenda.' },
-]
-
-type BioDataForm = { [K in keyof MemberBioData]: string }
-
-const bioDataKeys: (keyof MemberBioData)[] = [
-  'title', 'formerName', 'alternatePhone', 'maritalStatus', 'nationality', 'stateOfOrigin',
-  'lgaOfOrigin', 'nextOfKinName', 'nextOfKinRelationship', 'nextOfKinPhone', 'nextOfKinAddress',
-]
-
-function bioDataFrom(user: MemberBioData | null): BioDataForm {
-  const form = Object.fromEntries(bioDataKeys.map((key) => [key, user?.[key] ?? ''])) as BioDataForm
-  if (!form.nationality) form.nationality = 'Nigeria'
-  return form
+function errorMessage(error: unknown): string {
+  if (isAxiosError(error)) {
+    const messages = error.response?.data?.errors
+    const first = messages && Object.values(messages).flat()[0]
+    if (typeof first === 'string') return first
+    if (typeof error.response?.data?.message === 'string') return error.response.data.message
+  }
+  return 'Your changes could not be saved. Please try again.'
 }
 
-function initials(name: string): string {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('')
+function draftFrom(user: AuthUser, section: SectionDefinition): Record<string, string> {
+  return Object.fromEntries(section.fields.map(field => {
+    const value = field.source
+      ? user[field.key as keyof AuthUser]
+      : section.id !== 'membership' ? user.profileDetails?.[section.id]?.[field.key] : null
+    return [field.key, value === null || value === undefined ? '' : String(value)]
+  }))
+}
+
+function ProfilePhoto() {
+  const { user, updateProfile } = useAuth()
+  const [photo, setPhoto] = useState<File | null>(null)
+  const [preview, setPreview] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [saved, setSaved] = useState(false)
+  useEffect(() => {
+    return () => { if (preview) URL.revokeObjectURL(preview) }
+  }, [preview])
+  if (!user) return null
+  async function savePhoto(event: FormEvent) {
+    event.preventDefault()
+    if (!photo || !user) return
+    if (!user.dateOfBirth) { setError('Add your date of birth in BioData before saving your photo.'); return }
+    setError(''); setSaving(true)
+    try { await updateProfile({photo,dateOfBirth:user.dateOfBirth}); setPhoto(null); setPreview(null); setSaved(true) }
+    catch (error) { setError(errorMessage(error)) }
+    finally { setSaving(false) }
+  }
+  return (
+    <aside className="space-y-5 xl:sticky xl:top-24 xl:self-start" aria-label="Profile photo">
+      <form onSubmit={savePhoto} className="rounded-xl border border-border bg-card p-5 text-center shadow-sm">
+        <p className="mb-4 text-[0.68rem] font-semibold tracking-[0.15em] text-muted-foreground uppercase">Profile photograph</p>
+        <Avatar className="mx-auto h-40 w-36 rounded-xl border-4 border-background shadow-sm">
+          <AvatarImage src={preview ?? user.photoUrl ?? undefined} alt={user.name} className="aspect-auto h-full w-full object-cover object-top" />
+          <AvatarFallback className="rounded-lg bg-secondary text-3xl text-primary">{user.name.split(' ').filter(Boolean).slice(0,2).map(part=>part[0]).join('')}</AvatarFallback>
+        </Avatar>
+        <p className="mt-4 text-sm font-semibold">{[user.title,user.name].filter(Boolean).join(' ')}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{user.credential} · {user.membershipNumber}</p>
+        <label className="mt-5 inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-semibold hover:bg-secondary focus-within:ring-2 focus-within:ring-ring">
+          <Camera className="h-3.5 w-3.5" aria-hidden="true" />Change photo
+          <input aria-label="Choose profile photo" type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={event=>{
+            const file=event.target.files?.[0]
+            setError(''); setSaved(false)
+            if (!file) return
+            if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size>5*1024*1024) {
+              setError('Choose a JPG, PNG or WebP image up to 5 MB.'); setPhoto(null); setPreview(null); event.target.value=''; return
+            }
+            setPhoto(file)
+            setPreview(URL.createObjectURL(file))
+            event.target.value=''
+          }} />
+        </label>
+        <p className="mt-2 text-[0.67rem] text-muted-foreground">JPG, PNG or WebP · maximum 5 MB</p>
+        {photo && <div className="mt-3 flex justify-center gap-2"><Button size="sm" type="submit" disabled={saving}>{saving?'Saving…':'Save photo'}</Button><Button size="sm" variant="ghost" type="button" onClick={()=>{setPhoto(null);setPreview(null)}} disabled={saving}>Cancel</Button></div>}
+        {error && <p role="alert" className="mt-3 text-xs text-destructive">{error}</p>}
+        {saved && <p role="status" className="mt-3 text-xs text-success">Profile photo updated.</p>}
+      </form>
+      <div className="rounded-xl border border-border bg-card p-5">
+        <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
+        <h3 className="mt-3 text-sm">Your information is private</h3>
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Your contact details, BioData and next-of-kin information are held on your chapter record. Only the details you choose to list appear in the member directory.</p>
+      </div>
+    </aside>
+  )
+}
+
+function SectionEditor({ section }: { section: SectionDefinition }) {
+  const {user,updateProfile}=useAuth()
+  const [draft,setDraft]=useState(()=>user?draftFrom(user,section):{})
+  const [editing,setEditing]=useState(false)
+  const [saving,setSaving]=useState(false)
+  const [saved,setSaved]=useState(false)
+  const [error,setError]=useState('')
+  if(!user) return null
+  function change(key:string,value:string) { setDraft(current=>({...current,[key]:value})); setSaved(false) }
+  function isLocked(field:ProfileField) {
+    return Boolean(field.readOnly || (!user?.emailVerified && ['personalEmail','officialEmail'].includes(field.key)))
+  }
+  async function save(event:FormEvent) {
+    event.preventDefault()
+    if(!user) return
+    const payload:Parameters<typeof updateMe>[0]={dateOfBirth:user.dateOfBirth??''}
+    const detailFields:Record<string,string>={}
+    for(const field of section.fields) {
+      if(isLocked(field)) continue
+      const value=draft[field.key]??''
+      if(field.source==='bio') {
+        payload.bioData??={}
+        payload.bioData[field.key as keyof MemberBioData]=value
+      } else if(field.source==='root') {
+        if(['personalEmail','officialEmail'].includes(field.key) && value===(user[field.key as 'personalEmail'|'officialEmail']??'')) continue
+        Object.assign(payload,{[field.key]:field.type==='checkbox'?value==='true':value})
+      } else detailFields[field.key]=value
+    }
+    if(section.id!=='membership' && Object.keys(detailFields).length) payload.profileDetails={[section.id]:detailFields}
+    if(!payload.dateOfBirth) { setError('Please add your date of birth in BioData before saving your profile.'); return }
+    setError(''); setSaving(true); setSaved(false)
+    try {
+      const next=await updateProfile(payload)
+      setDraft(draftFrom(next,section)); setEditing(false); setSaved(true)
+    } catch(error) { setError(errorMessage(error)) }
+    finally { setSaving(false) }
+  }
+  function display(field:ProfileField) {
+    const value=draft[field.key]
+    if(field.type==='checkbox') return value==='true'?'Listed in the member directory':'Not listed in the member directory'
+    if(!value) return 'Not provided'
+    if(field.key==='notificationEmailPreference') return emailLabels[value]??value
+    if(field.type==='date') return formatDate(value)
+    return value
+  }
+  function fieldControl(field:ProfileField) {
+    const id=`profile-${section.id}-${field.key}`
+    const value=draft[field.key]??''
+    if(isLocked(field)) return <p className="mt-2 flex min-h-9 items-center gap-2 break-words text-sm"><LockKeyhole className="h-3 w-3 shrink-0 text-muted-foreground" aria-hidden="true" />{display(field)}</p>
+    if(field.type==='select') return <select id={id} value={value} onChange={event=>change(field.key,event.target.value)} className="mt-2 h-10 w-full rounded-md border border-input bg-background px-3 text-sm"><option value="">Select an option</option>{field.options?.map(option=><option key={option} value={option}>{field.key==='notificationEmailPreference'?emailLabels[option]:option}</option>)}</select>
+    if(field.type==='textarea') return <Textarea id={id} rows={3} maxLength={field.maxLength??1000} value={value} onChange={event=>change(field.key,event.target.value)} className="mt-2" />
+    if(field.type==='checkbox') return <label className="mt-3 flex items-center gap-3 text-sm"><input id={id} type="checkbox" checked={value==='true'} onChange={event=>change(field.key,String(event.target.checked))} className="h-4 w-4 accent-[var(--primary)]" />List my public professional profile</label>
+    return <Input id={id} type={field.type??'text'} value={value} onChange={event=>change(field.key,event.target.value)} maxLength={field.maxLength??255} min={field.min} max={field.type==='date'&&field.key==='dateOfBirth'?new Date().toISOString().slice(0,10):field.max} required={field.key==='dateOfBirth'} className="mt-2" />
+  }
+  return (
+    <form onSubmit={save} className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-5 py-5 sm:px-7">
+        <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary text-primary"><section.icon className="h-5 w-5" aria-hidden="true" /></span><div><h2 className="text-lg">{section.label}</h2><p className="mt-1 text-xs text-muted-foreground">{section.description}</p></div></div>
+        {!editing && <Button type="button" size="sm" variant="outline" onClick={()=>{setEditing(true);setSaved(false);setError('')}}><Pencil className="h-3.5 w-3.5" aria-hidden="true" />Edit details</Button>}
+      </div>
+      <div className="px-5 py-6 sm:px-7">
+        {section.id==='bio'&&<p className="mb-6 rounded-lg bg-secondary/60 px-4 py-3 text-xs leading-relaxed text-muted-foreground">Your registered name and membership number are managed by the chapter. Contact the secretariat if a correction is needed.</p>}
+        {section.id==='contact'&&!user.emailVerified&&<p className="mb-6 rounded-lg bg-accent/30 p-4 text-xs">Verify your registered email before adding personal or official email addresses. <Link to="/members/overview" className="font-semibold underline">Check email verification</Link></p>}
+        <dl className="grid min-w-0 gap-x-8 gap-y-6 sm:grid-cols-2">
+          {section.fields.map((field,index)=>(
+            <Fragment key={field.key}>
+              {field.group&&field.group!==section.fields[index-1]?.group&&<div className="mt-2 border-t border-border pt-5 sm:col-span-2"><h3 className="text-sm">{field.group}</h3></div>}
+              <div className={field.type==='textarea'||field.type==='checkbox'?'min-w-0 sm:col-span-2':'min-w-0'}>
+                <dt>{editing&&!isLocked(field)?<Label htmlFor={`profile-${section.id}-${field.key}`} className="text-xs text-muted-foreground">{field.label}</Label>:<span className="text-xs text-muted-foreground">{field.label}</span>}</dt>
+                <dd>{editing?fieldControl(field):<p className={`mt-2 min-h-5 whitespace-pre-wrap break-words text-[0.9rem] font-medium ${!draft[field.key]?'text-muted-foreground/60':''}`}>{display(field)}</p>}</dd>
+              </div>
+            </Fragment>
+          ))}
+        </dl>
+        {section.id==='membership'&&<Link to="/members/subscription" className="mt-7 inline-flex text-sm font-semibold text-primary underline-offset-4 hover:underline">View subscription and welfare payments →</Link>}
+        {error&&<p role="alert" className="mt-6 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">{error} {!user.dateOfBirth&&section.id!=='bio'&&<Link to="/members/profile" className="font-semibold underline">Open BioData</Link>}</p>}
+        {saved&&<p role="status" className="mt-6 flex items-center gap-2 text-sm text-success"><CheckCircle2 className="h-4 w-4" aria-hidden="true" />Your {section.label.toLowerCase()} have been saved.</p>}
+      </div>
+      {editing&&<div className="flex flex-wrap items-center justify-end gap-3 border-t border-border bg-secondary/25 px-5 py-4 sm:px-7"><Button type="button" variant="ghost" disabled={saving} onClick={()=>{setEditing(false);setDraft(draftFrom(user,section));setError('')}}>Cancel</Button><Button type="submit" disabled={saving}><Save className="h-4 w-4" aria-hidden="true" />{saving?'Saving…':'Save changes'}</Button></div>}
+    </form>
+  )
 }
 
 export default function MembersProfile() {
-  const { user, signOut, updateProfile } = useAuth()
-  const [phone, setPhone] = useState(user?.phone ?? '')
-  const [residentialAddress, setResidentialAddress] = useState(user?.residentialAddress ?? '')
-  const [placeOfWork, setPlaceOfWork] = useState(user?.placeOfWork ?? '')
-  const [dateOfBirth, setDateOfBirth] = useState(user?.dateOfBirth ?? '')
-  const [isDirectoryListed, setIsDirectoryListed] = useState(user?.isDirectoryListed ?? true)
-  const [photo, setPhoto] = useState<File | null>(null)
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
-  const [personalEmail, setPersonalEmail] = useState(user?.personalEmail ?? '')
-  const [officialEmail, setOfficialEmail] = useState(user?.officialEmail ?? '')
-  const [notificationPreference, setNotificationPreference] = useState<NotificationEmailPreference | ''>(
-    user?.notificationEmailPreference ?? '',
-  )
-  const [bioData, setBioData] = useState<BioDataForm>(() => bioDataFrom(user))
-  const [savingBioData, setSavingBioData] = useState(false)
-  const [savedBioData, setSavedBioData] = useState(false)
-  const [savingEmails, setSavingEmails] = useState(false)
-  const [savedEmails, setSavedEmails] = useState(false)
-  const [checked, setChecked] = useState<Record<string, boolean>>({
-    'pref-mentor': false,
-    'pref-attachment': false,
-    'pref-notices': true,
-  })
-
-  const photoPreviewUrl = useMemo(() => (photo ? URL.createObjectURL(photo) : null), [photo])
-  const { data: subscriptions } = useApiData(fetchMySubscriptions, [] as SubscriptionRecord[])
-  const currentYear = new Date().getFullYear()
-  const currentYearDues = subscriptions.find((s) => s.year === currentYear)
-
-  if (!user) return null
-
-  async function handleSave() {
-    setSaving(true)
-    setSaved(false)
-    try {
-      await updateProfile({
-        phone,
-        residentialAddress,
-        placeOfWork,
-        dateOfBirth,
-        isDirectoryListed,
-        photo: photo ?? undefined,
-      })
-      setPhoto(null)
-      setSaved(true)
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  function setBioField(key: keyof MemberBioData, value: string) {
-    setBioData((current) => ({ ...current, [key]: value }))
-  }
-
-  async function handleSaveBioData() {
-    setSavingBioData(true)
-    setSavedBioData(false)
-    try {
-      await updateProfile({ bioData, dateOfBirth })
-      setSavedBioData(true)
-    } finally {
-      setSavingBioData(false)
-    }
-  }
-
-  async function handleSaveEmails() {
-    setSavingEmails(true)
-    setSavedEmails(false)
-    try {
-      await updateProfile({
-        personalEmail,
-        officialEmail,
-        notificationEmailPreference: notificationPreference,
-        dateOfBirth,
-      })
-      setSavedEmails(true)
-    } finally {
-      setSavingEmails(false)
-    }
-  }
-
+  const {section:sectionId='bio'}=useParams()
+  const {user}=useAuth()
+  const section=profileSections.find(section=>section.id===sectionId)
+  if(!user) return null
+  if(!section) return <Navigate to={profileSectionPath('bio')} replace />
   return (
-    <div className="space-y-12">
-      <div>
-        <SectionHeading title="Your record" lede="Details held against your chapter membership." className="mb-6" />
-        <dl className="divide-y divide-border border-y border-border">
-          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">Name</dt>
-            <dd className="text-[0.92rem]">{[user.title, user.name].filter(Boolean).join(' ')}</dd>
-          </div>
-          {user.formerName && (
-            <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-              <dt className="text-[0.88rem] text-muted-foreground">Former / maiden name</dt>
-              <dd className="text-[0.92rem]">{user.formerName}</dd>
-            </div>
-          )}
-          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">Membership number</dt>
-            <dd className="tnum text-[0.92rem]">{user.membershipNumber}</dd>
-          </div>
-          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">Level</dt>
-            <dd className="text-[0.92rem]">{user.credential}</dd>
-          </div>
-          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">Registered email</dt>
-            <dd className="flex flex-wrap items-center gap-2 text-[0.92rem]">
-              <span>{user.email}</span>
-              <StatusTag tone={user.emailVerified ? 'positive' : 'warning'}>
-                {user.emailVerified ? 'Verified' : 'Unverified'}
-              </StatusTag>
-            </dd>
-          </div>
-          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">Personal email</dt>
-            <dd className="text-[0.92rem]">{user.personalEmail ?? '—'}</dd>
-          </div>
-          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">Official email</dt>
-            <dd className="text-[0.92rem]">{user.officialEmail ?? '—'}</dd>
-          </div>
-          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">Member since</dt>
-            <dd className="text-[0.92rem]">{formatDate(user.joinedAt)}</dd>
-          </div>
-          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">Status</dt>
-            <dd>
-              <StatusTag tone={user.membershipStatus === 'active' ? 'positive' : 'warning'}>
-                {user.membershipStatus}
-              </StatusTag>
-            </dd>
-          </div>
-          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">{currentYear} dues</dt>
-            <dd>
-              <StatusTag tone={currentYearDues?.status === 'Paid' ? 'positive' : 'warning'}>
-                {currentYearDues?.status ?? 'Not started'}
-              </StatusTag>
-            </dd>
-          </div>
-          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">Sector</dt>
-            <dd className="text-[0.92rem]">{user.sector ?? '—'}</dd>
-          </div>
-          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">Specialisation</dt>
-            <dd className="text-[0.92rem]">{user.specialisation ?? '—'}</dd>
-          </div>
-          <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-            <dt className="text-[0.88rem] text-muted-foreground">Year admitted</dt>
-            <dd className="tnum text-[0.92rem]">{user.yearAdmitted ?? '—'}</dd>
-          </div>
-          {user.chapterRole && (
-            <div className="grid gap-1 py-3.5 sm:grid-cols-[12rem_minmax(0,1fr)]">
-              <dt className="text-[0.88rem] text-muted-foreground">Chapter role</dt>
-              <dd className="text-[0.92rem]">{user.chapterRole}</dd>
-            </div>
-          )}
-        </dl>
-        <p className="mt-4 text-[0.85rem] text-muted-foreground">
-          Your name and membership number come from the ICAN roll. To correct either, update your
-          ICAN profile and the chapter record follows.
-        </p>
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-4 rounded-xl border border-border bg-card px-5 py-5 sm:px-7">
+        <div className="min-w-0"><p className="text-[0.67rem] font-semibold tracking-wider text-muted-foreground uppercase">Membership number</p><p className="mt-1.5 font-heading text-lg">{user.membershipNumber||'Not assigned'}</p></div>
+        <div className="min-w-0 flex-1"><p className="flex items-center gap-1.5 text-[0.67rem] font-semibold tracking-wider text-muted-foreground uppercase"><Mail className="h-3 w-3" aria-hidden="true" />Email address</p><p className="mt-1.5 flex flex-wrap items-center gap-2 break-all text-sm">{user.email}{user.emailVerified&&<Check className="h-3.5 w-3.5 text-success" aria-label="Email verified" />}</p></div>
+        <div><p className="flex items-center gap-1.5 text-[0.67rem] font-semibold tracking-wider text-muted-foreground uppercase"><Phone className="h-3 w-3" aria-hidden="true" />Mobile telephone</p><p className="mt-1.5 text-sm">{user.phone||'Not provided'}</p></div>
+        <StatusTag tone={user.emailVerified?'positive':'warning'}>{user.emailVerified?'Verified member email':'Email not verified'}</StatusTag>
       </div>
-
-      <div>
-        <SectionHeading title="Contact details" className="mb-6" />
-        <form
-          className="grid max-w-lg gap-5 sm:grid-cols-2"
-          onSubmit={(e) => {
-            e.preventDefault()
-            handleSave()
-          }}
-        >
-          <div className="sm:col-span-2 flex items-center gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={photoPreviewUrl ?? (user.photoUrl ?? undefined)} alt="" />
-              <AvatarFallback className="bg-secondary text-secondary-foreground">
-                {initials(user.name)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="space-y-1.5">
-              <Label htmlFor="profile-photo">Profile photo</Label>
-              <Input
-                id="profile-photo"
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-                className="max-w-xs"
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="profile-email">Email address</Label>
-            <Input id="profile-email" type="email" defaultValue={user.email} disabled />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="profile-phone">WhatsApp telephone number</Label>
-            <Input
-              id="profile-phone"
-              type="tel"
-              placeholder="0800 000 0000"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="profile-dob">Date of birth</Label>
-            <Input
-              id="profile-dob"
-              type="date"
-              required
-              value={dateOfBirth}
-              onChange={(e) => setDateOfBirth(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="profile-place-of-work">Place of work</Label>
-            <Input
-              id="profile-place-of-work"
-              placeholder="Employer or firm name"
-              value={placeOfWork}
-              onChange={(e) => setPlaceOfWork(e.target.value)}
-            />
-          </div>
-          <div className="sm:col-span-2 space-y-2">
-            <Label htmlFor="profile-address">Residential address</Label>
-            <Textarea
-              id="profile-address"
-              placeholder="Street, city and state"
-              rows={2}
-              value={residentialAddress}
-              onChange={(e) => setResidentialAddress(e.target.value)}
-            />
-          </div>
-          <div className="sm:col-span-2">
-            <label className="flex cursor-pointer items-start gap-3">
-              <input
-                type="checkbox"
-                checked={isDirectoryListed}
-                onChange={(e) => setIsDirectoryListed(e.target.checked)}
-                className="mt-1 h-4 w-4 shrink-0 accent-[var(--primary)]"
-              />
-              <span>
-                <span className="block text-[0.93rem] font-medium">
-                  List me in the members directory
-                </span>
-                <span className="mt-0.5 block text-[0.84rem] leading-relaxed text-muted-foreground">
-                  Name, photo, sector and role only. Contact details are never published.
-                </span>
-              </span>
-            </label>
-          </div>
-          <div className="sm:col-span-2 flex items-center gap-3">
-            <Button type="submit" disabled={saving}>
-              {saving ? 'Saving…' : 'Save changes'}
-            </Button>
-            {saved && <span className="text-[0.85rem] text-muted-foreground">Saved.</span>}
-          </div>
-        </form>
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_15rem]">
+        <SectionEditor key={section.id} section={section} />
+        <ProfilePhoto />
       </div>
-
-      <div>
-        <SectionHeading
-          title="Bio-data and next of kin"
-          lede="Kept on your chapter record for welfare and emergencies. Never shown in the directory."
-          className="mb-6"
-        />
-        <form
-          className="grid max-w-lg gap-5 sm:grid-cols-2"
-          onSubmit={(e) => {
-            e.preventDefault()
-            handleSaveBioData()
-          }}
-        >
-          <BioSelect id="bio-title" label="Title" options={memberTitles} value={bioData.title} onChange={(v) => setBioField('title', v)} />
-          <BioInput id="bio-former-name" label="Former / maiden name" value={bioData.formerName} onChange={(v) => setBioField('formerName', v)} />
-          <BioInput id="bio-alternate-phone" label="Alternate telephone number" type="tel" value={bioData.alternatePhone} onChange={(v) => setBioField('alternatePhone', v)} />
-          <BioSelect id="bio-marital-status" label="Marital status" options={maritalStatuses} value={bioData.maritalStatus} onChange={(v) => setBioField('maritalStatus', v)} />
-          <BioInput id="bio-nationality" label="Nationality" value={bioData.nationality} onChange={(v) => setBioField('nationality', v)} />
-          <BioSelect id="bio-state" label="State of origin" options={nigerianStates} value={bioData.stateOfOrigin} onChange={(v) => setBioField('stateOfOrigin', v)} />
-          <BioInput id="bio-lga" label="Local government of origin" value={bioData.lgaOfOrigin} onChange={(v) => setBioField('lgaOfOrigin', v)} />
-
-          <h3 className="sm:col-span-2 mt-2 border-t border-border pt-5 text-[1rem]">Next of kin</h3>
-          <BioInput id="bio-nok-name" label="Full name" value={bioData.nextOfKinName} onChange={(v) => setBioField('nextOfKinName', v)} />
-          <BioInput id="bio-nok-relationship" label="Relationship" placeholder="e.g. Husband, Daughter" value={bioData.nextOfKinRelationship} onChange={(v) => setBioField('nextOfKinRelationship', v)} />
-          <BioInput id="bio-nok-phone" label="Telephone number" type="tel" value={bioData.nextOfKinPhone} onChange={(v) => setBioField('nextOfKinPhone', v)} />
-          <div className="sm:col-span-2 space-y-2">
-            <Label htmlFor="bio-nok-address">Address</Label>
-            <Textarea
-              id="bio-nok-address"
-              rows={2}
-              value={bioData.nextOfKinAddress}
-              onChange={(e) => setBioField('nextOfKinAddress', e.target.value)}
-            />
-          </div>
-          <div className="sm:col-span-2 flex items-center gap-3">
-            <Button type="submit" disabled={savingBioData}>
-              {savingBioData ? 'Saving…' : 'Save changes'}
-            </Button>
-            {savedBioData && <span className="text-[0.85rem] text-muted-foreground">Saved.</span>}
-          </div>
-        </form>
-      </div>
-
-      <div>
-        <SectionHeading
-          title="Notification emails"
-          lede="Which of your emails should chapter notices go to."
-          className="mb-6"
-        />
-        {!user.emailVerified ? (
-          <EmptyState
-            title="Verify your registered email first"
-            body="Once you confirm the link we sent to your registered email, you can add a personal or official email and choose where notices go."
-          />
-        ) : (
-          <form
-            className="grid max-w-lg gap-5 sm:grid-cols-2"
-            onSubmit={(e) => {
-              e.preventDefault()
-              handleSaveEmails()
-            }}
-          >
-            <div className="space-y-2">
-              <Label htmlFor="profile-personal-email">Personal email</Label>
-              <Input
-                id="profile-personal-email"
-                type="email"
-                placeholder="you@example.com"
-                value={personalEmail}
-                onChange={(e) => setPersonalEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="profile-official-email">Official email</Label>
-              <Input
-                id="profile-official-email"
-                type="email"
-                placeholder="you@firm.com"
-                value={officialEmail}
-                onChange={(e) => setOfficialEmail(e.target.value)}
-              />
-            </div>
-            <div className="sm:col-span-2 space-y-2">
-              <Label htmlFor="profile-notification-preference">Send notices to</Label>
-              <Select
-                value={notificationPreference || undefined}
-                onValueChange={(value) => setNotificationPreference(value as NotificationEmailPreference)}
-              >
-                <SelectTrigger id="profile-notification-preference" className="w-full sm:w-64">
-                  <SelectValue placeholder="Chapter default" />
-                </SelectTrigger>
-                <SelectContent>
-                  {notificationPreferenceOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-[0.78rem] text-muted-foreground">
-                Leave unset to use the chapter&rsquo;s default. Only emails you&rsquo;ve added above are
-                usable here.
-              </p>
-            </div>
-            <div className="sm:col-span-2 flex items-center gap-3">
-              <Button type="submit" disabled={savingEmails}>
-                {savingEmails ? 'Saving…' : 'Save changes'}
-              </Button>
-              {savedEmails && <span className="text-[0.85rem] text-muted-foreground">Saved.</span>}
-            </div>
-          </form>
-        )}
-      </div>
-
-      <div>
-        <SectionHeading title="Preferences" className="mb-6" />
-        <ul className="divide-y divide-border border-y border-border">
-          {preferences.map((p) => (
-            <li key={p.id} className="py-4">
-              <label className="flex cursor-pointer items-start gap-3">
-                <input
-                  type="checkbox"
-                  checked={checked[p.id]}
-                  onChange={(e) => setChecked((c) => ({ ...c, [p.id]: e.target.checked }))}
-                  className="mt-1 h-4 w-4 shrink-0 accent-[var(--primary)]"
-                />
-                <span>
-                  <span className="block text-[0.93rem] font-medium">{p.label}</span>
-                  <span className="mt-0.5 block text-[0.84rem] leading-relaxed text-muted-foreground">
-                    {p.detail}
-                  </span>
-                </span>
-              </label>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="border border-border bg-card p-5">
-        <h2 className="text-[1.05rem]">Sign out</h2>
-        <p className="mt-2 text-[0.9rem] text-muted-foreground">
-          Ends this session and clears it from browser storage.
-        </p>
-        <Button variant="outline" className="mt-4" onClick={signOut}>
-          Sign out
-        </Button>
-      </div>
-    </div>
-  )
-}
-
-function BioInput({
-  id,
-  label,
-  value,
-  onChange,
-  type = 'text',
-  placeholder,
-}: {
-  id: string
-  label: string
-  value: string
-  onChange: (value: string) => void
-  type?: string
-  placeholder?: string
-}) {
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
-      <Input id={id} type={type} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} />
-    </div>
-  )
-}
-
-function BioSelect({
-  id,
-  label,
-  options,
-  value,
-  onChange,
-}: {
-  id: string
-  label: string
-  options: string[]
-  value: string
-  onChange: (value: string) => void
-}) {
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
-      <Select value={value || undefined} onValueChange={onChange}>
-        <SelectTrigger id={id} className="w-full">
-          <SelectValue placeholder="Select" />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option} value={option}>
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
     </div>
   )
 }

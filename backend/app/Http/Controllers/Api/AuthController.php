@@ -312,6 +312,47 @@ class AuthController extends Controller
             'next_of_kin_relationship' => ['sometimes', 'nullable', 'string', 'max:100'],
             'next_of_kin_phone' => ['sometimes', 'nullable', 'string', 'max:50'],
             'next_of_kin_address' => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'sector' => ['sometimes', 'nullable', Rule::in(['Public practice', 'Public sector', 'Financial services', 'Industry', 'Academia', 'Consulting'])],
+            'specialisation' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'year_admitted' => ['sometimes', 'nullable', 'integer', 'between:1950,2100'],
+            'profile_details' => ['sometimes', 'array:bio,contact,academic,professional,faculty,licence,career'],
+            'profile_details.bio' => ['sometimes', 'array:gender'],
+            'profile_details.bio.gender' => ['sometimes', 'nullable', Rule::in(['Female', 'Male', 'Prefer not to say'])],
+            'profile_details.contact' => ['sometimes', 'array:city,state,country,lga,officeAddress,officeCity,officeState,officeCountry'],
+            'profile_details.contact.city' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.contact.state' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'profile_details.contact.country' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'profile_details.contact.lga' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.contact.officeAddress' => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'profile_details.contact.officeCity' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.contact.officeState' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'profile_details.contact.officeCountry' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'profile_details.academic' => ['sometimes', 'array:qualification,institution,course,graduationYear'],
+            'profile_details.academic.qualification' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.academic.institution' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.academic.course' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.academic.graduationYear' => ['sometimes', 'nullable', 'integer', 'between:1950,2100'],
+            'profile_details.professional' => ['sometimes', 'array:body,membershipNumber,certifications'],
+            'profile_details.professional.body' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.professional.membershipNumber' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'profile_details.professional.certifications' => ['sometimes', 'nullable', 'string', 'max:2000'],
+            'profile_details.faculty' => ['sometimes', 'array:name,membershipNumber,joinedYear'],
+            'profile_details.faculty.name' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.faculty.membershipNumber' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'profile_details.faculty.joinedYear' => ['sometimes', 'nullable', 'integer', 'between:1950,2100'],
+            'profile_details.licence' => ['sometimes', 'array:number,category,issuingBody,issuedOn,expiresOn,practiceName'],
+            'profile_details.licence.number' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'profile_details.licence.category' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.licence.issuingBody' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.licence.issuedOn' => ['sometimes', 'nullable', 'date'],
+            'profile_details.licence.expiresOn' => ['sometimes', 'nullable', 'date', 'after_or_equal:profile_details.licence.issuedOn'],
+            'profile_details.licence.practiceName' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.career' => ['sometimes', 'array:jobTitle,employmentType,industry,yearsOfExperience,summary'],
+            'profile_details.career.jobTitle' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.career.employmentType' => ['sometimes', 'nullable', Rule::in(['Full-time', 'Part-time', 'Self-employed', 'Contract', 'Retired', 'Not currently employed'])],
+            'profile_details.career.industry' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_details.career.yearsOfExperience' => ['sometimes', 'nullable', 'integer', 'between:0,80'],
+            'profile_details.career.summary' => ['sometimes', 'nullable', 'string', 'max:3000'],
             'is_directory_listed' => ['sometimes', 'boolean'],
             'photo' => ['sometimes', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
             'personal_email' => ['sometimes', 'nullable', 'email', 'max:255', 'different:email', Rule::unique('users', 'personal_email')->ignore($user->id)],
@@ -328,7 +369,15 @@ class AuthController extends Controller
             'phone', 'residential_address', 'place_of_work', 'date_of_birth', 'is_directory_listed',
             'title', 'former_name', 'alternate_phone', 'marital_status', 'nationality', 'state_of_origin',
             'lga_of_origin', 'next_of_kin_name', 'next_of_kin_relationship', 'next_of_kin_phone', 'next_of_kin_address',
+            'sector', 'specialisation', 'year_admitted',
         ]));
+
+        if (array_key_exists('profile_details', $data)) {
+            $profileData['profile_details'] = array_replace_recursive(
+                $user->memberProfile?->profile_details ?? [],
+                $data['profile_details'],
+            );
+        }
 
         if ($profileData !== []) {
             $user->memberProfile()->updateOrCreate([], $profileData);
@@ -384,6 +433,8 @@ class AuthController extends Controller
             'id' => (string) $user->id,
             'name' => $user->name,
             'firstName' => $user->first_name ?? Str::before($user->name, ' '),
+            'middleName' => $user->middle_name,
+            'lastName' => $user->last_name,
             'email' => $user->email,
             'emailVerified' => $user->hasVerifiedEmail(),
             'personalEmail' => $user->personal_email,
@@ -417,6 +468,7 @@ class AuthController extends Controller
             'nextOfKinRelationship' => $profile?->next_of_kin_relationship,
             'nextOfKinPhone' => $profile?->next_of_kin_phone,
             'nextOfKinAddress' => $profile?->next_of_kin_address,
+            'profileDetails' => (object) ($profile?->profile_details ?? []),
         ];
     }
 

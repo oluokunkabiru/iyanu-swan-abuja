@@ -356,10 +356,17 @@ export interface MemberBioData {
   nextOfKinAddress: string | null
 }
 
+export type ProfileSection = 'bio' | 'contact' | 'academic' | 'professional' | 'membership' | 'faculty' | 'licence' | 'career'
+
+export type MemberProfileDetails = Partial<Record<Exclude<ProfileSection, 'membership'>, Record<string, string | number | null>>>
+
 export interface AuthUser extends MemberBioData {
   id: string
   name: string
   firstName: string
+  middleName?: string | null
+  lastName?: string | null
+  profileDetails?: MemberProfileDetails
   email: string
   emailVerified: boolean
   personalEmail: string | null

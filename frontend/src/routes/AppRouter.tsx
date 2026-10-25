@@ -95,22 +95,24 @@ export function AppRouter() {
         <Route path="register" element={<Navigate to="/membership/register" replace />} />
         <Route path="dashboard" element={<Navigate to="/members" replace />} />
 
-        <Route
-          path="members"
-          element={
-            <ProtectedRoute>
-              <MembersLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<MembersOverview />} />
-          {/* <Route path="cpd" element={<MembersCpd />} /> */}
-          <Route path="subscription" element={<MembersSubscription />} />
-          <Route path="tickets" element={<MembersTickets />} />
-          <Route path="profile" element={<MembersProfile />} />
-        </Route>
-
         <Route path="*" element={<NotFound />} />
+      </Route>
+
+      <Route
+        path="members"
+        element={
+          <ProtectedRoute>
+            <MembersLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="profile" replace />} />
+        <Route path="overview" element={<MembersOverview />} />
+        {/* <Route path="cpd" element={<MembersCpd />} /> */}
+        <Route path="subscription" element={<MembersSubscription />} />
+        <Route path="tickets" element={<MembersTickets />} />
+        <Route path="profile" element={<MembersProfile />} />
+        <Route path="profile/:section" element={<MembersProfile />} />
       </Route>
     </Routes>
   )
