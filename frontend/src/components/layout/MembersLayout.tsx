@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } 
 import { useAuth } from '@/context/AuthContext'
 import { DuesProvider } from '@/context/DuesContext'
 import { MembershipDuesSummary } from '@/components/sections/MembershipDues'
+import { MemberAvatar } from '@/components/sections/MemberIdentity'
 import { profileSectionPath, profileSections } from '@/data/memberProfile'
 import { cn } from '@/lib/utils'
 
@@ -29,7 +30,7 @@ export function MembersLayout() {
       <>
         <Link to="/" className="mx-5 mt-7 block rounded-lg bg-white px-3 py-3" onClick={() => setMobileOpen(false)}><BrandLogo className="max-h-10 w-full" /></Link>
         <p className="px-6 pt-4 pb-6 text-[0.68rem] font-semibold tracking-[0.2em] text-white/50 uppercase">Abuja Chapter · Members portal</p>
-        <nav aria-label="Members area" className="flex-1 space-y-6 overflow-y-auto px-4 pb-6">
+        <nav aria-label="Members area" className="member-sidebar-scroll min-h-0 flex-1 space-y-6 overflow-y-auto px-4 pb-6">
           <NavLink to="/members/overview" end className={linkClass} onClick={() => setMobileOpen(false)}><LayoutDashboard className="h-4 w-4" aria-hidden="true" />Overview</NavLink>
           <div>
             <p className="mb-2 px-3 text-[0.65rem] font-semibold tracking-[0.18em] text-white/40 uppercase">My profile</p>
@@ -73,7 +74,11 @@ export function MembersLayout() {
               <span className="hidden text-sm text-muted-foreground sm:inline">Members portal</span><ChevronRight className="hidden h-3.5 w-3.5 text-muted-foreground sm:block" aria-hidden="true" /><span className="truncate text-sm font-semibold">{pageTitle}</span>
             </div>
             <div className="flex shrink-0 items-center gap-2 sm:gap-4">
-              <Link to="/" className="hidden items-center gap-2 text-[0.8rem] font-medium text-muted-foreground hover:text-foreground md:inline-flex"><ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />Visit website</Link><ThemeToggle /><span className="hidden max-w-40 truncate border-l border-border pl-4 text-sm font-medium sm:block">{user.firstName}</span>
+              <Link to="/" className="hidden items-center gap-2 text-[0.8rem] font-medium text-muted-foreground hover:text-foreground md:inline-flex"><ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />Visit website</Link><ThemeToggle />
+              <Link to="/members/profile" aria-label="Your member profile" className="flex min-w-0 items-center gap-2 border-l border-border pl-3">
+                <MemberAvatar user={user} className="h-9 w-9 rounded-full border-2 [&_[data-slot=avatar-fallback]]:rounded-full [&_[data-slot=avatar-fallback]]:text-xs" />
+                <span className="min-w-0"><span className="block max-w-24 truncate text-xs font-semibold sm:max-w-40 sm:text-sm">{user.firstName}</span><span className="block max-w-24 truncate text-[0.65rem] text-muted-foreground sm:max-w-40" title={user.membershipNumber || undefined}>ID: {user.membershipNumber || 'Not assigned'}</span></span>
+              </Link>
             </div>
           </header>
           <main id="member-content" className="mx-auto max-w-[100rem] px-4 py-7 sm:px-8 sm:py-9">
@@ -81,7 +86,7 @@ export function MembersLayout() {
               <div><p className="mb-2 text-[0.67rem] font-semibold tracking-[0.18em] text-muted-foreground uppercase">Your chapter. Your community.</p><h1 className="text-2xl sm:text-3xl">{profileSection ? 'My profile' : pageTitle === 'Dashboard' ? `Welcome back, ${user.firstName}` : pageTitle}</h1><p className="mt-2 text-sm text-muted-foreground">{profileSection ? 'Keep your membership record complete and up to date.' : 'Manage your chapter membership, payments and activities.'}</p></div>
               <div className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs"><span className="text-muted-foreground">Membership</span><StatusTag tone={user.membershipStatus === 'active' ? 'positive' : 'warning'}>{user.membershipStatus}</StatusTag></div>
             </div>
-            <MembershipDuesSummary />
+            {pathname !== '/members/overview' && <MembershipDuesSummary />}
             <Outlet />
           </main>
           <footer className="px-4 pb-6 text-center text-xs text-muted-foreground sm:px-8">© {new Date().getFullYear()} Society of Women Accountants of Nigeria, Abuja Chapter</footer>

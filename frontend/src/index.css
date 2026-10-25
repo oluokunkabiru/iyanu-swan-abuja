@@ -211,6 +211,14 @@
 }
 
 @layer components {
+  .member-sidebar-scroll {
+    scrollbar-width: none;
+  }
+
+  .member-sidebar-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
   /* A restrained gold rule is the shared section marker. */
   .rule-gold {
     background-color: var(--brand-secondary);

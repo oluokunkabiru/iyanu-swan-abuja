@@ -1,10 +1,9 @@
 import { Fragment, useEffect, useState, type FormEvent } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
-import { Camera, Check, CheckCircle2, LockKeyhole, Mail, Pencil, Phone, Save, ShieldCheck } from 'lucide-react'
+import { Camera, CheckCircle2, LockKeyhole, Pencil, Save, ShieldCheck } from 'lucide-react'
 import type { updateMe } from '@/api/auth'
-import { StatusTag } from '@/components/common/Primitives'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { MemberAvatar, MemberSummary } from '@/components/sections/MemberIdentity'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -60,12 +59,9 @@ function ProfilePhoto() {
     <aside className="space-y-5 xl:sticky xl:top-24 xl:self-start" aria-label="Profile photo">
       <form onSubmit={savePhoto} className="rounded-xl border border-border bg-card p-5 text-center shadow-sm">
         <p className="mb-4 text-[0.68rem] font-semibold tracking-[0.15em] text-muted-foreground uppercase">Profile photograph</p>
-        <Avatar className="mx-auto h-40 w-36 rounded-xl border-4 border-background shadow-sm">
-          <AvatarImage src={preview ?? user.photoUrl ?? undefined} alt={user.name} className="aspect-auto h-full w-full object-cover object-top" />
-          <AvatarFallback className="rounded-lg bg-secondary text-3xl text-primary">{user.name.split(' ').filter(Boolean).slice(0,2).map(part=>part[0]).join('')}</AvatarFallback>
-        </Avatar>
+        <MemberAvatar user={user} preview={preview} className="mx-auto h-40 w-36" />
         <p className="mt-4 text-sm font-semibold">{[user.title,user.name].filter(Boolean).join(' ')}</p>
-        <p className="mt-1 text-xs text-muted-foreground">{user.credential} · {user.membershipNumber}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{user.credential}</p>
         <label className="mt-5 inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-semibold hover:bg-secondary focus-within:ring-2 focus-within:ring-ring">
           <Camera className="h-3.5 w-3.5" aria-hidden="true" />Change photo
           <input aria-label="Choose profile photo" type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={event=>{
@@ -185,12 +181,7 @@ export default function MembersProfile() {
   if(!section) return <Navigate to={profileSectionPath('bio')} replace />
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-x-8 gap-y-4 rounded-xl border border-border bg-card px-5 py-5 sm:px-7">
-        <div className="min-w-0"><p className="text-[0.67rem] font-semibold tracking-wider text-muted-foreground uppercase">Membership number</p><p className="mt-1.5 font-heading text-lg">{user.membershipNumber||'Not assigned'}</p></div>
-        <div className="min-w-0 flex-1"><p className="flex items-center gap-1.5 text-[0.67rem] font-semibold tracking-wider text-muted-foreground uppercase"><Mail className="h-3 w-3" aria-hidden="true" />Email address</p><p className="mt-1.5 flex flex-wrap items-center gap-2 break-all text-sm">{user.email}{user.emailVerified&&<Check className="h-3.5 w-3.5 text-success" aria-label="Email verified" />}</p></div>
-        <div><p className="flex items-center gap-1.5 text-[0.67rem] font-semibold tracking-wider text-muted-foreground uppercase"><Phone className="h-3 w-3" aria-hidden="true" />Mobile telephone</p><p className="mt-1.5 text-sm">{user.phone||'Not provided'}</p></div>
-        <StatusTag tone={user.emailVerified?'positive':'warning'}>{user.emailVerified?'Verified member email':'Email not verified'}</StatusTag>
-      </div>
+      <MemberSummary user={user} showPhoto={false} showProfileLink={false} />
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_15rem]">
         <SectionEditor key={section.id} section={section} />
         <ProfilePhoto />

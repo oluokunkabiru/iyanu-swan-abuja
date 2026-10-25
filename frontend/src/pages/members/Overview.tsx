@@ -4,6 +4,8 @@ import { /* Award, */ CalendarDays, /* GraduationCap, */ Mail, Ticket, Wallet } 
 import { /* fetchMyCpdRecords, */ fetchMyRegistrations, resendVerificationEmail } from '@/api/auth'
 import { getEvents } from '@/api/content'
 import { /* EmptyState, */ SectionHeading, StatusTag } from '@/components/common/Primitives'
+import { MemberSummary } from '@/components/sections/MemberIdentity'
+import { MembershipDuesSummary } from '@/components/sections/MembershipDues'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
@@ -47,7 +49,9 @@ export default function MembersOverview() {
   }
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-6">
+      <MemberSummary user={user} />
+      <MembershipDuesSummary />
       {!user.emailVerified && (
         <div className="flex flex-col gap-4 rounded-xl border border-gold-500/40 bg-accent/60 p-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
