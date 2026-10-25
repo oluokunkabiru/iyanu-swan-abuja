@@ -10,6 +10,12 @@ export function formatNaira(value: number): string {
   return naira.format(value)
 }
 
+export function formatDuesAmount(value: number): string {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency', currency: 'NGN', minimumFractionDigits: 2, maximumFractionDigits: 2,
+  }).format(value)
+}
+
 export function formatDate(value: string, opts?: Intl.DateTimeFormatOptions): string {
   return new Date(value).toLocaleDateString('en-NG', {
     day: 'numeric',

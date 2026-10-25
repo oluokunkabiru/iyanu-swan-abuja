@@ -8,6 +8,8 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useAuth } from '@/context/AuthContext'
+import { DuesProvider } from '@/context/DuesContext'
+import { MembershipDuesSummary } from '@/components/sections/MembershipDues'
 import { profileSectionPath, profileSections } from '@/data/memberProfile'
 import { cn } from '@/lib/utils'
 
@@ -53,6 +55,7 @@ export function MembersLayout() {
   }
   return (
     <MotionConfig reducedMotion="user">
+      <DuesProvider>
       <div className="min-h-screen bg-secondary/35">
         <a href="#member-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded focus:bg-card focus:p-3">Skip to content</a>
         <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-plum-900 lg:flex">{sidebar()}</aside>
@@ -78,11 +81,13 @@ export function MembersLayout() {
               <div><p className="mb-2 text-[0.67rem] font-semibold tracking-[0.18em] text-muted-foreground uppercase">Your chapter. Your community.</p><h1 className="text-2xl sm:text-3xl">{profileSection ? 'My profile' : pageTitle === 'Dashboard' ? `Welcome back, ${user.firstName}` : pageTitle}</h1><p className="mt-2 text-sm text-muted-foreground">{profileSection ? 'Keep your membership record complete and up to date.' : 'Manage your chapter membership, payments and activities.'}</p></div>
               <div className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs"><span className="text-muted-foreground">Membership</span><StatusTag tone={user.membershipStatus === 'active' ? 'positive' : 'warning'}>{user.membershipStatus}</StatusTag></div>
             </div>
+            <MembershipDuesSummary />
             <Outlet />
           </main>
           <footer className="px-4 pb-6 text-center text-xs text-muted-foreground sm:px-8">© {new Date().getFullYear()} Society of Women Accountants of Nigeria, Abuja Chapter</footer>
         </div>
       </div>
+      </DuesProvider>
     </MotionConfig>
   )
 }

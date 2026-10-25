@@ -88,6 +88,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/me/registrations', [AuthController::class, 'registrations']);
         Route::get('/me/cpd-records', [MemberCpdRecordController::class, 'index']);
         Route::get('/me/subscriptions', [MemberSubscriptionController::class, 'index']);
+        Route::get('/me/subscriptions/{year}/quote', [MemberSubscriptionController::class, 'quote'])->whereNumber('year');
         Route::post('/me/subscriptions/{year}/pay', [PaymentController::class, 'paySubscriptionDues']);
         Route::post('/me/subscriptions/{year}/bank-transfer', [PaymentController::class, 'submitBankTransfer']);
     });

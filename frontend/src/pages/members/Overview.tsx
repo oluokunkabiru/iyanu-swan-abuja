@@ -1,42 +1,38 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { /* Award, */ CalendarDays, /* GraduationCap, */ Mail, Ticket, Wallet, ArrowRight } from 'lucide-react'
-import { /* fetchMyCpdRecords, */ fetchMyRegistrations, fetchMySubscriptions, resendVerificationEmail } from '@/api/auth'
+import { /* Award, */ CalendarDays, /* GraduationCap, */ Mail, Ticket, Wallet } from 'lucide-react'
+import { /* fetchMyCpdRecords, */ fetchMyRegistrations, resendVerificationEmail } from '@/api/auth'
 import { getEvents } from '@/api/content'
 import { /* EmptyState, */ SectionHeading, StatusTag } from '@/components/common/Primitives'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/context/AuthContext'
+import { useDues } from '@/context/DuesContext'
 import { useApiData } from '@/hooks/useApiData'
-import { formatDate, formatNaira /* , formatShortDate */ } from '@/lib/format'
+import { formatDate, formatDuesAmount /* , formatShortDate */ } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import type { ChapterEvent, /* CpdRecord, */ SubscriptionRecord, TicketRecord } from '@/types'
+import type { ChapterEvent, /* CpdRecord, */ TicketRecord } from '@/types'
 
 export default function MembersOverview() {
   const { user } = useAuth()
   const [resending, setResending] = useState(false)
   const [resent, setResent] = useState(false)
   // const { data: cpdRecords, isLoading: loadingCpd } = useApiData(fetchMyCpdRecords, [] as CpdRecord[])
-  const { data: subscriptions, isLoading: loadingSubscriptions } = useApiData(
-    fetchMySubscriptions,
-    [] as SubscriptionRecord[],
-  )
+  const { quote, isLoading: loadingDues } = useDues()
   const { data: tickets, isLoading: loadingTickets } = useApiData(fetchMyRegistrations, [] as TicketRecord[])
   const { data: upcomingEvents } = useApiData(() => getEvents('upcoming'), [] as ChapterEvent[])
 
   if (!user) return null
 
-  const isLoading = /* loadingCpd || */ loadingSubscriptions || loadingTickets
+  const isLoading = /* loadingCpd || */ loadingDues || loadingTickets
   // const cycleStart = new Date().getFullYear() - 2
   // const cycleHours = cpdRecords
   //   .filter((r) => new Date(r.date).getFullYear() >= cycleStart)
   //   .reduce((sum, r) => sum + r.hours, 0)
   // const progress = Math.min(100, Math.round((cycleHours / user.cpdTarget) * 100))
 
-  const currentYear = new Date().getFullYear()
-  const currentYearRecord = subscriptions.find((s) => s.year === currentYear)
-  const duesNeedAction = !currentYearRecord || currentYearRecord.status !== 'Paid'
-  const duesPendingReview = currentYearRecord?.status === 'Pending review'
+  const duesNeedAction = quote?.status !== 'paid'
+  const duesPendingReview = quote?.status === 'pending_review'
   const nextTicket = tickets.find((t) => t.status === 'Confirmed')
   const nextEvent = upcomingEvents[0]
 
@@ -132,21 +128,16 @@ export default function MembersOverview() {
                 </StatusTag>
               </div>
               <p className="mt-4 text-[0.82rem] text-muted-foreground">Dues</p>
-              <p className="mt-1 font-heading text-2xl">
-                {duesPendingReview
-                  ? `${currentYear} under review`
-                  : duesNeedAction
-                    ? `${currentYear} outstanding`
-                    : 'Up to date'}
+              <p className="tnum mt-1 font-heading text-2xl">
+                {quote?.balanceDue !== null && quote?.balanceDue !== undefined
+                  ? formatDuesAmount(quote.balanceDue)
+                  : 'Select membership level'}
               </p>
-              <p className="tnum mt-2 text-[0.85rem] text-muted-foreground">
-                {duesPendingReview
-                  ? 'Awaiting admin approval'
-                  : duesNeedAction
-                    ? currentYearRecord
-                      ? `${formatNaira(currentYearRecord.subscription + currentYearRecord.welfare)} due`
-                      : 'Choose a membership level to see the amount'
-                    : 'No balance on your record'}
+              <p className="mt-2 text-[0.85rem] text-muted-foreground">
+                {duesPendingReview ? 'Awaiting admin approval'
+                  : !duesNeedAction ? 'Fully paid for this year'
+                  : quote?.subscriptionWaived ? 'Subscription waived for members aged 65 or over'
+                  : 'Subscription and welfare levy'}
               </p>
             </div>
 
@@ -167,45 +158,6 @@ export default function MembersOverview() {
           </div>
         )}
       </div>
-
-      {duesPendingReview ? (
-        <div className="flex flex-col gap-4 rounded-xl border border-gold-500/40 bg-accent/60 p-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="flex items-center gap-2 text-[1.05rem] font-semibold">
-              <Wallet className="h-4 w-4 text-accent-foreground" aria-hidden="true" />
-              Your {currentYear} payment is under review
-            </h2>
-            <p className="mt-1.5 max-w-[60ch] text-[0.9rem] leading-relaxed text-muted-foreground">
-              We received your bank transfer evidence and an admin will confirm it shortly. No
-              action needed from you right now.
-            </p>
-          </div>
-        </div>
-      ) : (
-        duesNeedAction && (
-          <div className="flex flex-col gap-4 rounded-xl border border-gold-500/40 bg-accent/60 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="flex items-center gap-2 text-[1.05rem] font-semibold">
-                <Wallet className="h-4 w-4 text-accent-foreground" aria-hidden="true" />
-                Your {currentYear} dues are open
-              </h2>
-              <p className="mt-1.5 max-w-[60ch] text-[0.9rem] leading-relaxed text-muted-foreground">
-                {currentYearRecord
-                  ? `${formatNaira(currentYearRecord.subscription)} subscription and ${formatNaira(currentYearRecord.welfare)} welfare. `
-                  : ''}
-                Choose your membership level and pay online or by bank transfer to keep your member
-                rate on events and your eligibility for committee service.
-              </p>
-            </div>
-            <Button asChild className="shrink-0">
-              <Link to="/members/subscription">
-                Pay {currentYear} dues
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-            </Button>
-          </div>
-        )
-      )}
 
       {/* Recent CPD section hidden
       <div>

@@ -29,6 +29,7 @@ class PaymentFlowTest extends TestCase
             'first_name' => 'Jane',
             'middle_name' => 'Ada',
             'email' => 'jane.member@example.com',
+            'date_of_birth' => '1985-05-10',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
             'membership_number' => 'ICAN/12345',
@@ -53,7 +54,7 @@ class PaymentFlowTest extends TestCase
         ]);
         $this->assertDatabaseHas('member_profiles', [
             'user_id' => $user->id,
-            'membership_number' => 'ICAN/12345',
+            'membership_number' => 'ICAN012345',
             'credential' => $level->name,
             'phone' => '08000000000',
             'residential_address' => '12 Chapter Close, Abuja',
@@ -85,6 +86,7 @@ class PaymentFlowTest extends TestCase
             'last_name' => 'Member',
             'first_name' => 'Jane',
             'email' => 'jane.member@example.com',
+            'date_of_birth' => '1985-05-10',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
             'membership_number' => 'ICAN/12345',
@@ -126,6 +128,7 @@ class PaymentFlowTest extends TestCase
         $user->memberProfile()->create(['membership_status' => 'active']);
 
         $this->actingAsApi($user)->putJson('/api/me', [
+            'date_of_birth' => '1985-05-10',
             'residential_address' => '4 New Layout, Kubwa, Abuja',
             'place_of_work' => 'ABC Chartered Accountants',
         ])->assertOk();

@@ -1,5 +1,5 @@
 import { api } from '@/api/client'
-import type { AuthUser, CpdRecord, MemberBioData, MemberProfileDetails, NotificationEmailPreference, Sector, SubscriptionRecord, TicketRecord } from '@/types'
+import type { AuthUser, CpdRecord, MemberBioData, MemberProfileDetails, MembershipDuesQuote, NotificationEmailPreference, Sector, SubscriptionRecord, TicketRecord } from '@/types'
 
 export interface AuthenticationResponse {
   accessToken: string
@@ -203,9 +203,16 @@ export async function fetchMySubscriptions(): Promise<SubscriptionRecord[]> {
 export async function paySubscriptionDues(
   year: number,
   membershipLevelId: string,
-): Promise<{ authorizationUrl: string }> {
-  const { data } = await api.post<{ authorizationUrl: string }>(`/me/subscriptions/${year}/pay`, {
+): Promise<{ authorizationUrl: string | null; status: string }> {
+  const { data } = await api.post<{ authorizationUrl: string | null; status: string }>(`/me/subscriptions/${year}/pay`, {
     membership_level_id: membershipLevelId,
+  })
+  return data
+}
+
+export async function fetchDuesQuote(year: number, membershipLevelId?: string): Promise<MembershipDuesQuote> {
+  const { data } = await api.get<MembershipDuesQuote>(`/me/subscriptions/${year}/quote`, {
+    params: membershipLevelId ? { membership_level_id: membershipLevelId } : undefined,
   })
   return data
 }

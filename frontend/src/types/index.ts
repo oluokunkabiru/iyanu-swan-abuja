@@ -328,6 +328,20 @@ export interface SubscriptionRecord {
   evidenceUrl: string | null
 }
 
+export interface MembershipDuesQuote {
+  year: number
+  status: 'paid' | 'pending_review' | 'outstanding'
+  membershipLevelId: string | null
+  membershipLevelName: string | null
+  subscription: number | null
+  welfare: number | null
+  total: number | null
+  balanceDue: number | null
+  subscriptionWaived: boolean
+  reviewNote: string | null
+  options: { id: string; name: string; description: string | null; subscription: number; welfare: number; total: number; subscriptionWaived: boolean }[]
+}
+
 export interface TicketRecord {
   id: string
   eventTitle: string

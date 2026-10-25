@@ -21,6 +21,20 @@ use RuntimeException;
  */
 class PaymentProcessor
 {
+    /** @return array{subscription: int, welfare: int, total: int, subscriptionWaived: bool} */
+    public function subscriptionAmounts(User $user, MembershipLevel $level): array
+    {
+        $waived = $user->memberProfile?->date_of_birth?->age >= 65;
+        $subscription = $waived ? 0 : $level->subscription_amount;
+
+        return [
+            'subscription' => $subscription,
+            'welfare' => $level->welfare_amount,
+            'total' => $subscription + $level->welfare_amount,
+            'subscriptionWaived' => $waived,
+        ];
+    }
+
     /**
      * Find or start this member's subscription for the year and apply the
      * level they picked — a member can pick a different level on each
@@ -42,20 +56,36 @@ class PaymentProcessor
             throw new RuntimeException("Your {$year} dues payment is already awaiting review.");
         }
 
+        $amounts = $this->subscriptionAmounts($user, $level);
+
         $subscription->update([
             'membership_level_id' => $level->id,
-            'subscription_amount' => $level->subscription_amount,
-            'welfare_amount' => $level->welfare_amount,
+            'subscription_amount' => $amounts['subscription'],
+            'welfare_amount' => $amounts['welfare'],
         ]);
 
         return $subscription;
     }
 
-    public function initializeForSubscription(Subscription $subscription, string $callbackUrl): string
+    public function initializeForSubscription(Subscription $subscription, string $callbackUrl): ?string
     {
-        $gateway = PaymentGatewayFactory::active();
         $reference = 'SUB-'.Str::upper(Str::random(10));
         $amount = $subscription->subscription_amount + $subscription->welfare_amount;
+
+        if ($amount === 0) {
+            $subscription->update([
+                'reference' => $reference,
+                'payment_gateway' => 'waived',
+                'status' => 'paid',
+                'paid_at' => now(),
+            ]);
+            $subscription->user->activateMembershipIfEligible();
+            $subscription->user->notify(new DuesPaymentConfirmed($subscription));
+
+            return null;
+        }
+
+        $gateway = PaymentGatewayFactory::active();
 
         $url = $gateway->initialize(
             $reference,
@@ -96,6 +126,10 @@ class PaymentProcessor
     public function finalize(string $reference): array
     {
         if ($subscription = Subscription::where('reference', $reference)->first()) {
+            if ($subscription->payment_gateway === 'waived' && $subscription->status === 'paid') {
+                return ['type' => 'subscription', 'status' => 'paid', 'record' => $subscription];
+            }
+
             // Both the gateway webhook and the frontend's own callback
             // verification can call finalize() for the same reference —
             // only notify on the transition into "paid", not every

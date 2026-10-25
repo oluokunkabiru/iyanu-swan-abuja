@@ -48,7 +48,7 @@ class PaymentController extends Controller
             return response()->json(['message' => 'We could not start this payment. Please try again shortly.'], 502);
         }
 
-        return response()->json(['authorizationUrl' => $url]);
+        return response()->json(['authorizationUrl' => $url, 'status' => $subscription->fresh()->status]);
     }
 
     /**
