@@ -40,8 +40,8 @@ class ExecutiveMemberController extends Controller
             ExecutiveMember::query()
                 ->with('media')
                 ->where('is_past_chairperson', true)
-                ->orderByDesc('term_start_year')
-                ->orderByDesc('id')
+                ->orderBy('term_start_year')
+                ->orderBy('id')
                 ->get()
                 ->map(fn (ExecutiveMember $member): array => $this->present($member))
         );

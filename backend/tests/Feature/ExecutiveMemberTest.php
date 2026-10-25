@@ -6,6 +6,8 @@ use App\Filament\Resources\PastChairpersons\Pages\ManagePastChairpersons;
 use App\Models\ExecutiveMember;
 use App\Models\User;
 use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\Testing\TestAction;
 use Filament\Facades\Filament;
 use Livewire\Livewire;
 use Tests\Concerns\UsesMysqlInTransaction;
@@ -142,5 +144,84 @@ class ExecutiveMemberTest extends TestCase
             'is_past_chairperson' => true,
             'is_active' => false,
         ]);
+    }
+
+    public function test_past_chairpersons_are_returned_in_historical_order_with_their_tenure_positions(): void
+    {
+        $second = ExecutiveMember::create([
+            'name' => 'Archive Second Chair',
+            'position' => '2nd Chairperson',
+            'is_past_chairperson' => true,
+            'term_start_year' => 2011,
+            'term_end_year' => 2013,
+        ]);
+        $founder = ExecutiveMember::create([
+            'name' => 'Archive Founding Member',
+            'position' => 'Founding Mother',
+            'is_past_chairperson' => true,
+            'term_start_year' => 1999,
+            'term_end_year' => 2002,
+        ]);
+        $first = ExecutiveMember::create([
+            'name' => 'Archive First Chair',
+            'position' => '1st Chairperson',
+            'is_past_chairperson' => true,
+            'term_start_year' => 2008,
+            'term_end_year' => 2010,
+        ]);
+
+        $response = $this->getJson('/api/past-chairpersons')->assertOk();
+        $archive = collect($response->json())
+            ->whereIn('id', [(string) $second->id, (string) $founder->id, (string) $first->id])
+            ->values();
+
+        $this->assertSame(
+            ['Archive Founding Member', 'Archive First Chair', 'Archive Second Chair'],
+            $archive->pluck('name')->all(),
+        );
+        $this->assertSame(
+            ['Founding Mother', '1st Chairperson', '2nd Chairperson'],
+            $archive->pluck('position')->all(),
+        );
+    }
+
+    public function test_admin_can_save_and_edit_a_past_chairpersons_tenure_position(): void
+    {
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+        $admin = User::factory()->admin()->create();
+
+        Livewire::actingAs($admin)
+            ->test(ManagePastChairpersons::class)
+            ->callAction(CreateAction::class, [
+                'name' => 'Archive Coordinator',
+                'position' => 'Co-ordinator',
+                'term_start_year' => 2005,
+                'term_end_year' => 2007,
+            ])
+            ->assertHasNoActionErrors();
+
+        $coordinator = ExecutiveMember::query()->where('name', 'Archive Coordinator')->firstOrFail();
+        $this->assertSame('Co-ordinator', $coordinator->position);
+
+        Livewire::actingAs($admin)
+            ->test(ManagePastChairpersons::class)
+            ->callAction(TestAction::make(EditAction::class)->table($coordinator), data: [
+                'position' => 'Founding Mother',
+            ])
+            ->assertHasNoActionErrors();
+
+        $this->assertDatabaseHas('executive_members', [
+            'id' => $coordinator->id,
+            'position' => 'Founding Mother',
+            'is_past_chairperson' => true,
+        ]);
+        $this->getJson('/api/past-chairpersons')
+            ->assertOk()
+            ->assertJsonFragment([
+                'id' => (string) $coordinator->id,
+                'position' => 'Founding Mother',
+                'termStartYear' => 2005,
+                'termEndYear' => 2007,
+            ]);
     }
 }

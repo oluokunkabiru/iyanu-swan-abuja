@@ -62,6 +62,13 @@ class PastChairpersonResource extends Resource
                 TextInput::make('credential')
                     ->placeholder('ACA, FCA...')
                     ->maxLength(50),
+                TextInput::make('position')
+                    ->label('Tenure position')
+                    ->placeholder('e.g. 1st Chairperson')
+                    ->helperText('Use the archive title, such as Founding Mother, Co-ordinator, 1st Chairperson or 8th Chairperson.')
+                    ->default('Chairperson')
+                    ->required()
+                    ->maxLength(255),
                 TextInput::make('term_start_year')
                     ->label('Term start year')
                     ->numeric()
@@ -82,11 +89,12 @@ class PastChairpersonResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('term_start_year', 'desc')
+            ->defaultSort('term_start_year')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('photo')->collection('photo')->circular(),
                 TextColumn::make('name')->searchable(),
                 TextColumn::make('credential'),
+                TextColumn::make('position')->label('Tenure position')->searchable(),
                 TextColumn::make('term_start_year')->label('From')->sortable(),
                 TextColumn::make('term_end_year')->label('To')->placeholder('—')->sortable(),
             ])
