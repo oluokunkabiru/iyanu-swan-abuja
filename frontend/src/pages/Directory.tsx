@@ -135,7 +135,7 @@ export default function Directory() {
             className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             variants={containerVariants}
           >
             {visible.map((m) => (

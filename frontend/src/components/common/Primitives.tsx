@@ -83,7 +83,7 @@ export function SectionHeading({
       className={cn('scroll-mt-24', className)}
       initial={reducedMotion ? false : { opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, margin: '0px 0px -40px 0px' }}
       transition={{ duration: reducedMotion ? 0 : 0.45, ease: 'easeOut' }}
     >
       <motion.div
@@ -123,7 +123,7 @@ export function Section({
           className="mx-auto max-w-6xl px-4 py-14 md:py-18"
           initial="initial"
           whileInView="animate"
-          viewport={{ once: true, amount: 0.1 }}
+          viewport={{ once: true, margin: '0px 0px -40px 0px' }}
           variants={containerVariants}
         >
           {children}

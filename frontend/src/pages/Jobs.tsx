@@ -76,7 +76,7 @@ export default function Jobs() {
           className="mt-8 divide-y divide-border border-y border-border"
           initial="initial"
           whileInView="animate"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: true, margin: '0px 0px -40px 0px' }}
           variants={containerVariants}
         >
           {visible.map((job) => (

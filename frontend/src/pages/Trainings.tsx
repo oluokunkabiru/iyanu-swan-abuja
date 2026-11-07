@@ -101,7 +101,7 @@ export default function Trainings() {
             className="mt-8 overflow-x-auto"
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             variants={containerVariants}
           >
             <table className="w-full min-w-[44rem] text-left">

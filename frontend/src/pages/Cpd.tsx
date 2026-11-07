@@ -140,7 +140,7 @@ export default function Cpd() {
             className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3"
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             variants={containerVariants}
           >
             {committees.slice(0, 3).map((c) => (

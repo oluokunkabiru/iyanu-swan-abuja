@@ -37,7 +37,7 @@ export default function Practice() {
               className="mt-6 divide-y divide-border border-y border-border"
               initial="initial"
               whileInView="animate"
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: true, margin: '0px 0px -40px 0px' }}
               variants={containerVariants}
             >
               <motion.li className="py-4" variants={itemVariants} whileHover="hover">
@@ -156,7 +156,7 @@ export default function Practice() {
               className="grid gap-px bg-border md:grid-cols-2 lg:grid-cols-3"
               initial="initial"
               whileInView="animate"
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: true, margin: '0px 0px -40px 0px' }}
               variants={containerVariants}
             >
               {firms.map((f) => (

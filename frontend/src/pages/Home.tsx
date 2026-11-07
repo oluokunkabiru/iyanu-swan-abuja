@@ -240,7 +240,7 @@ export default function Home() {
           className="mx-auto grid max-w-6xl gap-px bg-border px-4 sm:grid-cols-2 lg:grid-cols-4"
           initial="initial"
           whileInView="animate"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: true, margin: '0px 0px -40px 0px' }}
           variants={containerVariants}
         >
           {desks.map((desk) => (
@@ -281,7 +281,7 @@ export default function Home() {
             className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             variants={containerVariants}
           >
             {(settings?.chapterStats ?? []).map((s) => (
@@ -357,7 +357,7 @@ export default function Home() {
           className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
           initial="initial"
           whileInView="animate"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: true, margin: '0px 0px -40px 0px' }}
           variants={containerVariants}
         >
           {loadingEvents
@@ -388,7 +388,7 @@ export default function Home() {
             className="grid gap-px bg-border md:grid-cols-3"
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             variants={containerVariants}
           >
             {registrationSteps.map((s) => (
@@ -442,7 +442,7 @@ export default function Home() {
             className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5"
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             variants={containerVariants}
           >
             {executives
@@ -485,7 +485,7 @@ export default function Home() {
           className="grid gap-6 lg:grid-cols-3"
           initial="initial"
           whileInView="animate"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: true, margin: '0px 0px -40px 0px' }}
           variants={containerVariants}
         >
           {loadingNews

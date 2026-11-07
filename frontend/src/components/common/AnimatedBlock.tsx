@@ -47,7 +47,7 @@ export function AnimatedBlock({
     <motion.div
       initial={reducedMotion ? false : 'initial'}
       whileInView="animate"
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, margin: '0px 0px -40px 0px' }}
       variants={variants[variant]}
       transition={{
         duration: reducedMotion ? 0 : 0.5,

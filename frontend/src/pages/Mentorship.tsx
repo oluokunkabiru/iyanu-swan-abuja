@@ -77,7 +77,7 @@ export default function Mentorship() {
             className="space-y-6"
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             variants={containerVariants}
           >
             {expectations.map((block) => (

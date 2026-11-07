@@ -49,7 +49,7 @@ export default function About() {
             className="space-y-8"
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             variants={containerVariants}
           >
             {loadingSettings
@@ -110,7 +110,7 @@ export default function About() {
             className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3"
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             variants={containerVariants}
           >
             {coreValues.map((v) => (
@@ -167,7 +167,7 @@ export default function About() {
                 className="mt-6 divide-y divide-border border-y border-border"
                 initial="initial"
                 whileInView="animate"
-                viewport={{ once: true, amount: 0.2 }}
+                viewport={{ once: true, margin: '0px 0px -40px 0px' }}
                 variants={containerVariants}
               >
                 {partners.map((p) => (

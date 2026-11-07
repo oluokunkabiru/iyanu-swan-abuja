@@ -66,7 +66,7 @@ export default function Contact() {
           className="grid gap-12 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]"
           initial="initial"
           whileInView="animate"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: true, margin: '0px 0px -40px 0px' }}
           variants={containerVariants}
         >
           <div>

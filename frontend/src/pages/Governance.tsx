@@ -76,7 +76,7 @@ export default function Governance() {
           className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
           initial="initial"
           whileInView="animate"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: true, margin: '0px 0px -40px 0px' }}
           variants={containerVariants}
         >
           {isLoading
@@ -120,7 +120,7 @@ export default function Governance() {
           className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
           initial="initial"
           whileInView="animate"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: true, margin: '0px 0px -40px 0px' }}
           variants={containerVariants}
         >
           {!isLoading && others.map((exec) => (
@@ -162,7 +162,7 @@ export default function Governance() {
             className="flex flex-wrap justify-center gap-x-6 gap-y-10"
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             variants={containerVariants}
           >
             {loadingPastChairpersons

@@ -75,7 +75,7 @@ export default function Firms() {
             className="mt-8 grid gap-px bg-border md:grid-cols-2"
             initial="initial"
             whileInView="animate"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             variants={containerVariants}
           >
             {visible.map((f) => (

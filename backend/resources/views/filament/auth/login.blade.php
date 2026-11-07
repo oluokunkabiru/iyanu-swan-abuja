@@ -3,6 +3,13 @@
 @endphp
 
 <div style="display: flex; flex-wrap: wrap; min-height: calc(100vh - 4rem); margin: -2rem -1.5rem; overflow: hidden; border-radius: 0.5rem;">
+    {{-- Filament flips form text to white in dark mode (often the phone default),
+         so the form panel's background must follow the theme too. --}}
+    <style>
+        .swan-login-form { background-color: #ffffff; }
+        .dark .swan-login-form { background-color: var(--gray-900, #18181b); }
+    </style>
+
     <div style="flex: 1 1 22rem; background-color: #000066; color: #ffffff; padding: 3rem 2.5rem; display: flex; flex-direction: column; justify-content: center; gap: 2rem;">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
             <img src="{{ asset('images/logo.png') }}" alt="{{ $chapterName }}" style="height: 2.5rem; width: auto;" />
@@ -34,7 +41,7 @@
         </p>
     </div>
 
-    <div style="flex: 1 1 20rem; background-color: var(--fi-color-white, #ffffff); padding: 3rem 2.5rem; display: flex; align-items: center; justify-content: center;">
+    <div class="swan-login-form" style="flex: 1 1 20rem; padding: 3rem 2.5rem; display: flex; align-items: center; justify-content: center;">
         <div style="width: 100%; max-width: 24rem;">
             {{ $this->content }}
         </div>
