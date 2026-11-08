@@ -164,7 +164,7 @@ export default function Home() {
                   src={chairperson.photoUrl}
                   alt={`${chairperson.name}, ${chairperson.position}`}
                   loading="eager"
-                  className="aspect-[4/5] w-full object-cover object-top"
+                  className="aspect-[4/5] w-full object-contain"
                 />
               )}
               <div className="absolute right-0 bottom-0 bg-plum-900 px-4 py-3 text-right text-white">
@@ -475,7 +475,7 @@ export default function Home() {
                     <LazyImage
                       src={exec.photoUrl}
                       alt=""
-                      className="aspect-square w-full object-cover object-top"
+                      className="aspect-square w-full bg-secondary object-contain"
                     />
                   )}
                   <div className="p-4">

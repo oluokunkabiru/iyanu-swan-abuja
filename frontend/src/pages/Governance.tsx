@@ -93,7 +93,7 @@ export default function Governance() {
                   <LazyImage
                     src={exec.photoUrl}
                     alt=""
-                    className="h-20 w-20 object-cover object-top"
+                    className="h-20 w-20 bg-secondary object-contain"
                   />
                 </TiltCard>
               )}
@@ -134,7 +134,7 @@ export default function Governance() {
                 <LazyImage
                   src={exec.photoUrl}
                   alt=""
-                  className="h-16 w-16 shrink-0 rounded-sm object-cover object-top"
+                  className="h-16 w-16 shrink-0 rounded-sm bg-secondary object-contain"
                 />
               )}
               <div className="min-w-0">
@@ -187,7 +187,7 @@ export default function Governance() {
                           <LazyImage
                             src={exec.photoUrl}
                             alt={exec.name}
-                            className="h-full w-full object-cover object-top"
+                            className="h-full w-full object-contain"
                             hoverZoom={false}
                           />
                         </div>
