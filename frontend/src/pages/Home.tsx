@@ -1,6 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Building2, HeartHandshake, /* GraduationCap, */ Users, Wallet } from 'lucide-react'
+import {
+  ArrowRight,
+  BadgeCheck,
+  Building2,
+  CalendarCheck,
+  CircleCheck,
+  HeartHandshake,
+  /* GraduationCap, */
+  Users,
+  Wallet,
+} from 'lucide-react'
 import { motion } from 'framer-motion'
 import {
   getCoreValues,
@@ -59,6 +69,9 @@ const desks = [
     to: '/members/subscription',
   },
 ]
+
+// Steps are admin-editable, so any step beyond these three gets CircleCheck.
+const registrationStepIcons = [Wallet, BadgeCheck, CalendarCheck]
 
 function PartnerLogo({ partner, duplicate = false }: { partner: Partner; duplicate?: boolean }) {
   const content = partner.logoUrl ? (
@@ -391,22 +404,29 @@ export default function Home() {
             viewport={{ once: true, margin: '0px 0px -40px 0px' }}
             variants={containerVariants}
           >
-            {registrationSteps.map((s) => (
-              <motion.li
-                key={s.step}
-                className="bg-card p-6"
-                variants={itemVariants}
-                whileHover="hover"
-              >
-                <span className="tnum font-heading text-3xl leading-none text-plum-200 dark:text-plum-500">
-                  {String(s.step).padStart(2, '0')}
-                </span>
-                <h3 className="mt-4 text-[1.1rem]">{s.title}</h3>
-                <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
-                  {s.description}
-                </p>
-              </motion.li>
-            ))}
+            {registrationSteps.map((s, i) => {
+              const StepIcon = registrationStepIcons[i] ?? CircleCheck
+
+              return (
+                <motion.li
+                  key={s.step}
+                  className="bg-card p-6"
+                  variants={itemVariants}
+                  whileHover="hover"
+                >
+                  <div className="flex items-center justify-between">
+                    <StepIcon aria-hidden="true" className="h-7 w-7 text-primary" />
+                    <span className="tnum font-heading text-3xl leading-none text-muted-foreground">
+                      {String(s.step).padStart(2, '0')}
+                    </span>
+                  </div>
+                  <h3 className="mt-4 text-[1.1rem]">{s.title}</h3>
+                  <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
+                    {s.description}
+                  </p>
+                </motion.li>
+              )
+            })}
           </motion.ol>
         )}
         <div className="mt-8 flex flex-wrap gap-3">
