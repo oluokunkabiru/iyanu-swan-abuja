@@ -167,6 +167,8 @@ export interface Faq {
 export interface GalleryItem {
   id: string
   url: string
+  /** Saves the uploaded file; null for YouTube/Vimeo/other links. */
+  downloadUrl: string | null
   mediaType: 'image' | 'video'
   mimeType: string | null
   /** A YouTube/Vimeo/other link rather than an uploaded file. */

@@ -50,4 +50,27 @@ class GalleryBulkUploadTest extends TestCase
         $this->assertSame(['Group photo'], $items->pluck('caption')->unique()->values()->all());
         $this->assertTrue($items->every(fn (GalleryImage $item): bool => $item->getFirstMedia('image') !== null));
     }
+
+    public function test_admin_can_upload_to_an_activity_album_without_an_event(): void
+    {
+        Storage::fake('public');
+        Storage::fake('local');
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+        Livewire::actingAs(User::factory()->admin()->create())
+            ->test(ManageGalleryImages::class)
+            ->callAction(CreateAction::class, [
+                'uploads' => [
+                    UploadedFile::fake()->image('one.jpg'),
+                    UploadedFile::fake()->image('two.jpg'),
+                ],
+                'album' => 'Mentorship Day Test',
+            ])
+            ->assertHasNoActionErrors();
+
+        $items = GalleryImage::query()->where('album', 'Mentorship Day Test')->get();
+
+        $this->assertCount(2, $items);
+        $this->assertTrue($items->every(fn (GalleryImage $item): bool => $item->event_id === null));
+    }
 }
