@@ -1,4 +1,4 @@
-import { Award, BookOpen, BriefcaseBusiness, Building2, ContactRound, GraduationCap, IdCard, UserRound } from 'lucide-react'
+import { Award, /* BookOpen, */ BriefcaseBusiness, /* Building2, */ ContactRound, GraduationCap, IdCard, UserRound } from 'lucide-react'
 import { maritalStatuses, memberTitles, nigerianStates } from '@/data/bioData'
 import type { ProfileSection } from '@/types'
 
@@ -71,15 +71,15 @@ export const profileSections: { id: ProfileSection; label: string; description: 
     {key:'chapterRole',label:'Chapter role',source:'root',readOnly:true},
     {key:'isDirectoryListed',label:'Show my name, photo and professional details in the member directory',source:'root',type:'checkbox'},
   ]},
-  { id: 'faculty', label: 'Faculty details', description: 'Your faculty affiliation and membership information.', icon: BookOpen, fields: [
-    {key:'name',label:'Faculty name'}, {key:'membershipNumber',label:'Faculty membership number'},
-    {key:'joinedYear',label:'Year joined',type:'number',min:1950,max:2100},
-  ]},
-  { id: 'licence', label: 'Licence details', description: 'Your professional licence and practice information.', icon: Building2, fields: [
-    {key:'number',label:'Licence number'}, {key:'category',label:'Licence category'},
-    {key:'issuingBody',label:'Issuing body'}, {key:'practiceName',label:'Practice / firm name'},
-    {key:'issuedOn',label:'Date issued',type:'date'}, {key:'expiresOn',label:'Expiry date',type:'date'},
-  ]},
+  // { id: 'faculty', label: 'Faculty details', description: 'Your faculty affiliation and membership information.', icon: BookOpen, fields: [
+  //   {key:'name',label:'Faculty name'}, {key:'membershipNumber',label:'Faculty membership number'},
+  //   {key:'joinedYear',label:'Year joined',type:'number',min:1950,max:2100},
+  // ]},
+  // { id: 'licence', label: 'Licence details', description: 'Your professional licence and practice information.', icon: Building2, fields: [
+  //   {key:'number',label:'Licence number'}, {key:'category',label:'Licence category'},
+  //   {key:'issuingBody',label:'Issuing body'}, {key:'practiceName',label:'Practice / firm name'},
+  //   {key:'issuedOn',label:'Date issued',type:'date'}, {key:'expiresOn',label:'Expiry date',type:'date'},
+  // ]},
   { id: 'career', label: 'Career details', description: 'Your current role, experience and career background.', icon: BriefcaseBusiness, fields: [
     {key:'placeOfWork',label:'Employer / place of work',source:'root'}, {key:'jobTitle',label:'Current designation / job title'},
     {key:'employmentType',label:'Employment type',type:'select',options:['Full-time','Part-time','Self-employed','Contract','Retired','Not currently employed']},
