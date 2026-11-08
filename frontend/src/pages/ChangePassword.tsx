@@ -24,9 +24,7 @@ export default function ChangePassword() {
     return <Navigate to="/login" replace />
   }
 
-  if (!isLoading && user && !user.mustChangePassword) {
-    return <Navigate to="/members" replace />
-  }
+  const isTemporaryPassword = user?.mustChangePassword ?? false
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -57,7 +55,7 @@ export default function ChangePassword() {
       await updatePassword({ currentPassword, password, passwordConfirmation })
       navigate('/members', { replace: true })
     } catch {
-      setError('We could not change your password. Check your temporary password and try again.')
+      setError(`We could not change your password. Check your ${isTemporaryPassword ? 'temporary' : 'current'} password and try again.`)
     } finally {
       setSubmitting(false)
     }
@@ -71,14 +69,17 @@ export default function ChangePassword() {
         animate="animate"
         variants={pageVariants}
       >
-        <h1 className="text-3xl">Choose a new password</h1>
+        <h1 className="text-3xl">{isTemporaryPassword ? 'Choose a new password' : 'Change your password'}</h1>
         <p className="mt-3 text-[0.95rem] leading-relaxed text-muted-foreground">
-          For your security, replace the temporary password emailed to you before accessing your member account. {passwordRequirementText(passwordPolicy)}
+          {isTemporaryPassword
+            ? 'For your security, replace the temporary password emailed to you before accessing your member account.'
+            : 'Enter your current password, then choose a new one.'}{' '}
+          {passwordRequirementText(passwordPolicy)}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
           <div className="grid gap-2">
-            <Label htmlFor="currentPassword">Temporary password</Label>
+            <Label htmlFor="currentPassword">{isTemporaryPassword ? 'Temporary password' : 'Current password'}</Label>
             <Input id="currentPassword" name="currentPassword" type="password" autoComplete="current-password" />
           </div>
           <div className="grid gap-2">
