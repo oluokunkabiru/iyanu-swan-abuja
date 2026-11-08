@@ -383,7 +383,7 @@ export default function Home() {
         </motion.div>
       </Section>
 
-      {/* Registration — a genuine three-step sequence, so numbered. */}
+      {/* Registration — a three-step sequence. */}
       <Section>
         <SectionHeading
           title="Becoming a member"
@@ -414,12 +414,7 @@ export default function Home() {
                   variants={itemVariants}
                   whileHover="hover"
                 >
-                  <div className="flex items-center justify-between">
-                    <StepIcon aria-hidden="true" className="h-7 w-7 text-primary" />
-                    <span className="tnum font-heading text-3xl leading-none text-muted-foreground">
-                      {String(s.step).padStart(2, '0')}
-                    </span>
-                  </div>
+                  <StepIcon aria-hidden="true" className="h-7 w-7 text-primary" />
                   <h3 className="mt-4 text-[1.1rem]">{s.title}</h3>
                   <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
                     {s.description}
