@@ -46,7 +46,10 @@ class BirthdayGreetingDeliveryTest extends TestCase
         Artisan::call($this->scheduledQueueWorkerCommand());
 
         $this->assertSame(0, DB::table('jobs')->count());
-        $this->assertNotNull($this->sentGreetingTo($member));
+        $this->assertStringContainsString(
+            'Happy 40th birthday',
+            (string) $this->sentGreetingTo($member)?->getOriginalMessage()->getSubject(),
+        );
     }
 
     private function scheduledQueueWorkerCommand(): string
@@ -76,6 +79,8 @@ class BirthdayGreetingDeliveryTest extends TestCase
 
         $this->assertStringContainsString("Happy {$expectedOrdinal} birthday", $mail->subject);
         $this->assertStringContainsString("Happy {$expectedOrdinal} birthday", $mail->greeting);
+        $this->assertStringContainsString("Your {$expectedOrdinal} Birthday", (string) $mail->render());
+        $this->assertStringContainsString("celebrating {$age} wonderful years", (string) $mail->render());
     }
 
     /** @return array<string, array{int, string}> */
@@ -88,7 +93,10 @@ class BirthdayGreetingDeliveryTest extends TestCase
             '11' => [11, '11th'],
             '12' => [12, '12th'],
             '13' => [13, '13th'],
+            '27' => [27, '27th'],
+            '30' => [30, '30th'],
             '40' => [40, '40th'],
+            '60' => [60, '60th'],
             '101' => [101, '101st'],
             '111' => [111, '111th'],
         ];
@@ -100,6 +108,8 @@ class BirthdayGreetingDeliveryTest extends TestCase
         $mail = (new BirthdayGreeting)->toMail($this->memberBorn($dateOfBirth));
 
         $this->assertStringContainsString('Happy birthday', $mail->subject);
+        $this->assertStringNotContainsString('wonderful year', (string) $mail->render());
+        $this->assertStringNotContainsString('Birthday 🎉', (string) $mail->render());
     }
 
     /** @return array<string, array{?string}> */

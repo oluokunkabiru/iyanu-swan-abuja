@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 use Symfony\Component\Mime\Email;
 
 class BirthdayGreeting extends Notification implements ShouldQueue
@@ -29,12 +30,16 @@ class BirthdayGreeting extends Notification implements ShouldQueue
     {
         $chapterName = SiteSetting::current()->chapter_name;
         $birthday = $this->birthdayPhrase($notifiable);
+        $age = $this->celebratedAge($notifiable);
 
         return (new MailMessage)
             ->subject("🎉 {$birthday} from {$chapterName}!")
             ->greeting("🎂 {$birthday}, {$notifiable->name}!")
             ->line(new HtmlString('<img src="cid:'.self::BANNER_CONTENT_ID.'" alt="Happy Birthday!" width="100%" style="display:block;width:100%;max-width:570px;height:auto;border-radius:6px;margin:0 0 20px;">'))
-            ->line("🎈 Today, the entire {$chapterName} family celebrates you, and we are so glad you are one of us.")
+            ->when($age !== null, fn (MailMessage $mail): MailMessage => $mail->line($this->ageBadge($age)))
+            ->line($age !== null
+                ? "🎈 Today you are celebrating {$age} wonderful ".Str::plural('year', $age).", and the entire {$chapterName} family celebrates with you. We are so glad you are one of us."
+                : "🎈 Today, the entire {$chapterName} family celebrates you, and we are so glad you are one of us.")
             ->line('🌟 Your dedication, your excellence and the example you set continue to inspire the women around you, and our profession is stronger for it.')
             ->line('🙏 May this new year of your life bring you good health, joy, peace and success in everything you set your hands to.')
             ->line('🎁 Take a moment today to rest, to celebrate, and to enjoy the people who love you. You have earned it.')
@@ -54,20 +59,28 @@ class BirthdayGreeting extends Notification implements ShouldQueue
         return $this->toSms($notifiable);
     }
 
-    /**
-     * Leaves the age out when the stored birth year can't be real, so a
-     * placeholder date never produces a greeting like "Happy 126th birthday".
-     */
     private function birthdayPhrase(object $notifiable): string
+    {
+        $age = $this->celebratedAge($notifiable);
+
+        return $age !== null ? 'Happy '.$this->ordinal($age).' birthday' : 'Happy birthday';
+    }
+
+    /**
+     * Null when the stored birth year can't be real, so a placeholder date
+     * never produces a greeting like "Happy 126th birthday".
+     */
+    private function celebratedAge(object $notifiable): ?int
     {
         $dateOfBirth = $notifiable->memberProfile?->date_of_birth;
         $age = $dateOfBirth ? now()->year - $dateOfBirth->year : 0;
 
-        if ($age < 1 || $age > self::OLDEST_PLAUSIBLE_AGE) {
-            return 'Happy birthday';
-        }
+        return $age >= 1 && $age <= self::OLDEST_PLAUSIBLE_AGE ? $age : null;
+    }
 
-        return 'Happy '.$this->ordinal($age).' birthday';
+    private function ageBadge(int $age): HtmlString
+    {
+        return new HtmlString('<div style="text-align:center;margin:0 0 20px;"><span style="display:inline-block;background-color:#ffff00;color:#000066;font-size:28px;font-weight:bold;line-height:1.2;padding:12px 28px;border-radius:6px;">🎉 Your '.$this->ordinal($age).' Birthday 🎉</span></div>');
     }
 
     private function ordinal(int $number): string
