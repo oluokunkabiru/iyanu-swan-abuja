@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('dues:send-yearly-reminders')->yearlyOn(1, 1, '06:00');
 Schedule::command('birthdays:send-greetings')->dailyAt('07:00');
+Schedule::command('queue:work --stop-when-empty --tries=3 --max-time=50')->everyMinute()->withoutOverlapping(10);
