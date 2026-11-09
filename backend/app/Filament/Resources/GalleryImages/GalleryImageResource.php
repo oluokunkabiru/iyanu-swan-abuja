@@ -16,6 +16,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
@@ -66,8 +67,15 @@ class GalleryImageResource extends Resource
                     ->label('Event')
                     ->options(fn () => Event::query()->orderByDesc('starts_at')->pluck('title', 'id'))
                     ->searchable()
-                    ->placeholder('General (no event)')
-                    ->helperText('The gallery is organised by event — this appears in that event\'s album. Leave empty to post it under General.'),
+                    ->placeholder('Not linked to an event')
+                    ->live()
+                    ->helperText('The gallery is organised into albums — this appears in that event\'s album. For anything that isn\'t an event, leave this empty and name the activity below.'),
+                TextInput::make('album')
+                    ->label('Activity name')
+                    ->datalist(fn (): array => GalleryImage::query()->whereNull('event_id')->whereNotNull('album')->distinct()->orderBy('album')->pluck('album')->all())
+                    ->visible(fn (Get $get): bool => blank($get('event_id')))
+                    ->maxLength(255)
+                    ->helperText('Files with the same activity name share one album, so reuse the exact name for later uploads. Leave empty to post under General.'),
             ]);
     }
 
@@ -85,7 +93,7 @@ class GalleryImageResource extends Resource
                 TextColumn::make('caption'),
                 TextColumn::make('event.title')->label('Event')->placeholder('General')->searchable(),
                 TextColumn::make('event.category')->label('Event type')->badge(),
-                TextColumn::make('album')->label('Old album')->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('album')->label('Activity')->placeholder('—')->searchable()->toggleable(),
             ])
             ->filters([
                 //

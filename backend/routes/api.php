@@ -55,6 +55,7 @@ Route::get('/news', [NewsPostController::class, 'index']);
 Route::get('/news/{newsPost}', [NewsPostController::class, 'show']);
 
 Route::get('/gallery', [GalleryImageController::class, 'index']);
+Route::get('/gallery/media/{media}/download', [GalleryImageController::class, 'download'])->name('gallery.media.download');
 Route::get('/spotlights', [MemberSpotlightController::class, 'index']);
 Route::get('/partners', [PartnerController::class, 'index']);
 Route::get('/publications', [PublicationController::class, 'index']);

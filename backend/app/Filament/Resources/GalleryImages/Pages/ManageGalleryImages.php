@@ -25,9 +25,9 @@ class ManageGalleryImages extends ManageRecords
 
     /**
      * The upload field takes many files at once; each becomes its own
-     * gallery item sharing the chosen event and caption.
+     * gallery item sharing the chosen event or activity, and caption.
      *
-     * @param  array{uploads: array<int, string>, caption?: ?string, event_id?: ?int}  $data
+     * @param  array{uploads: array<int, string>, caption?: ?string, event_id?: ?int, album?: ?string}  $data
      */
     private function createOnePerFile(array $data): GalleryImage
     {
@@ -37,6 +37,7 @@ class ManageGalleryImages extends ManageRecords
             foreach ($data['uploads'] as $path) {
                 $created = GalleryImage::query()->create([
                     'caption' => $data['caption'] ?? null,
+                    'album' => $data['album'] ?? null,
                     'event_id' => $data['event_id'] ?? null,
                 ]);
 
