@@ -3,11 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\SiteSetting;
+use App\Notifications\Concerns\ShowsLoginDetails;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class LegacyMemberImported extends Notification
 {
+    use ShowsLoginDetails;
+
     public function __construct(private readonly string $temporaryPassword) {}
 
     /**
@@ -28,11 +31,11 @@ class LegacyMemberImported extends Notification
         $chapterName = SiteSetting::current()->short_name ?? SiteSetting::current()->chapter_name;
 
         return (new MailMessage)
-            ->subject("Your {$chapterName} member account is ready")
-            ->greeting("Hello {$notifiable->name},")
-            ->line("We've added your existing membership to {$chapterName}.")
-            ->line("Sign in with your email address and this temporary password: {$this->temporaryPassword}")
-            ->line('For your security, you will be required to choose a new password immediately after signing in.')
+            ->subject("Welcome to {$chapterName} — your member account is ready")
+            ->greeting("Welcome, {$notifiable->name}!")
+            ->line("We're delighted to welcome you to {$chapterName}. We've added your existing membership, and your account is ready to use.")
+            ->line($this->loginDetails($notifiable->email, $this->temporaryPassword))
+            ->line('For your security, you will be asked to replace this temporary password with your own personal password as soon as you sign in.')
             ->action('Sign in to your account', rtrim(config('app.frontend_url'), '/').'/login')
             ->line('If you were not expecting this email, please contact the chapter office.');
     }

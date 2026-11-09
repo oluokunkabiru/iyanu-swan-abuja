@@ -5,9 +5,12 @@ namespace App\Filament\Resources\Users\Pages;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\MembershipLevel;
 use App\Models\User;
+use App\Notifications\AccountCreatedByAdmin;
 use App\Notifications\LegacyMemberImported;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Str;
+use Throwable;
 
 class CreateUser extends CreateRecord
 {
@@ -15,7 +18,7 @@ class CreateUser extends CreateRecord
 
     private ?int $legacyMembershipLevelId = null;
 
-    private ?string $temporaryPassword = null;
+    private string $initialPassword = '';
 
     /**
      * @param  array<string, mixed>  $data
@@ -29,31 +32,40 @@ class CreateUser extends CreateRecord
         unset($data['is_legacy_member'], $data['legacy_membership_level_id']);
 
         if (! $isLegacyMember) {
+            // $data['password'] is already hashed here; the welcome email needs what the admin typed.
+            $this->initialPassword = (string) $this->data['password'];
+
             return [
                 ...$data,
                 'must_change_password' => $data['role'] === 'member',
             ];
         }
 
-        $this->temporaryPassword = Str::password(16);
+        $this->initialPassword = Str::password(16);
 
         return [
             ...$data,
             'email_verified_at' => now(),
             'must_change_password' => true,
-            'password' => $this->temporaryPassword,
+            'password' => $this->initialPassword,
             'role' => 'member',
         ];
     }
 
     protected function afterCreate(): void
     {
-        if (! $this->legacyMembershipLevelId || ! $this->temporaryPassword) {
-            return;
+        /** @var User $user */
+        $user = $this->getRecord();
+
+        if ($this->legacyMembershipLevelId) {
+            $this->recordLegacyMembership($user);
         }
 
-        /** @var User $member */
-        $member = $this->getRecord();
+        $this->sendWelcomeEmails($user);
+    }
+
+    private function recordLegacyMembership(User $member): void
+    {
         $level = MembershipLevel::query()->findOrFail($this->legacyMembershipLevelId);
 
         $member->forceFill(['email_verified_at' => now()])->save();
@@ -71,6 +83,33 @@ class CreateUser extends CreateRecord
             'paid_at' => now(),
             'payment_gateway' => 'legacy_import',
         ]);
-        $member->notify(new LegacyMemberImported($this->temporaryPassword));
+    }
+
+    /**
+     * The account already exists by now, so a mail outage is reported to
+     * the admin rather than thrown: retrying the form would only fail on
+     * the email address being taken.
+     */
+    private function sendWelcomeEmails(User $user): void
+    {
+        try {
+            if ($this->legacyMembershipLevelId) {
+                $user->notify(new LegacyMemberImported($this->initialPassword));
+
+                return;
+            }
+
+            $user->notify(new AccountCreatedByAdmin($this->initialPassword));
+            $user->sendEmailVerificationNotification();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            Notification::make()
+                ->title('User created, but the email could not be sent')
+                ->body('Once email is working, ask them to use "Forgot password" on the sign-in page.')
+                ->warning()
+                ->persistent()
+                ->send();
+        }
     }
 }

@@ -37,7 +37,7 @@ class UserForm
                         required: $operation === 'create' && ! $get('is_legacy_member'),
                     ))
                     ->hidden(fn ($get): bool => (bool) $get('is_legacy_member'))
-                    ->helperText('Members created here must change this password on their first sign-in. Legacy-member imports receive a generated temporary password by email.')
+                    ->helperText('This password is emailed to the user with a welcome message and an email-verification link. Members must replace it with their own on first sign-in. Legacy-member imports receive a generated temporary password instead.')
                     ->maxLength(255),
                 Select::make('role')
                     ->options([
